@@ -38,9 +38,14 @@ const ago = t => {
 let me = { id: "", role: "viewer" };
 const can = r => ["viewer", "operator", "admin"].indexOf(me.role) >= ["viewer", "operator", "admin"].indexOf(r);
 
+const API_BASE = (window.location.hostname.endsWith(".pages.dev") || window.location.hostname.includes("cloudflare"))
+  ? "https://curve-metrics-platform.onrender.com"
+  : "";
+
 async function api(path, method = "GET", body) {
-  const r = await fetch(path, {
+  const r = await fetch(API_BASE + path, {
     method,
+    credentials: "include",
     headers: {
       "X-Requested-With": "console",
       ...(body ? { "Content-Type": "application/json" } : {})

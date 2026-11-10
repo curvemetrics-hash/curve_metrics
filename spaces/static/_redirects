@@ -1,0 +1,9 @@
+/api/* https://curve-metrics-platform.onrender.com/api/:splat 200
+/spaces https://curve-metrics-platform.onrender.com/spaces 200
+/spaces/* https://curve-metrics-platform.onrender.com/spaces/:splat 200
+/rollout https://curve-metrics-platform.onrender.com/rollout 200
+/rollout/* https://curve-metrics-platform.onrender.com/rollout/:splat 200
+/jobs https://curve-metrics-platform.onrender.com/jobs 200
+/jobs/* https://curve-metrics-platform.onrender.com/jobs/:splat 200
+/audit https://curve-metrics-platform.onrender.com/audit 200
+/healthz https://curve-metrics-platform.onrender.com/healthz 200

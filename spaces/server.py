@@ -39,7 +39,7 @@ validate, write_request = core.validate, core.write_request
 
 SECURITY_HEADERS = {
     "Content-Security-Policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; "
-                               "connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
+                               "connect-src 'self' https://*.pages.dev https://curve-metrics-platform.onrender.com;  frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
     "X-Content-Type-Options": "nosniff",
     "X-Frame-Options": "DENY",
     "Referrer-Policy": "no-referrer",
@@ -98,6 +98,13 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Cache-Control", cache)
         for k, v in SECURITY_HEADERS.items():
             self.send_header(k, v)
+        # CORS cross-origin headers for Cloudflare Pages & local development
+        origin = self.headers.get("Origin")
+        if origin:
+            self.send_header("Access-Control-Allow-Origin", origin)
+            self.send_header("Access-Control-Allow-Credentials", "true")
+            self.send_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+            self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, Accept")
         if headers:
             for hk, hv in headers:
                 self.send_header(hk, hv)
@@ -139,6 +146,19 @@ class Handler(BaseHTTPRequestHandler):
         print(f"{self.command} {self.path.split('?')[0]} {getattr(self, '_status', 0)} {who} {int((time.time() - t0) * 1000)}ms", flush=True)
 
     # --- GET -----------------------------------------------------------------------------
+    def do_OPTIONS(self):
+        t0 = time.time()
+        self.send_response(204)
+        origin = self.headers.get("Origin", "*")
+        self.send_header("Access-Control-Allow-Origin", origin)
+        self.send_header("Access-Control-Allow-Credentials", "true")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, Accept")
+        self.send_header("Access-Control-Max-Age", "86400")
+        self.end_headers()
+        self._status = 204
+        self._log(None, t0)
+
     def do_GET(self):
         t0, who = time.time(), None
         u = urlparse(self.path)
@@ -246,7 +266,8 @@ class Handler(BaseHTTPRequestHandler):
                 try:
                     user_info = auth.register_user(username, password, role=role, name=name)
                     # Set cookie session
-                    cookie = f"platform_session={username}; Path=/; HttpOnly; SameSite=Lax"
+                    samesite = "SameSite=None; Secure" if config.is_aws() else "SameSite=Lax"
+                    cookie = f"platform_session={username}; Path=/; HttpOnly; {samesite}"
                     return self._send(200, {"ok": True, "user": user_info}, headers=[("Set-Cookie", cookie)])
                 except auth.AuthError as e:
                     return self._send(e.code, {"error": str(e)})
@@ -263,7 +284,8 @@ class Handler(BaseHTTPRequestHandler):
                     return self._send(e.code, {"error": str(e)})
 
             if path == "/api/auth/logout":
-                cookie = "platform_session=guest; Path=/; HttpOnly; SameSite=Lax"
+                samesite = "SameSite=None; Secure" if config.is_aws() else "SameSite=Lax"
+                cookie = f"platform_session=guest; Path=/; HttpOnly; {samesite}"
                 return self._send(200, {"ok": True}, headers=[("Set-Cookie", cookie)])
 
             if path == "/api/chat":
