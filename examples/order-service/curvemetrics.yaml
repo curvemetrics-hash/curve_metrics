@@ -1,0 +1,48 @@
+# ==============================================================================
+# Curve Metrics Environment & Infrastructure Blueprint
+# ==============================================================================
+# Developers commit this file directly inside their application repository.
+# Curve Metrics reads this declaration and provisions the isolated cloud resources.
+
+version: "1.0"
+
+service:
+  name: "order-service"
+  team: "checkout"
+  environment: "dev"
+  size: "small"
+  blueprint: "standard"
+
+# Cloud resources requested by the application
+cloud_resources:
+  # Managed PostgreSQL database
+  database:
+    type: "postgres"
+    name: "orders_db"
+    backup_retention_days: 7
+    allocated_storage_gb: 20
+
+  # Encrypted object storage for order receipts
+  storage:
+    buckets:
+      - name: "checkout-orders-receipts"
+        versioning: true
+        server_side_encryption: "AES256"
+        public_read: false
+
+  # Application Secrets managed in AWS Secrets Manager / Vault
+  secrets:
+    - name: "STRIPE_API_KEY"
+    - name: "ORDER_WEBHOOK_SECRET"
+
+  # CloudWatch / FluentBit logging stream
+  logging:
+    retention_days: 30
+    level: "INFO"
+
+# Security & Compliance policies enforced automatically
+compliance:
+  prevent_public_access: true
+  enforce_encryption_at_rest: true
+  enforce_network_isolation: true
+  auto_remediate_drift: true
