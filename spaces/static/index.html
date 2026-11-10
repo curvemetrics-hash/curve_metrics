@@ -385,6 +385,144 @@
         </div>
       </div>
 
+      <!-- Real-World Developer Use Case Section -->
+      <div class="landing-usecase-container animate-on-scroll">
+        <div class="landing-section-header" style="margin-bottom:28px">
+          <div class="landing-section-tag">Developer Story &amp; Real-World Use Case</div>
+          <h2 class="landing-section-title">How It Powers Your Codebase in 40 Seconds</h2>
+          <p class="landing-section-desc">You built your application code. Curve Metrics gives it a compliant, production-grade cloud home without waiting for DevOps or learning complex AWS plumbing.</p>
+        </div>
+
+        <!-- Before vs After Comparison Grid -->
+        <div class="landing-comparison-grid">
+          <!-- The Old Painful Way -->
+          <div class="landing-compare-card old-way">
+            <div class="landing-compare-badge old">
+              <svg class="i sm-i"><use href="#i-alert-triangle"/></svg>
+              <span>The Old Way (Without Curve Metrics)</span>
+            </div>
+            <h4>Frustrating, Slow &amp; Risky</h4>
+            <ul class="landing-compare-list">
+              <li>
+                <span class="compare-icon-cross">✕</span>
+                <div>
+                  <strong>Weeks Waiting for DevOps:</strong> Submit Jira tickets to create a simple namespace, database, and bucket.
+                </div>
+              </li>
+              <li>
+                <span class="compare-icon-cross">✕</span>
+                <div>
+                  <strong>Complex AWS &amp; Terraform Plumbing:</strong> Struggle with 500 lines of IAM policies, VPCs, subnets, and Kubernetes YAML.
+                </div>
+              </li>
+              <li>
+                <span class="compare-icon-cross">✕</span>
+                <div>
+                  <strong>Dangerous Cloud Mistakes:</strong> Accidental unencrypted S3 buckets, exposed databases, or $5,000 budget blowouts.
+                </div>
+              </li>
+              <li>
+                <span class="compare-icon-cross">✕</span>
+                <div>
+                  <strong>Hardcoded Secrets in Code:</strong> Scrambling to inject AWS access keys and database credentials manually.
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <!-- The Curve Metrics Way -->
+          <div class="landing-compare-card new-way">
+            <div class="landing-compare-badge new">
+              <svg class="i sm-i"><use href="#i-sparkles"/></svg>
+              <span>The Curve Metrics Way</span>
+            </div>
+            <h4>Instant, Autonomous &amp; 100% Compliant</h4>
+            <ul class="landing-compare-list">
+              <li>
+                <span class="compare-icon-check">✓</span>
+                <div>
+                  <strong>1-Click Self-Service in 40s:</strong> Pick your project name and size (Small, Medium, Large). Ready in seconds.
+                </div>
+              </li>
+              <li>
+                <span class="compare-icon-check">✓</span>
+                <div>
+                  <strong>Full Cloud Infrastructure Included:</strong> K8s namespace + private encrypted S3 bucket + SQS queue + Secrets vault.
+                </div>
+              </li>
+              <li>
+                <span class="compare-icon-check">✓</span>
+                <div>
+                  <strong>56 Security Rules Pre-Enforced:</strong> Hard resource limits, default-deny network firewalls, and least-privilege IAM.
+                </div>
+              </li>
+              <li>
+                <span class="compare-icon-check">✓</span>
+                <div>
+                  <strong>Native Zero-Credential App Wiring:</strong> Your code automatically reads its S3 bucket and secrets via environment variables.
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 3-Step Codebase Workflow Cards -->
+        <div class="landing-usecase-steps">
+          <div class="landing-usecase-step-card">
+            <div class="usecase-step-number">STEP 1</div>
+            <div class="usecase-step-icon">
+              <svg class="i"><use href="#i-terminal"/></svg>
+            </div>
+            <h4>You Have App Code</h4>
+            <p>You wrote a microservice (Node.js, Python, Go, Java) that needs to run in the cloud, upload files, and store secrets safely.</p>
+          </div>
+
+          <div class="landing-usecase-step-card highlight">
+            <div class="usecase-step-number">STEP 2</div>
+            <div class="usecase-step-icon">
+              <svg class="i"><use href="#i-sparkles"/></svg>
+            </div>
+            <h4>Click 1 Button</h4>
+            <p>Choose your team name and resource size. Curve Metrics autonomously builds, secures, and verifies the cloud space.</p>
+          </div>
+
+          <div class="landing-usecase-step-card">
+            <div class="usecase-step-number">STEP 3</div>
+            <div class="usecase-step-icon">
+              <svg class="i"><use href="#i-check-circle"/></svg>
+            </div>
+            <h4>Deploy &amp; Run</h4>
+            <p>Your code deploys with zero hardcoded AWS keys. Storage, queues, and secrets connect automatically via cloud bindings.</p>
+          </div>
+        </div>
+
+        <!-- Visual Code Snippet: How Clean Your Codebase Becomes -->
+        <div class="landing-code-demo">
+          <div class="landing-code-header">
+            <span class="landing-code-dot red"></span>
+            <span class="landing-code-dot yellow"></span>
+            <span class="landing-code-dot green"></span>
+            <span class="landing-code-title">deployment.yaml &bull; How your application connects cleanly</span>
+          </div>
+          <pre class="landing-code-pre"><code><span class="tok-comment"># In your app deployment, zero AWS secrets or complex configs required</span>
+<span class="tok-key">apiVersion</span>: <span class="tok-val">apps/v1</span>
+<span class="tok-key">kind</span>: <span class="tok-val">Deployment</span>
+<span class="tok-key">metadata</span>:
+  <span class="tok-key">name</span>: <span class="tok-val">payments-service</span>
+  <span class="tok-key">namespace</span>: <span class="tok-val">payments-dev</span>  <span class="tok-comment"># &lt;-- Created in 40s by Curve Metrics</span>
+<span class="tok-key">spec</span>:
+  <span class="tok-key">template</span>:
+    <span class="tok-key">spec</span>:
+      <span class="tok-key">serviceAccountName</span>: <span class="tok-val">app</span>  <span class="tok-comment"># &lt;-- Pre-wired with least-privilege IAM role!</span>
+      <span class="tok-key">containers</span>:
+        - <span class="tok-key">name</span>: <span class="tok-val">api</span>
+          <span class="tok-key">image</span>: <span class="tok-val">mycompany/payments:v1.0.0</span>
+          <span class="tok-key">envFrom</span>:
+            - <span class="tok-key">configMapRef</span>:
+                <span class="tok-key">name</span>: <span class="tok-val">cloud-resources</span>  <span class="tok-comment"># &lt;-- Auto-injects S3_BUCKET, SQS_QUEUE, SECRET_ID!</span></code></pre>
+        </div>
+      </div>
+
       <!-- Bottom Call to Action Banner -->
       <div class="landing-bottom-cta animate-on-scroll">
         <h3>Ready to Explore the Platform Console?</h3>
