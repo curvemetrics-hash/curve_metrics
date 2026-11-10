@@ -14,3 +14,7 @@ site/
 *.png
 .pytest_cache/
 *.db
+
+.wrangler/
+scratch/
+
