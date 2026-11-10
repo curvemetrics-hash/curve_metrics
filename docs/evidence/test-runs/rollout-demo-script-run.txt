@@ -1,0 +1,33 @@
+wrote /Users/dharmendraahuja/curve_metrics/.local/rollout/registry.json with 6 environments and a catalog with tags v1.0.0 v1.1.0 v1.2.0
+== provision 6 environments at v1.0.0
+provisioned 6 environments in 72s (avg 45.1s each)
+  ok   all environments compliant on v1.0.0
+== good release v1.1.0
+preview for 6 environment(s)
+canary: svc01-dev
+batch 1: svc02-test, svc03-prod, svc04-dev
+batch 2: svc05-test, svc06-prod
+
+rollout to v1.1.0: completed in 98.1s
+  canary   svc01-dev: ok (16.5s)
+  batch 1  svc02-test: ok (21.1s)
+  batch 1  svc03-prod: ok (26.2s)
+  batch 1  svc04-dev: ok (17.0s)
+  batch 2  svc05-test: ok (16.0s)
+  batch 2  svc06-prod: ok (20.8s)
+  ok   rollout completes
+  ok   every environment now on v1.1.0
+  ok   change really applied (log retention 90)
+== bad release v1.2.0, preview not overridden
+  ok   blocked before anything changes
+  ok   all environments still on v1.1.0
+== bad release v1.2.0, preview overridden
+  ok   stopped at the canary
+  ok   canary was rolled back
+  ok   no environment left on v1.2.0
+  ok   all environments still compliant
+  report written to site/index.html
+failed checks: 0
+== cleaned up
+scripts/rollout_demo.sh 6  367.17s user 66.30s system 105% cpu 6:50.05 total
+exit=0

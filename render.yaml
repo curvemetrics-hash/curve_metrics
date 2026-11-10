@@ -1,0 +1,68 @@
+# Render blueprint: web console, job worker, scheduled scan and Postgres.
+# Secrets are never in this file: every `sync: false` value is typed into the Render dashboard once.
+# Check plan names and prices in the Render dashboard before applying; they change.
+databases:
+  - name: curve-db
+    plan: basic-256mb
+    databaseName: platform
+    user: platform
+    postgresMajorVersion: "16"
+    ipAllowList: []            # only Render services in this account can connect
+
+services:
+  # Web console and API. No AWS credentials here: it only validates, authorises and queues.
+  - type: web
+    name: curve-console
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /healthz
+    autoDeploy: false          # deploy deliberately, after tests pass
+    envVars:
+      - { key: PLATFORM_MODE, value: aws }
+      - { key: AUTH_MODE, value: cloudflare }
+      - { key: EMBEDDED_WORKER, value: "0" }
+      - { key: DATABASE_URL, fromDatabase: { name: curve-db, property: connectionString } }
+      - { key: CF_TEAM_DOMAIN, sync: false }        # yourteam.cloudflareaccess.com
+      - { key: CF_ACCESS_AUD, sync: false }         # the Access application's AUD tag
+      - { key: ADMIN_EMAILS, sync: false }          # comma separated; '@example.com' matches a domain
+      - { key: OPERATOR_EMAILS, sync: false }
+      - { key: ACCESS_DEFAULT_ROLE, value: viewer } # use "none" to deny anyone not listed
+
+  # Worker: runs the pipeline, scans and rollouts. Holds the cloud credentials.
+  - type: worker
+    name: curve-worker
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    dockerCommand: python -m spaces.worker
+    autoDeploy: false
+    envVars:
+      - { key: PLATFORM_MODE, value: aws }
+      - { key: DATABASE_URL, fromDatabase: { name: curve-db, property: connectionString } }
+      - { key: AWS_REGION, sync: false }
+      - { key: AWS_ACCESS_KEY_ID, sync: false }     # IAM user that can only assume the roles below
+      - { key: AWS_SECRET_ACCESS_KEY, sync: false }
+      - { key: AWS_ROLE_ARN, sync: false }          # pipeline role
+      - { key: AWS_READONLY_ROLE_ARN, sync: false } # optional: scans use this role instead
+      - { key: EKS_CLUSTER_NAME, sync: false }
+      - { key: TF_STATE_BUCKET, sync: false }
+      - { key: TF_LOCK_TABLE, sync: false }
+      - { key: OIDC_PROVIDER_ARN, sync: false }
+      - { key: OIDC_ISSUER, sync: false }
+      - { key: PERMISSIONS_BOUNDARY_ARN, sync: false }
+      - { key: CATALOG_URL, sync: false }           # git URL of the blueprint repo, for rollouts
+      - { key: KUBECONFIG, value: /tmp/kubeconfig }
+      - { key: KUBECONFIG_RO, value: /tmp/kubeconfig-ro }
+
+  # Daily scan of every ready environment (queues jobs; the worker does them).
+  - type: cron
+    name: curve-scan-all
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    dockerCommand: python -m spaces.cron scan-all
+    schedule: "0 6 * * *"
+    envVars:
+      - { key: PLATFORM_MODE, value: aws }
+      - { key: DATABASE_URL, fromDatabase: { name: curve-db, property: connectionString } }

@@ -1,0 +1,94 @@
+# Compliance-Ready Spaces end to end, 2026-11-06, after moving to the shared store, job queue and worker
+# command: scripts/test_spaces_e2e.sh (kind + LocalStack, SQLite, embedded worker). Request-log lines removed.
+console on http://127.0.0.1:8089 (local mode, auth off)
+== 1 request validation
+  ok   invalid size rejected with 400
+  ok   malformed JSON rejected with 400
+== 2 create two spaces through the API
+job 66cd7270 create acme-82104 started
+job 66cd7270 finished
+  ok   space A reached ready
+job b6d278ca create globex-82104 started
+job b6d278ca finished
+  ok   space B reached ready
+  ok   duplicate name gives 409
+  seconds to ready: A=53 B=51
+  seconds to compliant: A=63 B=58
+== 3 new spaces are fully compliant
+job 4996dd56 scan acme-82104 started
+job 4996dd56 finished
+  ok   A controls
+job a5279e22 scan globex-82104 started
+job a5279e22 finished
+  ok   B controls
+== 4 unsafe request is rejected by the pipeline
+job a440df62 create evil-82104 started
+job a440df62 finished
+  ok   wildcard admin request rejected
+  ok   no namespace created for rejected request
+== 5 break a managed control, detect, re-apply
+job b7db4b3a scan acme-82104 started
+job b7db4b3a finished
+  ok   delete default-deny policy: detected
+job 98718661 scan globex-82104 started
+job 98718661 finished
+  ok   delete default-deny policy: other space unaffected
+job 4958cdd3 fix acme-82104 started
+job 4958cdd3 finished
+job 48218980 scan acme-82104 started
+job 48218980 finished
+  ok   delete default-deny policy: compliant after re-apply
+job 0542f30b scan acme-82104 started
+job 0542f30b finished
+  ok   make bucket public: detected
+job 77300f56 scan globex-82104 started
+job 77300f56 finished
+  ok   make bucket public: other space unaffected
+job c0e9764e fix acme-82104 started
+job c0e9764e finished
+job b171cf41 scan acme-82104 started
+job b171cf41 finished
+  ok   make bucket public: compliant after re-apply
+job bd805f5a scan acme-82104 started
+job bd805f5a finished
+  ok   change quota: detected
+job 98e9d126 scan globex-82104 started
+job 98e9d126 finished
+  ok   change quota: other space unaffected
+job c6c4c69b fix acme-82104 started
+job c6c4c69b finished
+job 84a3e829 scan acme-82104 started
+job 84a3e829 finished
+  ok   change quota: compliant after re-apply
+job 01ff8794 scan acme-82104 started
+job 01ff8794 finished
+  ok   suspend versioning: detected
+job 5db6b29b scan globex-82104 started
+job 5db6b29b finished
+  ok   suspend versioning: other space unaffected
+job 5c4d4697 fix acme-82104 started
+job 5c4d4697 finished
+job 962ea6fa scan acme-82104 started
+job 962ea6fa finished
+  ok   suspend versioning: compliant after re-apply
+== 6 object added by hand (not managed by the blueprint)
+job 8334b6bf scan acme-82104 started
+job 8334b6bf finished
+  ok   wildcard binding detected
+job 462753a9 fix acme-82104 started
+job 462753a9 finished
+job 17a78e4c scan acme-82104 started
+job 17a78e4c finished
+  ok   re-apply does NOT remove an unmanaged binding (known limit)
+job ea03ac8b scan acme-82104 started
+job ea03ac8b finished
+  ok   compliant after manual removal
+== 7 deleted space is reported, not silently passed
+  (checked by unit test test_empty_snapshot_fails_not_crashes)
+
+passed: 24  failed: 0
+== cleanup
+scripts/test_spaces_e2e.sh: line 30: 36053 Terminated: 15          PORT=$PORT python3 -m spaces.server
+  destroyed acme-82104
+  destroyed globex-82104
+exit 0

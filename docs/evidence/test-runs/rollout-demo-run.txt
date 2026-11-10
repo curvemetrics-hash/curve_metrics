@@ -1,0 +1,95 @@
+### status (all on v1.0.0)
+environment  kind  pinned  actual  compliance
+svc01-dev    dev   v1.0.0  v1.0.0  ok        
+svc02-test   test  v1.0.0  v1.0.0  ok        
+svc03-prod   prod  v1.0.0  v1.0.0  ok        
+svc04-dev    dev   v1.0.0  v1.0.0  ok        
+svc05-test   test  v1.0.0  v1.0.0  ok        
+svc06-prod   prod  v1.0.0  v1.0.0  ok        
+svc07-dev    dev   v1.0.0  v1.0.0  ok        
+svc08-test   test  v1.0.0  v1.0.0  ok        
+svc09-prod   prod  v1.0.0  v1.0.0  ok        
+svc10-dev    dev   v1.0.0  v1.0.0  ok        
+
+### preview v1.1.0 (first two environments shown)
+svc01-dev: +0 ~2 -0
+    update   module.cloud[0].aws_cloudwatch_log_group.app
+    update   module.environment.kubernetes_namespace_v1.this
+svc02-test: +0 ~2 -0
+    update   module.cloud[0].aws_cloudwatch_log_group.app
+    update   module.environment.kubernetes_namespace_v1.this
+svc03-prod: +0 ~2 -0
+    update   module.cloud[0].aws_cloudwatch_log_group.app
+
+### rollout v1.1.0 (good change)
+preview for 10 environment(s)
+canary: svc01-dev
+batch 1: svc02-test, svc03-prod, svc04-dev
+batch 2: svc05-test, svc06-prod, svc07-dev
+batch 3: svc08-test, svc09-prod, svc10-dev
+
+rollout to v1.1.0: completed in 197.9s
+  canary   svc01-dev: ok (18.4s)
+  batch 1  svc02-test: ok (18.4s)
+  batch 1  svc03-prod: ok (26.3s)
+  batch 1  svc04-dev: ok (32.3s)
+  batch 2  svc05-test: ok (24.5s)
+  batch 2  svc06-prod: ok (29.1s)
+  batch 2  svc07-dev: ok (19.4s)
+  batch 3  svc08-test: ok (29.0s)
+  batch 3  svc09-prod: ok (23.1s)
+  batch 3  svc10-dev: ok (17.2s)
+exit=0
+
+### status after v1.1.0
+environment  kind  pinned  actual  compliance
+svc01-dev    dev   v1.1.0  v1.1.0  ok        
+svc02-test   test  v1.1.0  v1.1.0  ok        
+svc03-prod   prod  v1.1.0  v1.1.0  ok        
+svc04-dev    dev   v1.1.0  v1.1.0  ok        
+svc05-test   test  v1.1.0  v1.1.0  ok        
+svc06-prod   prod  v1.1.0  v1.1.0  ok        
+svc07-dev    dev   v1.1.0  v1.1.0  ok        
+svc08-test   test  v1.1.0  v1.1.0  ok        
+svc09-prod   prod  v1.1.0  v1.1.0  ok        
+svc10-dev    dev   v1.1.0  v1.1.0  ok        
+
+### proof the change is live: log retention on svc05-test (was 30, v1.1.0 sets 90)
+90
+
+### rollout v1.2.0 (bad change), no override
+preview for 10 environment(s)
+
+rollout to v1.2.0: blocked_by_preview in 82.4s
+  blocked: svc01-dev would destroy module.environment.kubernetes_network_policy_v1.default_deny_ingress (use --allow-destroy to proceed)
+  blocked: svc02-test would destroy module.environment.kubernetes_network_policy_v1.default_deny_ingress (use --allow-destroy to proceed)
+  blocked: svc03-prod would destroy module.environment.kubernetes_network_policy_v1.default_deny_ingress (use --allow-destroy to proceed)
+  blocked: svc04-dev would destroy module.environment.kubernetes_network_policy_v1.default_deny_ingress (use --allow-destroy to proceed)
+  blocked: svc05-test would destroy module.environment.kubernetes_network_policy_v1.default_deny_ingress (use --allow-destroy to proceed)
+  blocked: svc06-prod would destroy module.environment.kubernetes_network_policy_v1.default_deny_ingress (use --allow-destroy to proceed)
+  blocked: svc07-dev would destroy module.environment.kubernetes_network_policy_v1.default_deny_ingress (use --allow-destroy to proceed)
+  blocked: svc08-test would destroy module.environment.kubernetes_network_policy_v1.default_deny_ingress (use --allow-destroy to proceed)
+  blocked: svc09-prod would destroy module.environment.kubernetes_network_policy_v1.default_deny_ingress (use --allow-destroy to proceed)
+  blocked: svc10-dev would destroy module.environment.kubernetes_network_policy_v1.default_deny_ingress (use --allow-destroy to proceed)
+exit=1
+
+### rollout v1.2.0 with --allow-destroy (operator overrides the preview)
+preview for 10 environment(s)
+canary: svc01-dev
+
+rollout to v1.2.0: aborted_at_canary in 117.2s
+  canary   svc01-dev: FAILED (37.3s); rolled back: True; NET-1: default-deny-ingress missing or altered
+exit=1
+
+### status after the failed v1.2.0 attempt
+environment  kind  pinned  actual  compliance
+svc01-dev    dev   v1.1.0  v1.1.0  ok        
+svc02-test   test  v1.1.0  v1.1.0  ok        
+svc03-prod   prod  v1.1.0  v1.1.0  ok        
+svc04-dev    dev   v1.1.0  v1.1.0  ok        
+svc05-test   test  v1.1.0  v1.1.0  ok        
+svc06-prod   prod  v1.1.0  v1.1.0  ok        
+svc07-dev    dev   v1.1.0  v1.1.0  ok        
+svc08-test   test  v1.1.0  v1.1.0  ok        
+svc09-prod   prod  v1.1.0  v1.1.0  ok        
+svc10-dev    dev   v1.1.0  v1.1.0  ok        

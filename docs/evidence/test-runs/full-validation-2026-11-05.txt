@@ -1,0 +1,99 @@
+=== module unit tests (tofu test, mocked providers)
+      run "queue_secret_and_logs_are_named_from_the_environment"... [32mpass[0m[0m
+      run "role_is_bound_to_the_namespace_service_account_only"... [32mpass[0m[0m
+      run "policy_has_no_wildcard_actions"... [32mpass[0m[0m
+      run "kubernetes_side_exposes_the_names_to_the_workload"... [32mpass[0m[0m
+    
+    [32mSuccess![0m[0m 5 passed, 0 failed.
+=== python tests (policy, controls, api, rollout)
+    python3 -m pytest -q tests
+    ...................................                                      [100%]
+    35 passed in 0.05s
+=== pipeline: team-alpha-dev (dev, small)
+      ok   IAM role exists
+      ok   IAM policy attached to role
+      ok   service account carries role ARN
+      ok   config map carries resource names
+    == 10 metric
+    metric recorded: s3://curve-metrics-pipeline-metrics/team-alpha-dev-1793909820.json  {'environment': 'team-alpha-dev', 'requested_epoch': 1793909803, 'ready_epoch': 1793909820, 'elapsed_seconds': 17, 'manual_steps': 0, 'outcome': 'success'}
+=== pipeline: team-beta-prod (prod, large)
+      ok   IAM role exists
+      ok   IAM policy attached to role
+      ok   service account carries role ARN
+      ok   config map carries resource names
+    == 10 metric
+    metric recorded: s3://curve-metrics-pipeline-metrics/team-beta-prod-1793909844.json  {'environment': 'team-beta-prod', 'requested_epoch': 1793909827, 'ready_epoch': 1793909844, 'elapsed_seconds': 17, 'manual_steps': 0, 'outcome': 'success'}
+=== pipeline: wildcard-admin request is rejected
+    [31m│[0m [0madmin_groups must not include system:authenticated or
+    [31m│[0m [0msystem:unauthenticated.
+    [31m│[0m [0m
+    [31m│[0m [0mThis was checked by the validation rule at
+    [31m│[0m [0m../../modules/namespace_baseline/variables.tf:42,3-13.
+    [31m╵[0m[0m
+=== drift check: no drift
+    scripts/drift_check.sh local/fixtures/team-alpha-dev.tfvars
+    no drift: team-alpha-dev matches the blueprint
+=== demo workload uses S3, SQS, secret, logs
+    local-demo-value
+    workload finished: used S3, SQS, Secrets Manager and Logs
+    --- what the workload left in AWS (LocalStack)
+    2026-11-05 20:17:51         41 hello.txt
+    SQS messages waiting: 2
+    demo workload ran
+=== network policy is enforced (with control case)
+    scripts/test_network_policy.sh team-alpha-dev
+      ok   same namespace -> team-alpha-dev: reachable
+      ok   unrelated namespace -> team-alpha-dev (default-deny): blocked
+      ok   allow-listed kube-system -> team-alpha-dev: reachable
+      ok   control: unrelated -> namespace with no policy: reachable
+=== compliance spaces end to end
+    
+    passed: 24  failed: 0
+    == cleanup
+    scripts/test_spaces_e2e.sh: line 29: 54832 Terminated: 15          PORT=$PORT python3 -m spaces.server
+      destroyed acme-09970
+      destroyed globex-09970
+=== rollout manager demo (4 environments)
+      ok   canary was rolled back
+      ok   no environment left on v1.2.0
+      ok   all environments still compliant
+      report written to site/index.html
+    failed checks: 0
+    == cleaned up
+
+=== AWS resources in LocalStack now
+S3 buckets:
+  curve-metrics-pipeline-metrics
+  curve-metrics-tfstate
+  team-alpha-dev-data
+  team-beta-prod-data
+SQS queues:
+  team-alpha-dev-events
+  team-beta-prod-events
+Secrets:
+  team-alpha-dev/app
+  team-beta-prod/app
+  demo-dev/app
+  acme-09970/app
+  globex-09970/app
+IAM roles:
+  team-beta-prod-app
+  team-alpha-dev-app
+Log groups:
+  /curve-metrics/team-alpha-dev
+  /curve-metrics/team-beta-prod
+
+=== SUMMARY
+  PASS  module unit tests (tofu test, mocked providers)
+  PASS  python tests (policy, controls, api, rollout)
+  PASS  pipeline: team-alpha-dev (dev, small)
+  PASS  pipeline: team-beta-prod (prod, large)
+  PASS  pipeline: wildcard-admin request is rejected
+  PASS  drift check: no drift
+  PASS  demo workload uses S3, SQS, secret, logs
+  PASS  network policy is enforced (with control case)
+  PASS  compliance spaces end to end
+  PASS  rollout manager demo (4 environments)
+failed steps: 0
+scripts/validate_all.sh  455.50s user 96.86s system 68% cpu 13:26.48 total
+exit=0

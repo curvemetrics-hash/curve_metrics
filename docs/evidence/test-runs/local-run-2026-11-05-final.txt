@@ -1,0 +1,378 @@
+FULL LOCAL RUN from nothing (make down, then make all), now including the network policy enforcement test. Not evidence of adoption. Thu Nov  5 10:33:14 CST 2026
+tofu: OpenTofu v1.13.2  kind: kind v0.33.0 go1.27.0 darwin/arm64  localstack: 3.8
+scripts/local-up.sh
+waiting for LocalStack...
+LocalStack backend ready (state bucket, lock table, metrics bucket)
+Creating cluster "curve-metrics-local" ...
+ • Ensuring node image (kindest/node:v1.31.2) 🖼️  ...
+ ✓ Ensuring node image (kindest/node:v1.31.2) 🖼️
+ • Preparing nodes 📦   ...
+ ✓ Preparing nodes 📦 
+ • Writing configuration 📜  ...
+ ✓ Writing configuration 📜
+ • Starting control-plane 🕹️  ...
+ ✓ Starting control-plane 🕹️
+ • Installing CNI 🔌  ...
+ ✓ Installing CNI 🔌
+ • Installing StorageClass 💾  ...
+ ✓ Installing StorageClass 💾
+ • Waiting ≤ 2m0s for control-plane = Ready ⏳  ...
+ ✓ Waiting ≤ 2m0s for control-plane = Ready ⏳
+ • Ready after 17s 💚
+Set kubectl context to "kind-curve-metrics-local"
+You can now use your cluster with:
+
+kubectl cluster-info --context kind-curve-metrics-local --kubeconfig .local/kubeconfig
+
+Thanks for using kind! 😊
+NAME                                STATUS   ROLES           AGE   VERSION
+curve-metrics-local-control-plane   Ready    control-plane   29s   v1.31.2
+for m in namespace_baseline team_cloud_bindings; do (cd modules/$m && tofu init -backend=false -input=false >/dev/null && tofu test) || exit 1; done
+tests/baseline.tftest.hcl... pass
+  run "small_environment_has_standard_labels_and_quota"... pass
+  run "large_environment_quota"... pass
+  run "default_deny_network_policy_present"... pass
+  run "ingress_controller_policy_by_default"... pass
+  run "ingress_controller_policy_can_be_disabled"... pass
+  run "no_extra_namespace_policy_without_allowlist"... pass
+  run "allowlist_creates_policy"... pass
+  run "admin_groups_create_role_bindings"... pass
+  run "no_admin_groups_no_role_bindings"... pass
+  run "rejects_invalid_size"... pass
+  run "rejects_invalid_environment"... pass
+  run "rejects_invalid_name"... pass
+  run "rejects_wildcard_admin_group"... pass
+
+Success! 13 passed, 0 failed.
+tests/cloud.tftest.hcl... pass
+  run "bucket_is_private_encrypted_and_versioned"... pass
+  run "queue_secret_and_logs_are_named_from_the_environment"... pass
+  run "role_is_bound_to_the_namespace_service_account_only"... pass
+  run "policy_has_no_wildcard_actions"... pass
+  run "kubernetes_side_exposes_the_names_to_the_workload"... pass
+
+Success! 5 passed, 0 failed.
+python3 -m pytest -q tests
+..............                                                           [100%]
+14 passed in 0.01s
+AUTO_APPROVE=1 scripts/ci.sh local/fixtures/team-alpha-dev.tfvars
+== 1 format
+== 2 validate
+Success! The configuration is valid.
+Success! The configuration is valid.
+== 3 unit tests
+tests/baseline.tftest.hcl... pass
+  run "small_environment_has_standard_labels_and_quota"... pass
+  run "large_environment_quota"... pass
+  run "default_deny_network_policy_present"... pass
+  run "ingress_controller_policy_by_default"... pass
+  run "ingress_controller_policy_can_be_disabled"... pass
+  run "no_extra_namespace_policy_without_allowlist"... pass
+  run "allowlist_creates_policy"... pass
+  run "admin_groups_create_role_bindings"... pass
+  run "no_admin_groups_no_role_bindings"... pass
+  run "rejects_invalid_size"... pass
+  run "rejects_invalid_environment"... pass
+  run "rejects_invalid_name"... pass
+  run "rejects_wildcard_admin_group"... pass
+
+Success! 13 passed, 0 failed.
+tests/cloud.tftest.hcl... pass
+  run "bucket_is_private_encrypted_and_versioned"... pass
+  run "queue_secret_and_logs_are_named_from_the_environment"... pass
+  run "role_is_bound_to_the_namespace_service_account_only"... pass
+  run "policy_has_no_wildcard_actions"... pass
+  run "kubernetes_side_exposes_the_names_to_the_workload"... pass
+
+Success! 5 passed, 0 failed.
+== 4 init (remote state in LocalStack)
+Success! The configuration is valid.
+== 5 plan
+== 6 policy gate
+policy check passed
+== 7 approval
+auto-approved (local test run)
+== 8 apply
+module.environment.kubernetes_namespace_v1.this: Creating...
+module.environment.kubernetes_namespace_v1.this: Creation complete after 0s [id=team-alpha-dev]
+module.environment.kubernetes_resource_quota_v1.this: Creating...
+module.environment.kubernetes_limit_range_v1.this: Creating...
+module.environment.kubernetes_network_policy_v1.allow_ingress_controller[0]: Creating...
+module.environment.kubernetes_network_policy_v1.default_deny_ingress: Creating...
+module.environment.kubernetes_role_binding_v1.admins["alpha-admins"]: Creating...
+module.environment.kubernetes_network_policy_v1.allow_same_namespace: Creating...
+module.environment.kubernetes_network_policy_v1.allow_listed_namespaces[0]: Creating...
+module.environment.kubernetes_network_policy_v1.default_deny_ingress: Creation complete after 0s [id=team-alpha-dev/default-deny-ingress]
+module.environment.kubernetes_role_binding_v1.admins["alpha-admins"]: Creation complete after 0s [id=team-alpha-dev/team-admin-ea3ef83f]
+module.environment.kubernetes_limit_range_v1.this: Creation complete after 0s [id=team-alpha-dev/standard-limits]
+module.environment.kubernetes_network_policy_v1.allow_listed_namespaces[0]: Creation complete after 0s [id=team-alpha-dev/allow-listed-namespaces]
+module.environment.kubernetes_network_policy_v1.allow_ingress_controller[0]: Creation complete after 0s [id=team-alpha-dev/allow-ingress-controller]
+module.environment.kubernetes_network_policy_v1.allow_same_namespace: Creation complete after 0s [id=team-alpha-dev/allow-same-namespace]
+module.environment.kubernetes_resource_quota_v1.this: Creation complete after 0s [id=team-alpha-dev/standard-quota]
+module.cloud[0].aws_cloudwatch_log_group.app: Creating...
+module.cloud[0].aws_iam_role.app: Creating...
+module.cloud[0].aws_secretsmanager_secret.app: Creating...
+module.cloud[0].aws_sqs_queue.events: Creating...
+module.cloud[0].aws_s3_bucket.data: Creating...
+module.cloud[0].aws_s3_bucket.data: Creation complete after 0s [id=team-alpha-dev-data]
+module.cloud[0].aws_s3_bucket_server_side_encryption_configuration.data: Creating...
+module.cloud[0].aws_s3_bucket_public_access_block.data: Creating...
+module.cloud[0].aws_s3_bucket_versioning.data: Creating...
+module.cloud[0].aws_s3_bucket_server_side_encryption_configuration.data: Creation complete after 0s [id=team-alpha-dev-data]
+module.cloud[0].aws_s3_bucket_public_access_block.data: Creation complete after 0s [id=team-alpha-dev-data]
+module.cloud[0].aws_secretsmanager_secret.app: Creation complete after 1s [id=arn:aws:secretsmanager:us-east-1:000000000000:secret:team-alpha-dev/app-ZfYcQE]
+module.cloud[0].aws_iam_role.app: Creation complete after 1s [id=team-alpha-dev-app]
+module.cloud[0].kubernetes_service_account_v1.app: Creating...
+module.cloud[0].kubernetes_service_account_v1.app: Creation complete after 0s [id=team-alpha-dev/app]
+module.cloud[0].aws_cloudwatch_log_group.app: Creation complete after 1s [id=/curve-metrics/team-alpha-dev]
+module.cloud[0].aws_s3_bucket_versioning.data: Creation complete after 2s [id=team-alpha-dev-data]
+module.cloud[0].aws_sqs_queue.events: Still creating... [10s elapsed]
+module.cloud[0].aws_sqs_queue.events: Still creating... [20s elapsed]
+module.cloud[0].aws_sqs_queue.events: Creation complete after 26s [id=http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/team-alpha-dev-events]
+module.cloud[0].aws_iam_policy.app: Creating...
+module.cloud[0].kubernetes_config_map_v1.cloud: Creating...
+module.cloud[0].kubernetes_config_map_v1.cloud: Creation complete after 0s [id=team-alpha-dev/cloud-resources]
+module.cloud[0].aws_iam_policy.app: Creation complete after 0s [id=arn:aws:iam::000000000000:policy/team-alpha-dev-app]
+module.cloud[0].aws_iam_role_policy_attachment.app: Creating...
+module.cloud[0].aws_iam_role_policy_attachment.app: Creation complete after 0s [id=team-alpha-dev-app-20261105163501163100000002]
+
+Apply complete! Resources: 20 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+cloud = {
+  "bucket" = "team-alpha-dev-data"
+  "log_group" = "/curve-metrics/team-alpha-dev"
+  "queue_url" = "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/team-alpha-dev-events"
+  "role_arn" = "arn:aws:iam::000000000000:role/team-alpha-dev-app"
+  "secret_name" = "team-alpha-dev/app"
+}
+namespace = "team-alpha-dev"
+quota = tomap({
+  "count/ingresses.networking.k8s.io" = "3"
+  "limits.cpu" = "4"
+  "limits.memory" = "8Gi"
+  "persistentvolumeclaims" = "5"
+  "pods" = "20"
+  "requests.cpu" = "2"
+  "requests.memory" = "4Gi"
+  "requests.storage" = "50Gi"
+})
+== 9 verify cluster
+  ok   namespace exists
+  ok   team label set
+  ok   resource quota present
+  ok   limit range present
+  ok   default-deny policy present
+  ok   same-namespace policy
+  ok   storage limit in quota
+  ok   ingress limit in quota
+  ok   ingress controller policy
+  ok   no cluster-admin binding
+== 9b verify AWS resources (LocalStack)
+  ok   S3 bucket exists
+  ok   bucket public access fully blocked
+  ok   bucket versioning enabled
+  ok   bucket encryption configured
+  ok   SQS queue exists
+  ok   secret exists
+  ok   log group with retention
+  ok   IAM role exists
+  ok   IAM policy attached to role
+  ok   service account carries role ARN
+  ok   config map carries resource names
+== 10 metric
+metric recorded: s3://curve-metrics-pipeline-metrics/team-alpha-dev-1793896501.json  {'environment': 'team-alpha-dev', 'requested_epoch': 1793896458, 'ready_epoch': 1793896501, 'elapsed_seconds': 43, 'manual_steps': 0, 'outcome': 'success'}
+AUTO_APPROVE=1 scripts/ci.sh local/fixtures/team-beta-prod.tfvars
+== 1 format
+== 2 validate
+Success! The configuration is valid.
+Success! The configuration is valid.
+== 3 unit tests
+tests/baseline.tftest.hcl... pass
+  run "small_environment_has_standard_labels_and_quota"... pass
+  run "large_environment_quota"... pass
+  run "default_deny_network_policy_present"... pass
+  run "ingress_controller_policy_by_default"... pass
+  run "ingress_controller_policy_can_be_disabled"... pass
+  run "no_extra_namespace_policy_without_allowlist"... pass
+  run "allowlist_creates_policy"... pass
+  run "admin_groups_create_role_bindings"... pass
+  run "no_admin_groups_no_role_bindings"... pass
+  run "rejects_invalid_size"... pass
+  run "rejects_invalid_environment"... pass
+  run "rejects_invalid_name"... pass
+  run "rejects_wildcard_admin_group"... pass
+
+Success! 13 passed, 0 failed.
+tests/cloud.tftest.hcl... pass
+  run "bucket_is_private_encrypted_and_versioned"... pass
+  run "queue_secret_and_logs_are_named_from_the_environment"... pass
+  run "role_is_bound_to_the_namespace_service_account_only"... pass
+  run "policy_has_no_wildcard_actions"... pass
+  run "kubernetes_side_exposes_the_names_to_the_workload"... pass
+
+Success! 5 passed, 0 failed.
+== 4 init (remote state in LocalStack)
+Success! The configuration is valid.
+== 5 plan
+== 6 policy gate
+policy check passed
+== 7 approval
+auto-approved (local test run)
+== 8 apply
+module.environment.kubernetes_namespace_v1.this: Creating...
+module.environment.kubernetes_namespace_v1.this: Creation complete after 0s [id=team-beta-prod]
+module.environment.kubernetes_resource_quota_v1.this: Creating...
+module.environment.kubernetes_limit_range_v1.this: Creating...
+module.environment.kubernetes_network_policy_v1.default_deny_ingress: Creating...
+module.environment.kubernetes_network_policy_v1.allow_ingress_controller[0]: Creating...
+module.environment.kubernetes_network_policy_v1.allow_same_namespace: Creating...
+module.environment.kubernetes_role_binding_v1.admins["beta-admins"]: Creating...
+module.environment.kubernetes_role_binding_v1.admins["beta-leads"]: Creating...
+module.environment.kubernetes_role_binding_v1.admins["beta-leads"]: Creation complete after 0s [id=team-beta-prod/team-admin-0eef89cd]
+module.environment.kubernetes_limit_range_v1.this: Creation complete after 0s [id=team-beta-prod/standard-limits]
+module.environment.kubernetes_role_binding_v1.admins["beta-admins"]: Creation complete after 0s [id=team-beta-prod/team-admin-8217d174]
+module.environment.kubernetes_network_policy_v1.default_deny_ingress: Creation complete after 0s [id=team-beta-prod/default-deny-ingress]
+module.environment.kubernetes_network_policy_v1.allow_same_namespace: Creation complete after 0s [id=team-beta-prod/allow-same-namespace]
+module.environment.kubernetes_network_policy_v1.allow_ingress_controller[0]: Creation complete after 0s [id=team-beta-prod/allow-ingress-controller]
+module.environment.kubernetes_resource_quota_v1.this: Creation complete after 0s [id=team-beta-prod/standard-quota]
+module.cloud[0].aws_cloudwatch_log_group.app: Creating...
+module.cloud[0].aws_iam_role.app: Creating...
+module.cloud[0].aws_secretsmanager_secret.app: Creating...
+module.cloud[0].aws_sqs_queue.events: Creating...
+module.cloud[0].aws_s3_bucket.data: Creating...
+module.cloud[0].aws_secretsmanager_secret.app: Creation complete after 0s [id=arn:aws:secretsmanager:us-east-1:000000000000:secret:team-beta-prod/app-NUdgdT]
+module.cloud[0].aws_iam_role.app: Creation complete after 0s [id=team-beta-prod-app]
+module.cloud[0].aws_cloudwatch_log_group.app: Creation complete after 0s [id=/curve-metrics/team-beta-prod]
+module.cloud[0].kubernetes_service_account_v1.app: Creating...
+module.cloud[0].kubernetes_service_account_v1.app: Creation complete after 0s [id=team-beta-prod/app]
+module.cloud[0].aws_s3_bucket.data: Creation complete after 0s [id=team-beta-prod-data]
+module.cloud[0].aws_s3_bucket_server_side_encryption_configuration.data: Creating...
+module.cloud[0].aws_s3_bucket_versioning.data: Creating...
+module.cloud[0].aws_s3_bucket_public_access_block.data: Creating...
+module.cloud[0].aws_s3_bucket_public_access_block.data: Creation complete after 0s [id=team-beta-prod-data]
+module.cloud[0].aws_s3_bucket_server_side_encryption_configuration.data: Creation complete after 0s [id=team-beta-prod-data]
+module.cloud[0].aws_s3_bucket_versioning.data: Creation complete after 2s [id=team-beta-prod-data]
+module.cloud[0].aws_sqs_queue.events: Still creating... [10s elapsed]
+module.cloud[0].aws_sqs_queue.events: Still creating... [20s elapsed]
+module.cloud[0].aws_sqs_queue.events: Creation complete after 25s [id=http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/team-beta-prod-events]
+module.cloud[0].aws_iam_policy.app: Creating...
+module.cloud[0].kubernetes_config_map_v1.cloud: Creating...
+module.cloud[0].kubernetes_config_map_v1.cloud: Creation complete after 0s [id=team-beta-prod/cloud-resources]
+module.cloud[0].aws_iam_policy.app: Creation complete after 0s [id=arn:aws:iam::000000000000:policy/team-beta-prod-app]
+module.cloud[0].aws_iam_role_policy_attachment.app: Creating...
+module.cloud[0].aws_iam_role_policy_attachment.app: Creation complete after 0s [id=team-beta-prod-app-20261105163550358300000002]
+
+Apply complete! Resources: 20 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+cloud = {
+  "bucket" = "team-beta-prod-data"
+  "log_group" = "/curve-metrics/team-beta-prod"
+  "queue_url" = "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/team-beta-prod-events"
+  "role_arn" = "arn:aws:iam::000000000000:role/team-beta-prod-app"
+  "secret_name" = "team-beta-prod/app"
+}
+namespace = "team-beta-prod"
+quota = tomap({
+  "count/ingresses.networking.k8s.io" = "10"
+  "limits.cpu" = "16"
+  "limits.memory" = "32Gi"
+  "persistentvolumeclaims" = "20"
+  "pods" = "100"
+  "requests.cpu" = "8"
+  "requests.memory" = "16Gi"
+  "requests.storage" = "500Gi"
+})
+== 9 verify cluster
+  ok   namespace exists
+  ok   team label set
+  ok   resource quota present
+  ok   limit range present
+  ok   default-deny policy present
+  ok   same-namespace policy
+  ok   storage limit in quota
+  ok   ingress limit in quota
+  ok   ingress controller policy
+  ok   no cluster-admin binding
+== 9b verify AWS resources (LocalStack)
+  ok   S3 bucket exists
+  ok   bucket public access fully blocked
+  ok   bucket versioning enabled
+  ok   bucket encryption configured
+  ok   SQS queue exists
+  ok   secret exists
+  ok   log group with retention
+  ok   IAM role exists
+  ok   IAM policy attached to role
+  ok   service account carries role ARN
+  ok   config map carries resource names
+== 10 metric
+metric recorded: s3://curve-metrics-pipeline-metrics/team-beta-prod-1793896550.json  {'environment': 'team-beta-prod', 'requested_epoch': 1793896508, 'ready_epoch': 1793896550, 'elapsed_seconds': 42, 'manual_steps': 0, 'outcome': 'success'}
+! AUTO_APPROVE=1 scripts/ci.sh local/fixtures/bad-wildcard-admin.tfvars
+== 1 format
+== 2 validate
+Success! The configuration is valid.
+Success! The configuration is valid.
+== 3 unit tests
+tests/baseline.tftest.hcl... pass
+  run "small_environment_has_standard_labels_and_quota"... pass
+  run "large_environment_quota"... pass
+  run "default_deny_network_policy_present"... pass
+  run "ingress_controller_policy_by_default"... pass
+  run "ingress_controller_policy_can_be_disabled"... pass
+  run "no_extra_namespace_policy_without_allowlist"... pass
+  run "allowlist_creates_policy"... pass
+  run "admin_groups_create_role_bindings"... pass
+  run "no_admin_groups_no_role_bindings"... pass
+  run "rejects_invalid_size"... pass
+  run "rejects_invalid_environment"... pass
+  run "rejects_invalid_name"... pass
+  run "rejects_wildcard_admin_group"... pass
+
+Success! 13 passed, 0 failed.
+tests/cloud.tftest.hcl... pass
+  run "bucket_is_private_encrypted_and_versioned"... pass
+  run "queue_secret_and_logs_are_named_from_the_environment"... pass
+  run "role_is_bound_to_the_namespace_service_account_only"... pass
+  run "policy_has_no_wildcard_actions"... pass
+  run "kubernetes_side_exposes_the_names_to_the_workload"... pass
+
+Success! 5 passed, 0 failed.
+== 4 init (remote state in LocalStack)
+Success! The configuration is valid.
+== 5 plan
+╷
+│ Error: Invalid value for variable
+│ 
+│   on main.tf line 36, in module "environment":
+│   36:   admin_groups                  = var.admin_groups
+│     ├────────────────
+│     │ var.admin_groups is list of string with 1 element
+│ 
+│ admin_groups must not include system:authenticated or
+│ system:unauthenticated.
+│ 
+│ This was checked by the validation rule at
+│ ../../modules/namespace_baseline/variables.tf:42,3-13.
+╵
+scripts/drift_check.sh local/fixtures/team-alpha-dev.tfvars
+no drift: team-alpha-dev matches the blueprint
+scripts/demo_workload.sh team-alpha-dev
+job.batch/demo-workload condition met
+--- workload output
+Completed 41 Bytes/41 Bytes (4.1 KiB/s) with 1 file(s) remainingupload: ../tmp/hello.txt to s3://team-alpha-dev-data/hello.txt  
+local-demo-value
+workload finished: used S3, SQS, Secrets Manager and Logs
+--- what the workload left in AWS (LocalStack)
+2026-11-05 16:36:22         41 hello.txt
+SQS messages waiting: 1
+demo workload ran
+scripts/test_network_policy.sh team-alpha-dev
+  ok   same namespace -> team-alpha-dev: reachable
+  ok   unrelated namespace -> team-alpha-dev (default-deny): blocked
+  ok   allow-listed kube-system -> team-alpha-dev: reachable
+  ok   control: unrelated -> namespace with no policy: reachable
+make all exit code: 0

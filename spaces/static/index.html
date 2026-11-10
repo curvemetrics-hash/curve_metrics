@@ -1,0 +1,932 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Platform Console • Curve Metrics</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236366f1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m12 3 9 5-9 5-9-5z'/><path d='m3 13 9 5 9-5'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/app.css">
+  <link rel="stylesheet" href="/static/chatbot.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <symbol id="i-env" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="6" rx="1.5"/><rect x="3" y="14" width="18" height="6" rx="1.5"/><path d="M7 7h.01M7 17h.01"/></symbol>
+  <symbol id="i-roll" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5.3L20 9"/><path d="M20 4v5h-5"/><path d="M20 12a8 8 0 0 1-14 5.3L4 15"/><path d="M4 20v-5h5"/></symbol>
+  <symbol id="i-how" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 1-1 1.7M12 17h.01"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="i-scan" viewBox="0 0 24 24"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2M4 12h16"/></symbol>
+  <symbol id="i-fix" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.4 2.4-2.6-.6-.6-2.6z"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></symbol>
+  <symbol id="i-act" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></symbol>
+  <symbol id="i-cube" viewBox="0 0 24 24"><path d="m21 16-9 5-9-5V8l9-5 9 5v8z"/><path d="M3.27 6.96 12 12.01l8.73-5.05"/><path d="M12 22.08V12"/></symbol>
+  <symbol id="i-check-circle" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>
+  <symbol id="i-alert-triangle" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+  <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z"/></symbol>
+  <symbol id="i-chevron-right" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></symbol>
+  <symbol id="i-terminal" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></symbol>
+  <symbol id="i-panel-left" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></symbol>
+  <symbol id="i-message-square" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></symbol>
+  <symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></symbol>
+  <symbol id="i-bot" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 15h.01M16 15h.01"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
+</defs></svg>
+
+<aside class="side">
+  <div class="brand">
+    <div class="logo">
+      <svg class="i" style="stroke:#fff"><use href="#i-layers"/></svg>
+    </div>
+    <div class="brand-info">
+      <div class="brand-title">Platform Console</div>
+      <div class="brand-sub"><span class="brand-dot"></span><span>Engine Ready</span></div>
+    </div>
+  </div>
+
+  <div class="nav-label">Navigation</div>
+  <nav class="nav" id="nav">
+    <button data-page="env" class="on">
+      <svg class="i"><use href="#i-env"/></svg>
+      <span>Environments</span>
+      <span class="nav-badge" id="nav-badge-env">0</span>
+    </button>
+    <button data-page="roll">
+      <svg class="i"><use href="#i-roll"/></svg>
+      <span>Rollouts</span>
+    </button>
+    <button data-page="act" id="nav-act" hidden>
+      <svg class="i"><use href="#i-act"/></svg>
+      <span>Activity</span>
+    </button>
+    <button data-page="how">
+      <svg class="i"><use href="#i-how"/></svg>
+      <span>Architecture &amp; Docs</span>
+    </button>
+    <button type="button" id="nav-copilot-btn" style="color:var(--acc);font-weight:600">
+      <svg class="i"><use href="#i-bot"/></svg>
+      <span>AI Copilot</span>
+    </button>
+  </nav>
+
+  <div class="side-spacer"></div>
+
+  <div class="side-foot-action">
+    <button id="sidebar-toggle" class="sidebar-collapse-action-btn" type="button" aria-label="Collapse / expand sidebar" title="Toggle sidebar width (Ctrl+B)">
+      <svg class="i"><use href="#i-panel-left"/></svg>
+      <span class="collapse-label">Collapse sidebar</span>
+    </button>
+  </div>
+
+  <div class="foot" style="display:none" aria-hidden="true">
+    <div class="user-card" id="who">
+      <div class="user-avatar">L</div>
+      <div class="user-details">
+        <div class="user-header-line">
+          <span class="user-name">local</span>
+          <span class="user-role"><span class="pill acc">admin</span></span>
+        </div>
+        <div class="user-meta-line">
+          <span class="mode-bullet"></span>
+          <span class="user-mode">local mode</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<main>
+  <div class="topbar">
+    <button class="toggle-sidebar-btn" id="topbar-toggle-sidebar" type="button" style="display:none" aria-hidden="true" aria-label="Toggle sidebar">
+      <svg class="i"><use href="#i-panel-left"/></svg>
+    </button>
+    <div class="topbar-breadcrumbs">
+      <span>Console</span>
+      <svg class="i sm-i"><use href="#i-chevron-right"/></svg>
+      <span class="active" id="topbar-page-name">Environments</span>
+    </div>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-pill" id="health-pill" title="Automatic health check every 15 minutes">
+      <span class="brand-dot" id="health-dot"></span>
+      <span id="health-label">API Checking...</span>
+    </div>
+    <div class="topbar-user-area">
+      <div class="account-menu-wrapper" style="position:relative;display:flex;align-items:center;gap:8px">
+        <button class="btn sm pri" id="topbar-signin-btn" type="button" style="display:none;font-size:12px;padding:5px 12px">Sign In</button>
+        <button class="avatar-badge-btn" id="topbar-account-btn" type="button" title="Account & Settings" aria-haspopup="true" aria-expanded="false">
+          <span id="topbar-user-initials">L</span>
+        </button>
+        <div class="user-dropdown-menu" id="account-dropdown" hidden>
+          <div class="user-dd-header">
+            <div class="user-dd-avatar" id="dd-avatar">L</div>
+            <div class="user-dd-info">
+              <div class="user-dd-name" id="dd-user-name">Local User</div>
+              <div class="user-dd-role" id="dd-user-role">admin · local mode</div>
+            </div>
+          </div>
+          <div class="user-dd-divider"></div>
+          <button type="button" class="user-dd-item" id="dd-profile-btn">
+            <svg class="i sm-i"><use href="#i-user"/></svg>
+            <span>Profile</span>
+          </button>
+          <button type="button" class="user-dd-item" id="dd-settings-btn">
+            <svg class="i sm-i"><use href="#i-settings"/></svg>
+            <span>Settings</span>
+          </button>
+          <button type="button" class="user-dd-item theme-toggle" id="theme" aria-label="Switch between light and dark mode" title="Toggle theme">
+            <svg class="i sm-i" id="dd-theme-icon"><use href="#i-moon"/></svg>
+            <span id="dd-theme-text">Toggle Theme</span>
+          </button>
+          <div class="user-dd-divider"></div>
+          <button type="button" class="user-dd-item user-dd-logout" id="topbar-logout-btn">
+            <svg class="i sm-i"><use href="#i-logout"/></svg>
+            <span>Logout</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- World-Class Landing Page & Patent Showcase (Default view for 127.0.0.1 guest) -->
+  <section id="p-gated" style="display:none">
+    <!-- Floating Marketing Header for Guest Landing Page -->
+    <nav class="landing-top-nav">
+      <div class="landing-nav-brand">
+        <div class="logo">
+          <svg class="i"><use href="#i-layers"/></svg>
+        </div>
+        <span class="landing-nav-brand-title">Curve Metrics</span>
+        <span class="landing-nav-patent-pill">Patent No. 20 2025 107 185</span>
+      </div>
+      <div class="landing-nav-actions">
+        <a href="#how" class="btn sm" onclick="page('how')" style="text-decoration:none;font-weight:600">Documentation</a>
+        <button class="landing-theme-toggle-btn" id="landing-theme-btn" type="button" aria-label="Toggle theme" title="Toggle theme">
+          <svg class="i sm-i" style="width:16px;height:16px"><use href="#i-moon"/></svg>
+        </button>
+        <button class="btn sm pri landing-nav-signin-btn" id="landing-nav-signin-btn" type="button">
+          <svg class="i sm-i"><use href="#i-user"/></svg>
+          <span>Sign In</span>
+        </button>
+      </div>
+    </nav>
+    <div class="landing-container">
+      <!-- Hero Section -->
+      <header class="landing-hero animate-on-scroll is-visible">
+        <div class="landing-badge">
+          <span class="landing-pulse-dot"></span>
+          <span>German Utility Model (Gebrauchsmuster) No. 20 2025 107 185</span>
+        </div>
+        <h1 class="landing-title">
+          Autonomous Kubernetes Platform Engineering <br>
+          <span class="landing-gradient-text">Governed by Continuous Compliance</span>
+        </h1>
+        <p class="landing-subtitle">
+          Curve Metrics implements the patented architecture for blueprinted platform engineering using composable Terraform modules on Kubernetes and OpenShift with integrated CI/CD, live policy enforcement, and autonomous rollouts.
+        </p>
+
+        <div class="landing-cta-group">
+          <button class="btn pri landing-btn-hero" id="gated-signin-btn" type="button">
+            <svg class="i"><use href="#i-cube"/></svg>
+            <span>Launch Platform Console</span>
+          </button>
+          <a href="#how" class="landing-btn-secondary" onclick="page('how')">
+            <svg class="i sm-i"><use href="#i-how"/></svg>
+            <span>Architecture &amp; Docs</span>
+          </a>
+        </div>
+
+        <div class="landing-demo-tags">
+          <span>Explore Demo Accounts:</span>
+          <code>admin / admin123</code> &bull; 
+          <code>operator / operator123</code> &bull; 
+          <code>viewer / viewer123</code>
+        </div>
+      </header>
+
+      <!-- Metric Ticker Strip -->
+      <div class="landing-metrics-strip animate-on-scroll">
+        <div class="landing-metric-box">
+          <div class="landing-metric-num">38<span class="unit">Active</span></div>
+          <div class="landing-metric-title">Managed Environments</div>
+          <div class="landing-metric-sub">Isolated Kubernetes namespaces across Dev, Staging, and Prod</div>
+        </div>
+        <div class="landing-metric-box">
+          <div class="landing-metric-num">44<span class="unit">sec</span></div>
+          <div class="landing-metric-title">Avg Time to Ready</div>
+          <div class="landing-metric-sub">Full declarative provisioning with remote state &amp; AWS IAM</div>
+        </div>
+        <div class="landing-metric-box">
+          <div class="landing-metric-num">56<span class="unit">Rules</span></div>
+          <div class="landing-metric-title">Continuous Compliance</div>
+          <div class="landing-metric-sub">14 baseline controls + 42 extended security audits</div>
+        </div>
+        <div class="landing-metric-box">
+          <div class="landing-metric-num">99.98<span class="unit">%</span></div>
+          <div class="landing-metric-title">Verified SLA Uptime</div>
+          <div class="landing-metric-sub">Zero Trust IRSA with automated drift restoration</div>
+        </div>
+      </div>
+
+      <!-- Patent Alignment Section -->
+      <section class="landing-patent-hero animate-on-scroll">
+        <div class="landing-patent-badge">PATENT ALIGNMENT SPECIFICATION</div>
+        <h2 style="font-size:24px;font-weight:600;color:var(--fg);margin:0 0 10px">
+          German Utility Model (Gebrauchsmuster) No. 20 2025 107 185
+        </h2>
+        <p style="font-size:14px;color:var(--mut);line-height:1.6;max-width:820px;margin:0 auto">
+          "System for blueprinted Platform Engineering using Terraform Modules on Kubernetes/Openshift with CI/CD" (Registered February 16, 2026, Inventor Dharmendra Ahuja), licensed to Curve Metrics.
+        </p>
+
+        <div class="landing-patent-grid">
+          <div class="landing-patent-card">
+            <div class="landing-patent-card-icon">
+              <svg class="i"><use href="#i-layers"/></svg>
+            </div>
+            <h4>Blueprinted Platform Engineering</h4>
+            <p>Standardized, version-controlled environment blueprints (small, medium, large) defining namespace baselines, quotas, default-deny network policies, and role bindings.</p>
+          </div>
+          <div class="landing-patent-card">
+            <div class="landing-patent-card-icon">
+              <svg class="i"><use href="#i-shield"/></svg>
+            </div>
+            <h4>Validated Terraform Modules</h4>
+            <p>Reusable infrastructure-as-code modules composing local Kubernetes resources with scoped cloud bindings: S3 buckets, SQS queues, Secrets Manager, and IRSA IAM policies.</p>
+          </div>
+          <div class="landing-patent-card">
+            <div class="landing-patent-card-icon">
+              <svg class="i"><use href="#i-roll"/></svg>
+            </div>
+            <h4>Automated 10-Stage CI/CD Pipeline</h4>
+            <p>From format, lint, and security policy gate to plan, approval, apply, verification, and telemetry logging—blocking policy violations before execution.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3 Strategic Pillars -->
+      <div>
+        <div class="landing-section-header">
+          <div class="landing-section-tag">Enterprise Capabilities</div>
+          <h2 class="landing-section-title">Engineered for Sovereign Cloud &amp; Security</h2>
+          <p class="landing-section-desc">Eliminate manual infrastructure configuration with declarative specifications, automated compliance gates, and progressive delivery.</p>
+        </div>
+
+        <div class="landing-feature-grid animate-on-scroll">
+          <div class="landing-feature-card">
+            <div class="landing-feature-icon indigo">
+              <svg class="i"><use href="#i-cube"/></svg>
+            </div>
+            <h3>Self-Service Workspaces</h3>
+            <p>Empower engineering teams to spin up dedicated, compliant Kubernetes namespaces in under 60 seconds with simple 5-field declarations.</p>
+            <ul class="landing-feature-list">
+              <li><svg class="i sm-i"><use href="#i-check"/></svg> Multi-tenant namespace isolation</li>
+              <li><svg class="i sm-i"><use href="#i-check"/></svg> Hard resource quotas &amp; limit ranges</li>
+              <li><svg class="i sm-i"><use href="#i-check"/></svg> Scoped cloud IAM credentials</li>
+            </ul>
+          </div>
+
+          <div class="landing-feature-card">
+            <div class="landing-feature-icon emerald">
+              <svg class="i"><use href="#i-shield"/></svg>
+            </div>
+            <h3>Autonomous Compliance Engine</h3>
+            <p>Continuous scanning verifies every pod, policy, and bucket against 56 stringent security controls with instant drift detection and repair.</p>
+            <ul class="landing-feature-list">
+              <li><svg class="i sm-i"><use href="#i-check"/></svg> Default-deny ingress &amp; egress</li>
+              <li><svg class="i sm-i"><use href="#i-check"/></svg> Blocked cluster-admin escalations</li>
+              <li><svg class="i sm-i"><use href="#i-check"/></svg> SOC 2 Type II audit ledger export</li>
+            </ul>
+          </div>
+
+          <div class="landing-feature-card">
+            <div class="landing-feature-icon cyan">
+              <svg class="i"><use href="#i-roll"/></svg>
+            </div>
+            <h3>Progressive Rollouts &amp; Canaries</h3>
+            <p>Upgrade fleet-wide cluster blueprints safely with automated pre-flight gates, canary batching, and one-click instant rollbacks.</p>
+            <ul class="landing-feature-list">
+              <li><svg class="i sm-i"><use href="#i-check"/></svg> Non-destructive preview audits</li>
+              <li><svg class="i sm-i"><use href="#i-check"/></svg> Canary verification stage</li>
+              <li><svg class="i sm-i"><use href="#i-check"/></svg> Instant rollback on regression</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 10-Stage Pipeline Visualizer -->
+      <div class="landing-pipeline-container animate-on-scroll">
+        <div class="landing-section-header" style="margin-bottom:24px">
+          <div class="landing-section-tag">Continuous Delivery Lifecycle</div>
+          <h2 class="landing-section-title" style="font-size:24px">The Patented 10-Stage CI/CD Engine</h2>
+          <p class="landing-section-desc">Every environment request executes through a deterministic, strictly auditable verification flow.</p>
+        </div>
+
+        <div class="landing-pipeline-steps">
+          <div class="landing-step-card">
+            <span class="landing-step-num">STAGE 01</span>
+            <div class="landing-step-name">Format &amp; Lint</div>
+            <div class="landing-step-desc">Ensures Terraform and YAML specifications conform to organizational standards.</div>
+          </div>
+          <div class="landing-step-card">
+            <span class="landing-step-num">STAGE 02</span>
+            <div class="landing-step-name">Validation</div>
+            <div class="landing-step-desc">Validates syntax, schema parameters, and naming convention constraints.</div>
+          </div>
+          <div class="landing-step-card">
+            <span class="landing-step-num">STAGE 03</span>
+            <div class="landing-step-name">Unit Testing</div>
+            <div class="landing-step-desc">Runs automated tests against isolated Terraform module definitions.</div>
+          </div>
+          <div class="landing-step-card">
+            <span class="landing-step-num">STAGE 04</span>
+            <div class="landing-step-name">Remote State Init</div>
+            <div class="landing-step-desc">Initializes isolated backend state in encrypted S3 with DynamoDB lock table.</div>
+          </div>
+          <div class="landing-step-card">
+            <span class="landing-step-num">STAGE 05</span>
+            <div class="landing-step-name">Plan Generation</div>
+            <div class="landing-step-desc">Produces speculative execution plan without applying infrastructure changes.</div>
+          </div>
+          <div class="landing-step-card">
+            <span class="landing-step-num">STAGE 06</span>
+            <div class="landing-step-name">Policy Gate</div>
+            <div class="landing-step-desc">Evaluates plan against 14 baseline security rules, blocking non-compliant plans.</div>
+          </div>
+          <div class="landing-step-card">
+            <span class="landing-step-num">STAGE 07</span>
+            <div class="landing-step-name">Security Approval</div>
+            <div class="landing-step-desc">Role-based approval check ensuring tier and size change authorizations.</div>
+          </div>
+          <div class="landing-step-card">
+            <span class="landing-step-num">STAGE 08</span>
+            <div class="landing-step-name">Terraform Apply</div>
+            <div class="landing-step-desc">Orchestrates atomic provisioning across Kubernetes cluster and cloud services.</div>
+          </div>
+          <div class="landing-step-card">
+            <span class="landing-step-num">STAGE 09</span>
+            <div class="landing-step-name">Runtime Verify</div>
+            <div class="landing-step-desc">Probes namespace, quotas, network isolation, and AWS bucket permissions.</div>
+          </div>
+          <div class="landing-step-card">
+            <span class="landing-step-num">STAGE 10</span>
+            <div class="landing-step-name">Metric Recording</div>
+            <div class="landing-step-desc">Records execution latency, audit trail ledger, and fleet telemetry events.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Call to Action Banner -->
+      <div class="landing-bottom-cta animate-on-scroll">
+        <h3>Ready to Explore the Platform Console?</h3>
+        <p>Access the live cluster dashboard to inspect environments, trigger real-time compliance audits, preview rollouts, or chat with the autonomous AI Platform Copilot.</p>
+        <button class="btn pri landing-btn-hero" onclick="document.getElementById('auth-dlg').showModal();" type="button">
+          <svg class="i"><use href="#i-user"/></svg>
+          <span>Sign In to Console</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Environments Page -->
+  <section id="p-env">
+    <div class="head">
+      <div class="head-left">
+        <div class="head-tag"><svg class="i sm-i"><use href="#i-cube"/></svg> Workspace Management</div>
+        <div class="head-title-row">
+          <h1>Environments</h1>
+          <div style="display:flex;align-items:center;gap:8px">
+            <a class="btn sm" href="/api/compliance/export?format=csv" download style="text-decoration:none;display:inline-flex;align-items:center;gap:6px" title="Export executive SOC 2 compliance ledger in CSV format">
+              <svg class="i sm-i"><use href="#i-scan"/></svg>
+              <span>Export Audit CSV</span>
+            </a>
+            <button class="btn pri" id="new">New environment</button>
+          </div>
+        </div>
+        <p>Standard Kubernetes environments built from versioned blueprints and continuously verified for compliance.</p>
+      </div>
+    </div>
+
+    <!-- Stats Cards Grid -->
+    <div class="stats" id="stats"></div>
+
+    <!-- Main Table Card -->
+    <div class="card table-card">
+      <div class="tools">
+        <label class="search">
+          <svg class="i"><use href="#i-search"/></svg>
+          <input id="q" placeholder="Search by name, team, kind, or size..." autocomplete="off">
+          <span class="search-kbd" title="Press / to search"><kbd>/</kbd></span>
+        </label>
+        <div class="chips" id="chips"></div>
+        <div id="batch-bar" style="margin-left:auto;display:none;align-items:center;gap:10px">
+          <span id="batch-selected-count" class="sub" style="font-weight:600">0 selected</span>
+          <button class="btn sm pri" id="batch-fix-btn">
+            <svg class="i"><use href="#i-fix"/></svg>
+            <span>Fix Selected</span>
+          </button>
+          <button class="btn sm" id="batch-fix-all-btn" title="Re-apply blueprint to all degraded/non-compliant environments">
+            <span>Fix All Degraded</span>
+          </button>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th styl<th style="width:44px;text-align:center"><input type="checkbox" id="select-all-env" title="Select all visible"></th>
+              <th style="width:24%">Environment</th>
+              <th style="width:20%">Pipeline Stage</th>
+              <th class="col-c" style="width:24%">Compliance &amp; Health</th>
+              <th class="col-t" style="width:14%">Time to Ready</th>
+              <th style="width:18%;text-align:right"></th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Rollouts Page -->
+  <section id="p-roll" hidden>
+    <div class="head">
+      <div>
+        <div class="head-tag"><svg class="i sm-i"><use href="#i-roll"/></svg> Continuous Delivery</div>
+        <h1>Rollouts</h1>
+        <p>Safely move environments to a new blueprint version with preview gates, canary phases, automated batching, and instant rollback.</p>
+      </div>
+    </div>
+
+    <div class="sect" id="rctl" hidden>
+      <h2>Roll out a blueprint version</h2>
+      <div class="card rollout-card">
+        <div class="rbar">
+          <label class="fld" style="margin:0">
+            <span>Blueprint version</span>
+            <select id="rver"></select>
+          </label>
+          <label class="chk">
+            <input type="checkbox" id="rdestroy">
+            <span>Allow resources to be destroyed</span>
+          </label>
+          <span style="flex:1"></span>
+          <button class="btn" id="rpreview">Preview changes</button>
+          <button class="btn pri" id="rstart">
+            <svg class="i"><use href="#i-roll"/></svg>
+            <span>Start rollout</span>
+          </button>
+        </div>
+        <div id="rmsg" class="sub" style="margin-top:10px"></div>
+      </div>
+    </div>
+
+    <div class="sect">
+      <div class="sect-header">
+        <h2>Pinned blueprint versions</h2>
+        <span class="sub">Active environment registry</span>
+      </div>
+      <div class="card" id="renv"></div>
+    </div>
+
+    <div class="sect">
+      <div class="sect-header">
+        <h2>Rollout history</h2>
+        <span class="sub">Past rollouts, preview audits, and automated rollbacks</span>
+      </div>
+      <div class="card" id="rruns"></div>
+    </div>
+
+    <div class="callout-card">
+      <svg class="i"><use href="#i-sparkles"/></svg>
+      <div>
+        <strong>Safe Rollout Guarantee</strong>
+        <p>Preview runs evaluate policy changes without altering cloud state. Live rollouts target the designated canary first, verify compliance, then advance in canary batches. Pins are committed only after cluster verification passes.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Activity Page -->
+  <section id="p-act" hidden>
+    <div class="head">
+      <div>
+        <div class="head-tag"><svg class="i sm-i"><use href="#i-act"/></svg> Observability</div>
+        <h1>Activity &amp; Audit Log</h1>
+        <p>Real-time queue execution, worker operations, and complete audit history of all environment lifecycle changes.</p>
+      </div>
+    </div>
+
+    <div class="sect">
+      <div class="sect-header">
+        <h2>Worker job queue</h2>
+        <span class="sub">Asynchronous pipeline and scan workers</span>
+      </div>
+      <div class="card" id="jobs"></div>
+    </div>
+
+    <div class="sect">
+      <div class="sect-header">
+        <h2>Security audit log</h2>
+        <span class="sub">Immutable record of administrative actions</span>
+      </div>
+      <div class="card" id="audit"></div>
+    </div>
+  </section>
+
+  <!-- How It Works Page -->
+  <section id="p-how" hidden>
+    <div class="head">
+      <div>
+        <div class="head-tag"><svg class="i sm-i"><use href="#i-how"/></svg> Platform Blueprint Architecture</div>
+        <h1>How It Works</h1>
+        <p>From self-service requests to continuously verified Kubernetes namespaces and automated version upgrades.</p>
+      </div>
+    </div>
+
+    <div class="flow sect">
+      <div class="card flow-card">
+        <div class="flow-header">
+          <div class="num">1</div>
+          <span class="flow-badge">Step 1</span>
+        </div>
+        <b>Request</b>
+        <span class="mut sm">Five declarative fields: name, team, kind, size, and admin groups via console, API, or pull request.</span>
+      </div>
+      <div class="card flow-card">
+        <div class="flow-header">
+          <div class="num">2</div>
+          <span class="flow-badge">Step 2</span>
+        </div>
+        <b>Pipeline</b>
+        <span class="mut sm">Ten automated stages from linting to metric recording. Requests violating security policy are rejected before execution.</span>
+      </div>
+      <div class="card flow-card">
+        <div class="flow-header">
+          <div class="num">3</div>
+          <span class="flow-badge">Step 3</span>
+        </div>
+        <b>Ready</b>
+        <span class="mut sm">Namespace, resource quota, default-deny network, role bindings, plus private S3, SQS queue, secrets, and scoped IAM role.</span>
+      </div>
+      <div class="card flow-card">
+        <div class="flow-header">
+          <div class="num">4</div>
+          <span class="flow-badge">Step 4</span>
+        </div>
+        <b>Check</b>
+        <span class="mut sm">14 baseline controls and 42 extended security checks run on demand or scheduled. Architectural drift is restored automatically.</span>
+      </div>
+      <div class="card flow-card">
+        <div class="flow-header">
+          <div class="num">5</div>
+          <span class="flow-badge">Step 5</span>
+        </div>
+        <b>Upgrade</b>
+        <span class="mut sm">Publish blueprint versions with preview gates, canary releases, batch deployment, and instant automated rollbacks.</span>
+      </div>
+    </div>
+
+    <div class="sect">
+      <h2>Continuous Compliance Matrix</h2>
+      <div class="cover">
+        <div class="card check-card">
+          <div class="check-header">
+            <svg class="i ok-t"><use href="#i-shield"/></svg>
+            <h3>Baseline Controls (14)</h3>
+          </div>
+          <p>Determines formal compliance: Default-deny network policies, no open cluster-admin bindings, quota constraints, resource limits, ownership tags, S3 public block, S3 versioning/encryption, SQS KMS, CloudWatch log retention, and scoped IAM roles.</p>
+        </div>
+        <div class="card check-card">
+          <div class="check-header">
+            <svg class="i bad-t"><use href="#i-alert-triangle"/></svg>
+            <h3>Workload Security</h3>
+          </div>
+          <p>Detects privileged containers, host access escapes, root user execution, dangerous Linux capabilities, unpinned mutable image tags, plaintext secrets in specs, missing liveness/readiness probes, and unbounded resource requests.</p>
+        </div>
+        <div class="card check-card">
+          <div class="check-header">
+            <svg class="i ok-t"><use href="#i-cube"/></svg>
+            <h3>Exposure &amp; Access</h3>
+          </div>
+          <p>Flags NodePort/LoadBalancer exposure, unencrypted ingress, permissive network policies, wildcard IAM permissions, unauthorised secret read permissions, and manual cluster-admin bindings.</p>
+        </div>
+        <div class="card check-card">
+          <div class="check-header">
+            <svg class="i warn-t"><use href="#i-clock"/></svg>
+            <h3>Drift &amp; Runtime Faults</h3>
+          </div>
+          <p>Surfaces out-of-band policy mutations, broken IRSA bindings, pod CrashLoopBackOffs, pending workloads, replica starvation, namespace quota saturation, and Kubernetes warning events.</p>
+        </div>
+        <div class="card check-card">
+          <div class="check-header">
+            <svg class="i acc-t"><use href="#i-layers"/></svg>
+            <h3>AWS Configuration</h3>
+          </div>
+          <p>Deep inspection of S3 bucket policies, SQS dead-letter queues, automated Secrets Manager rotation, least-privilege IAM trust policies, cross-account boundaries, and wildcard actions.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="note">
+      <strong>Patent Reference Notice:</strong> This reference build aligns with the title of German Utility Model (Gebrauchsmuster) No. 20 2025 107 185 ("System for blueprinted Platform Engineering using Terraform Modules on Kubernetes/Openshift with CI/CD"). Built for Curve Metrics.
+    </div>
+  </section>
+
+    <!-- Enterprise Console Utility & Status Bar -->
+    <footer class="app-console-bar">
+      <div class="console-bar-left">
+        <span class="csb-pill ok">
+          <span class="csb-dot"></span>
+          <span>All Systems Operational</span>
+        </span>
+        <span class="csb-sep">/</span>
+        <span class="csb-item">SLA: <strong>99.98%</strong></span>
+        <span class="csb-sep">/</span>
+        <span class="csb-item">Cluster: <strong>AWS EKS v1.29</strong></span>
+        <span class="csb-sep">/</span>
+        <span class="csb-tag">SOC 2 Type II</span>
+      </div>
+      <div class="console-bar-right">
+        <a href="#how" class="csb-link" onclick="page('how')">Architecture &amp; Docs</a>
+        <span class="csb-bullet">&bull;</span>
+        <a href="/api/compliance/export?format=csv" download class="csb-link">Audit CSV</a>
+        <span class="csb-bullet">&bull;</span>
+        <a href="/healthz" target="_blank" class="csb-link">Healthz</a>
+        <span class="csb-bullet">&bull;</span>
+        <a href="#how" class="csb-link" onclick="page('how')">Trust Center</a>
+        <span class="csb-bullet">&bull;</span>
+        <span class="csb-copy">&copy; 2026 Curve Metrics</span>
+      </div>
+    </footer>
+
+</main>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true"></aside>
+
+<!-- New Environment Dialog -->
+<dialog id="dlg">
+  <form class="dlg" id="f" method="dialog">
+    <div class="dlg-head">
+      <div class="dlg-icon"><svg class="i"><use href="#i-cube"/></svg></div>
+      <div>
+        <h2>Request new environment</h2>
+        <div class="mut sm">The pipeline will provision and verify standard Kubernetes &amp; AWS blueprints.</div>
+      </div>
+    </div>
+
+    <div class="dlg-body">
+      <label class="fld">
+        <span class="fld-label">Environment Name <span class="req">*</span></span>
+        <input name="name" id="fld-name" placeholder="payments-dev" required pattern="[a-z0-9]([a-z0-9]|-)*[a-z0-9]|[a-z0-9]" title="Lowercase alphanumeric with dashes" autocomplete="off">
+        <span class="fld-hint">Format: lowercase alphanumeric with hyphens (e.g. <span class="mono">payments-dev</span>)</span>
+      </label>
+
+      <div class="two">
+        <label class="fld">
+          <span class="fld-label">Team <span class="req">*</span></span>
+          <input name="team" id="fld-team" list="teams-list" placeholder="payments" required autocomplete="off">
+          <datalist id="teams-list">
+            <option value="payments">Payments Engineering</option>
+            <option value="checkout">Checkout &amp; Cart</option>
+            <option value="auth">Identity &amp; Auth</option>
+            <option value="orders">Orders &amp; Logistics</option>
+            <option value="analytics">Data &amp; Analytics</option>
+            <option value="platform">Platform Core</option>
+          </datalist>
+          <span class="fld-hint">Select or type team slug (lowercase)</span>
+        </label>
+        <label class="fld">
+          <span class="fld-label">Environment Kind <span class="req">*</span></span>
+          <select name="environment" id="fld-env">
+            <option value="dev">dev (Development)</option>
+            <option value="test">test (Staging &amp; QA)</option>
+            <option value="prod">prod (Production)</option>
+          </select>
+          <span class="fld-hint">Deployment tier &amp; policy rules</span>
+        </label>
+      </div>
+
+      <label class="fld">
+        <span class="fld-label">Workload Blueprint Template <span class="req">*</span></span>
+        <select name="blueprint" id="fld-blueprint">
+          <option value="standard">Standard Microservice (Full AWS: S3 + SQS + Secrets + Logs + IRSA)</option>
+          <option value="minimal">Minimal / Internal Tool (Lean K8s namespace + CloudWatch logs only)</option>
+          <option value="data_analytics">Data &amp; Analytics Lake (S3 Data Lake + Secrets + Logs)</option>
+          <option value="event_driven">Event-Driven Hub (Encrypted SQS FIFO/SSE + S3 + Logs)</option>
+          <option value="frontend_spa">Static Web / Frontend (S3 Static Hosting + Logs)</option>
+        </select>
+        <span class="fld-hint">Tailors AWS cloud resources and K8s policies to your workload</span>
+      </label>
+
+      <div class="two">
+        <label class="fld">
+          <span class="fld-label">Blueprint Size <span class="req">*</span></span>
+          <select name="size">
+            <option value="small">small (Standard: 2 CPU / 4GB RAM)</option>
+            <option value="medium">medium (Expanded: 4 CPU / 8GB RAM)</option>
+            <option value="large">large (High-throughput: 8 CPU / 16GB RAM)</option>
+          </select>
+          <span class="fld-hint">Resource quota &amp; limits</span>
+        </label>
+        <label class="fld">
+          <span class="fld-label">Admin Groups <span class="req">*</span></span>
+          <input name="groups" id="fld-groups" list="groups-list" placeholder="payments-admins" required autocomplete="off">
+          <datalist id="groups-list">
+            <option value="payments-admins">Payments Admins</option>
+            <option value="checkout-admins">Checkout Admins</option>
+            <option value="auth-admins">Auth Admins</option>
+            <option value="orders-admins">Orders Admins</option>
+            <option value="platform-admins">Platform Admins</option>
+          </datalist>
+          <span class="fld-hint">IdP / SSO groups granted K8s admin role</span>
+        </label>
+      </div>
+
+      <div class="err" id="ferr"></div>
+    </div>
+
+    <div class="dfoot">
+      <button type="button" class="btn" id="cancel">Cancel</button>
+      <button class="btn pri" id="submit">
+        <svg class="i"><use href="#i-plus"/></svg>
+        <span>Request environment</span>
+      </button>
+    </div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast"></div>
+
+<!-- Enterprise Sign In & Sign Up Modal -->
+<dialog id="auth-dlg">
+  <div class="dlg">
+    <!-- Header with centered icon, title & dismiss button -->
+    <div class="auth-modal-header">
+      <button type="button" class="auth-modal-close-btn" id="auth-close-x" aria-label="Close dialog" title="Close (Esc)">
+        <svg class="i sm-i" style="width:16px;height:16px"><use href="#i-x"/></svg>
+      </button>
+      <div class="auth-modal-icon">
+        <svg class="i"><use href="#i-layers"/></svg>
+      </div>
+      <div>
+        <h2 id="auth-modal-title" style="font-size:19px;font-weight:600;margin:0 0 4px;color:var(--fg)">Enterprise Sign In</h2>
+        <div class="mut sm" style="font-size:13px">Access your verified Kubernetes spaces &amp; audit ledgers</div>
+      </div>
+    </div>
+
+    <!-- Segmented Control for Sign In / Sign Up -->
+    <div class="auth-tabs-segmented">
+      <button type="button" id="tab-auth-login" class="auth-tab-btn active">
+        <svg class="i sm-i" style="width:14px;height:14px"><use href="#i-user"/></svg>
+        <span>Sign In</span>
+      </button>
+      <button type="button" id="tab-auth-signup" class="auth-tab-btn">
+        <svg class="i sm-i" style="width:14px;height:14px"><use href="#i-cube"/></svg>
+        <span>Sign Up</span>
+      </button>
+    </div>
+
+    <!-- Auth Form -->
+    <form id="auth-form" style="display:flex;flex-direction:column;gap:14px">
+      <label class="fld" style="margin:0">
+        <span class="fld-label" style="font-size:12px;font-weight:500;color:var(--fg);margin-bottom:6px">Username <span class="req">*</span></span>
+        <div class="auth-input-wrapper">
+          <svg class="auth-input-icon"><use href="#i-user"/></svg>
+          <input name="username" id="auth-username" class="auth-input-field" placeholder="admin or username" required autocomplete="username">
+        </div>
+      </label>
+
+      <div id="auth-extra-fields" style="display:none;flex-direction:column;gap:14px">
+        <label class="fld" style="margin:0">
+          <span class="fld-label" style="font-size:12px;font-weight:500;color:var(--fg);margin-bottom:6px">Full Name</span>
+          <div class="auth-input-wrapper">
+            <svg class="auth-input-icon"><use href="#i-user"/></svg>
+            <input name="fullname" id="auth-fullname" class="auth-input-field" placeholder="Alex Taylor" autocomplete="name">
+          </div>
+        </label>
+        <label class="fld" style="margin:0">
+          <span class="fld-label" style="font-size:12px;font-weight:500;color:var(--fg);margin-bottom:6px">Organization Role</span>
+          <div class="auth-input-wrapper">
+            <svg class="auth-input-icon"><use href="#i-shield"/></svg>
+            <select name="role" id="auth-role" class="auth-input-field">
+              <option value="viewer">Viewer (Read-only)</option>
+              <option value="operator">Operator (Provision &amp; Scan)</option>
+              <option value="admin" selected>Admin (Full Access &amp; Rollouts)</option>
+            </select>
+          </div>
+        </label>
+      </div>
+
+      <label class="fld" style="margin:0">
+        <span class="fld-label" style="font-size:12px;font-weight:500;color:var(--fg);margin-bottom:6px">Password <span class="req">*</span></span>
+        <div class="auth-input-wrapper">
+          <svg class="auth-input-icon"><use href="#i-shield"/></svg>
+          <input type="password" name="password" id="auth-password" class="auth-input-field" placeholder="Enter password" required autocomplete="current-password">
+          <button type="button" class="auth-pwd-toggle-btn" id="auth-pwd-toggle" title="Show/hide password" aria-label="Toggle password visibility">
+            <svg class="i sm-i" id="pwd-eye-icon" style="width:16px;height:16px"><use href="#i-search"/></svg>
+          </button>
+        </div>
+      </label>
+
+      <div class="err" id="auth-err" style="display:none;color:var(--bad);font-size:12px;padding:8px 12px;background:var(--bad-soft);border:1px solid var(--bad-border);border-radius:8px"></div>
+
+      <!-- Action Buttons -->
+      <button type="submit" class="btn pri auth-submit-btn" id="auth-submit">
+        <span>Sign In</span>
+        <svg class="i sm-i"><use href="#i-chevron-right"/></svg>
+      </button>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px">
+        <button type="button" class="btn sm" id="auth-modal-logout" style="display:none;color:var(--bad);border-color:var(--bad-border);background:var(--bad-soft);font-size:11.5px;padding:4px 8px">Sign Out</button>
+        <button type="button" class="btn sm" id="auth-cancel" style="margin-left:auto;font-size:12px;padding:4px 12px">Cancel</button>
+      </div>
+
+      <!-- Fast Demo Presets with 1-Click Fill -->
+      <div class="auth-demo-presets">
+        <span class="auth-demo-label">Quick Sign In As:</span>
+        <div class="auth-preset-chips">
+          <button type="button" class="auth-preset-pill" data-preset="admin" title="1-click fill Admin credentials">
+            <span>Admin</span>
+          </button>
+          <button type="button" class="auth-preset-pill" data-preset="operator" title="1-click fill Operator credentials">
+            <span>Operator</span>
+          </button>
+          <button type="button" class="auth-preset-pill" data-preset="viewer" title="1-click fill Viewer credentials">
+            <span>Viewer</span>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</dialog>
+
+<!-- Floating AI Platform Assistant Chatbot -->
+<div id="chatbot-widget">
+  <button id="chatbot-trigger" type="button" aria-label="Open Platform Copilot Assistant" title="Chat with Platform AI Assistant">
+    <div class="chatbot-trigger-icon">
+      <svg class="i"><use href="#i-bot"/></svg>
+    </div>
+    <span class="chatbot-trigger-label">Copilot</span>
+    <span class="chatbot-badge" id="chatbot-badge" style="display:none">1</span>
+  </button>
+
+  <div id="chatbot-panel" class="chatbot-panel" hidden>
+    <div class="chatbot-header">
+      <div class="chatbot-header-title">
+        <div class="chatbot-avatar">
+          <svg class="i sm-i"><use href="#i-bot"/></svg>
+        </div>
+        <div>
+          <div class="chatbot-name">Platform Copilot</div>
+          <div class="chatbot-sub"><span class="brand-dot"></span> Online &bull; Local Assistant</div>
+        </div>
+      </div>
+      <div class="chatbot-header-actions">
+        <button id="chatbot-clear" class="icon-btn" title="Clear chat history">
+          <svg class="i sm-i"><use href="#i-refresh"/></svg>
+        </button>
+        <button id="chatbot-close" class="icon-btn" aria-label="Close Assistant">
+          <svg class="i sm-i"><use href="#i-x"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="chatbot-quick-chips">
+      <button class="cb-chip" data-cb-prompt="Create environment">Create env</button>
+      <button class="cb-chip" data-cb-prompt="What environments need attention?">Show degraded</button>
+      <button class="cb-chip" data-cb-prompt="Fix all degraded environments">Fix all</button>
+      <button class="cb-chip" data-cb-prompt="How many environments are compliant?">Summary</button>
+      <button class="cb-chip" data-cb-prompt="Export compliance report">Export audit</button>
+    </div>
+
+    <div class="chatbot-body" id="chatbot-messages">
+      <div class="cb-msg bot">
+        <div class="cb-bubble">
+          Hello! I am your <b>Platform Copilot</b>. I can inspect environments, trigger scans, execute blueprint fixes, export audit CSVs, and answer compliance questions.
+          <div class="cb-time">Just now</div>
+        </div>
+      </div>
+    </div>
+
+    <form class="chatbot-input-row" id="chatbot-form">
+      <input type="text" id="chatbot-input" placeholder="Ask Copilot (e.g. 'Fix payments-dev', 'scan all')..." autocomplete="off">
+      <button type="submit" id="chatbot-send" class="btn pri sm" aria-label="Send message">
+        <svg class="i sm-i"><use href="#i-send"/></svg>
+      </button>
+    </form>
+  </div>
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

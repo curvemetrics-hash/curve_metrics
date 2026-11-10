@@ -1,0 +1,34 @@
+# Rollout manager demo, 2026-11-06, after moving registry and run history to the shared store
+# command: scripts/rollout_demo.sh 6 (kind + LocalStack, SQLite). Job lines removed.
+saved a registry of 6 environments and a catalog with tags v1.0.0 v1.1.0 v1.2.0
+== provision 6 environments at v1.0.0
+provisioned 6 environments in 77s (avg 48.6s each)
+  ok   all environments compliant on v1.0.0
+== good release v1.1.0
+preview for 6 environment(s)
+canary: svc01-dev
+batch 1: svc02-test, svc03-prod, svc04-dev
+batch 2: svc05-test, svc06-prod
+
+rollout to v1.1.0: completed in 143.1s
+  canary   svc01-dev: ok (21.9s)
+  batch 1  svc02-test: ok (28.6s)
+  batch 1  svc03-prod: ok (36.9s)
+  batch 1  svc04-dev: ok (41.8s)
+  batch 2  svc05-test: ok (23.7s)
+  batch 2  svc06-prod: ok (31.1s)
+  ok   rollout completes
+  ok   every environment now on v1.1.0
+  ok   change really applied (log retention 90)
+== bad release v1.2.0, preview not overridden
+  ok   blocked before anything changes
+  ok   all environments still on v1.1.0
+== bad release v1.2.0, preview overridden
+  ok   stopped at the canary
+  ok   canary was rolled back
+  ok   no environment left on v1.2.0
+  ok   all environments still compliant
+  report written to site/index.html
+failed checks: 0
+== cleaned up
+exit 0

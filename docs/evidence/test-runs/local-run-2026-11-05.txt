@@ -1,0 +1,214 @@
+LOCAL RUN (LocalStack + kind). Not evidence of adoption. Thu Nov  5 08:57:17 CST 2026
+tofu: OpenTofu v1.13.2  kind: kind v0.33.0 go1.27.0 darwin/arm64  localstack: 3.8
+scripts/local-up.sh
+waiting for LocalStack...
+LocalStack backend ready (state bucket, lock table, metrics bucket)
+Creating cluster "curve-metrics-local" ...
+ • Ensuring node image (kindest/node:v1.31.2) 🖼️  ...
+ ✓ Ensuring node image (kindest/node:v1.31.2) 🖼️
+ • Preparing nodes 📦   ...
+ ✓ Preparing nodes 📦 
+ • Writing configuration 📜  ...
+ ✓ Writing configuration 📜
+ • Starting control-plane 🕹️  ...
+ ✓ Starting control-plane 🕹️
+ • Installing CNI 🔌  ...
+ ✓ Installing CNI 🔌
+ • Installing StorageClass 💾  ...
+ ✓ Installing StorageClass 💾
+ • Waiting ≤ 2m0s for control-plane = Ready ⏳  ...
+ ✓ Waiting ≤ 2m0s for control-plane = Ready ⏳
+ • Ready after 18s 💚
+Set kubectl context to "kind-curve-metrics-local"
+You can now use your cluster with:
+
+kubectl cluster-info --context kind-curve-metrics-local --kubeconfig .local/kubeconfig
+
+Thanks for using kind! 😊
+NAME                                STATUS   ROLES           AGE   VERSION
+curve-metrics-local-control-plane   Ready    control-plane   22s   v1.31.2
+cd modules/namespace_baseline && tofu init -backend=false -input=false >/dev/null && tofu test
+tests/baseline.tftest.hcl... pass
+  run "small_environment_has_standard_labels_and_quota"... pass
+  run "large_environment_quota"... pass
+  run "default_deny_network_policy_present"... pass
+  run "no_extra_namespace_policy_without_allowlist"... pass
+  run "allowlist_creates_policy"... pass
+  run "admin_groups_create_role_bindings"... pass
+  run "no_admin_groups_no_role_bindings"... pass
+  run "rejects_invalid_size"... pass
+  run "rejects_invalid_environment"... pass
+  run "rejects_invalid_name"... pass
+  run "rejects_wildcard_admin_group"... pass
+
+Success! 11 passed, 0 failed.
+python3 -m pytest -q tests
+.......                                                                  [100%]
+7 passed in 0.01s
+AUTO_APPROVE=1 scripts/ci.sh local/fixtures/team-alpha-dev.tfvars
+== 1 format
+== 2 validate
+Success! The configuration is valid.
+== 3 unit tests
+tests/baseline.tftest.hcl... pass
+  run "small_environment_has_standard_labels_and_quota"... pass
+  run "large_environment_quota"... pass
+  run "default_deny_network_policy_present"... pass
+  run "no_extra_namespace_policy_without_allowlist"... pass
+  run "allowlist_creates_policy"... pass
+  run "admin_groups_create_role_bindings"... pass
+  run "no_admin_groups_no_role_bindings"... pass
+  run "rejects_invalid_size"... pass
+  run "rejects_invalid_environment"... pass
+  run "rejects_invalid_name"... pass
+  run "rejects_wildcard_admin_group"... pass
+
+Success! 11 passed, 0 failed.
+== 4 init (remote state in LocalStack)
+Success! The configuration is valid.
+== 5 plan
+== 6 policy gate
+policy check passed
+== 7 approval
+auto-approved (local test run)
+== 8 apply
+module.environment.kubernetes_namespace_v1.this: Creating...
+module.environment.kubernetes_namespace_v1.this: Creation complete after 0s [id=team-alpha-dev]
+module.environment.kubernetes_resource_quota_v1.this: Creating...
+module.environment.kubernetes_limit_range_v1.this: Creating...
+module.environment.kubernetes_network_policy_v1.default_deny_ingress: Creating...
+module.environment.kubernetes_role_binding_v1.admins["alpha-admins"]: Creating...
+module.environment.kubernetes_network_policy_v1.allow_listed_namespaces[0]: Creating...
+module.environment.kubernetes_network_policy_v1.allow_same_namespace: Creating...
+module.environment.kubernetes_network_policy_v1.allow_same_namespace: Creation complete after 0s [id=team-alpha-dev/allow-same-namespace]
+module.environment.kubernetes_limit_range_v1.this: Creation complete after 0s [id=team-alpha-dev/standard-limits]
+module.environment.kubernetes_role_binding_v1.admins["alpha-admins"]: Creation complete after 0s [id=team-alpha-dev/team-admin-ea3ef83f]
+module.environment.kubernetes_network_policy_v1.allow_listed_namespaces[0]: Creation complete after 0s [id=team-alpha-dev/allow-listed-namespaces]
+module.environment.kubernetes_network_policy_v1.default_deny_ingress: Creation complete after 0s [id=team-alpha-dev/default-deny-ingress]
+module.environment.kubernetes_resource_quota_v1.this: Creation complete after 1s [id=team-alpha-dev/standard-quota]
+
+Apply complete! Resources: 7 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+namespace = "team-alpha-dev"
+quota = tomap({
+  "limits.cpu" = "4"
+  "limits.memory" = "8Gi"
+  "pods" = "20"
+  "requests.cpu" = "2"
+  "requests.memory" = "4Gi"
+})
+== 9 verify
+  ok   namespace exists
+  ok   team label set
+  ok   resource quota present
+  ok   limit range present
+  ok   default-deny policy present
+  ok   same-namespace policy
+  ok   no cluster-admin binding
+== 10 metric
+metric recorded: s3://curve-metrics-pipeline-metrics/team-alpha-dev-1793890692.json  {'environment': 'team-alpha-dev', 'requested_epoch': 1793890688, 'ready_epoch': 1793890692, 'elapsed_seconds': 4, 'manual_steps': 0, 'outcome': 'success'}
+AUTO_APPROVE=1 scripts/ci.sh local/fixtures/team-beta-prod.tfvars
+== 1 format
+== 2 validate
+Success! The configuration is valid.
+== 3 unit tests
+tests/baseline.tftest.hcl... pass
+  run "small_environment_has_standard_labels_and_quota"... pass
+  run "large_environment_quota"... pass
+  run "default_deny_network_policy_present"... pass
+  run "no_extra_namespace_policy_without_allowlist"... pass
+  run "allowlist_creates_policy"... pass
+  run "admin_groups_create_role_bindings"... pass
+  run "no_admin_groups_no_role_bindings"... pass
+  run "rejects_invalid_size"... pass
+  run "rejects_invalid_environment"... pass
+  run "rejects_invalid_name"... pass
+  run "rejects_wildcard_admin_group"... pass
+
+Success! 11 passed, 0 failed.
+== 4 init (remote state in LocalStack)
+Success! The configuration is valid.
+== 5 plan
+== 6 policy gate
+policy check passed
+== 7 approval
+auto-approved (local test run)
+== 8 apply
+module.environment.kubernetes_namespace_v1.this: Creating...
+module.environment.kubernetes_namespace_v1.this: Creation complete after 0s [id=team-beta-prod]
+module.environment.kubernetes_resource_quota_v1.this: Creating...
+module.environment.kubernetes_limit_range_v1.this: Creating...
+module.environment.kubernetes_role_binding_v1.admins["beta-leads"]: Creating...
+module.environment.kubernetes_role_binding_v1.admins["beta-admins"]: Creating...
+module.environment.kubernetes_network_policy_v1.allow_same_namespace: Creating...
+module.environment.kubernetes_network_policy_v1.default_deny_ingress: Creating...
+module.environment.kubernetes_limit_range_v1.this: Creation complete after 0s [id=team-beta-prod/standard-limits]
+module.environment.kubernetes_role_binding_v1.admins["beta-leads"]: Creation complete after 0s [id=team-beta-prod/team-admin-0eef89cd]
+module.environment.kubernetes_role_binding_v1.admins["beta-admins"]: Creation complete after 0s [id=team-beta-prod/team-admin-8217d174]
+module.environment.kubernetes_network_policy_v1.allow_same_namespace: Creation complete after 0s [id=team-beta-prod/allow-same-namespace]
+module.environment.kubernetes_network_policy_v1.default_deny_ingress: Creation complete after 0s [id=team-beta-prod/default-deny-ingress]
+module.environment.kubernetes_resource_quota_v1.this: Creation complete after 0s [id=team-beta-prod/standard-quota]
+
+Apply complete! Resources: 7 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+namespace = "team-beta-prod"
+quota = tomap({
+  "limits.cpu" = "16"
+  "limits.memory" = "32Gi"
+  "pods" = "100"
+  "requests.cpu" = "8"
+  "requests.memory" = "16Gi"
+})
+== 9 verify
+  ok   namespace exists
+  ok   team label set
+  ok   resource quota present
+  ok   limit range present
+  ok   default-deny policy present
+  ok   same-namespace policy
+  ok   no cluster-admin binding
+== 10 metric
+metric recorded: s3://curve-metrics-pipeline-metrics/team-beta-prod-1793890697.json  {'environment': 'team-beta-prod', 'requested_epoch': 1793890693, 'ready_epoch': 1793890697, 'elapsed_seconds': 4, 'manual_steps': 0, 'outcome': 'success'}
+! AUTO_APPROVE=1 scripts/ci.sh local/fixtures/bad-wildcard-admin.tfvars
+== 1 format
+== 2 validate
+Success! The configuration is valid.
+== 3 unit tests
+tests/baseline.tftest.hcl... pass
+  run "small_environment_has_standard_labels_and_quota"... pass
+  run "large_environment_quota"... pass
+  run "default_deny_network_policy_present"... pass
+  run "no_extra_namespace_policy_without_allowlist"... pass
+  run "allowlist_creates_policy"... pass
+  run "admin_groups_create_role_bindings"... pass
+  run "no_admin_groups_no_role_bindings"... pass
+  run "rejects_invalid_size"... pass
+  run "rejects_invalid_environment"... pass
+  run "rejects_invalid_name"... pass
+  run "rejects_wildcard_admin_group"... pass
+
+Success! 11 passed, 0 failed.
+== 4 init (remote state in LocalStack)
+Success! The configuration is valid.
+== 5 plan
+╷
+│ Error: Invalid value for variable
+│ 
+│   on main.tf line 12, in module "environment":
+│   12:   admin_groups                  = var.admin_groups
+│     ├────────────────
+│     │ var.admin_groups is list of string with 1 element
+│ 
+│ admin_groups must not include system:authenticated or
+│ system:unauthenticated.
+│ 
+│ This was checked by the validation rule at
+│ ../../modules/namespace_baseline/variables.tf:42,3-13.
+╵
+scripts/drift_check.sh local/fixtures/team-alpha-dev.tfvars
+no drift: team-alpha-dev matches the blueprint
+make all: every target completed (make stops at the first failure; the last target, drift-alpha, ran).

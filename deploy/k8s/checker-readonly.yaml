@@ -1,0 +1,39 @@
+# Read-only access for compliance scans. Apply once to the cluster:
+#   kubectl apply -f deploy/k8s/checker-readonly.yaml
+# Then map the read-only IAM role to the group (EKS access entries):
+#   aws eks create-access-entry --cluster-name <cluster> --principal-arn <readonly role arn> \
+#       --kubernetes-groups platform-readonly --type STANDARD
+# It can read what the checks need and nothing else. Secrets are deliberately absent.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: platform-readonly
+rules:
+  - apiGroups: [""]
+    resources: [namespaces, pods, services, serviceaccounts, configmaps, resourcequotas, limitranges, persistentvolumeclaims, events]
+    verbs: [get, list]
+  - apiGroups: [apps]
+    resources: [deployments, statefulsets, daemonsets]
+    verbs: [get, list]
+  - apiGroups: [batch]
+    resources: [jobs, cronjobs]
+    verbs: [get, list]
+  - apiGroups: [networking.k8s.io]
+    resources: [networkpolicies, ingresses]
+    verbs: [get, list]
+  - apiGroups: [rbac.authorization.k8s.io]
+    resources: [roles, rolebindings]
+    verbs: [get, list]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: platform-readonly
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: platform-readonly
+subjects:
+  - apiGroup: rbac.authorization.k8s.io
+    kind: Group
+    name: platform-readonly

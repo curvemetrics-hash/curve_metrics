@@ -1,0 +1,14 @@
+# Container image checks, 2026-11-06 (image built from ./Dockerfile on an arm64 Mac)
+## tools
+aarch64
+app
+OpenTofu v1.13.2
+Client Version: v1.33.0
+aws-cli/2.17.0 Python/3.11.8 Linux/6.8.0-100-generic exe/aarch64.debian.13
+## no login configured on a public address: must refuse to start
+refusing to start: AUTH_MODE=off is only allowed on localhost; set AUTH_MODE=cloudflare
+## AWS role setup: raw keys removed from the environment (dummy values)
+raw keys in env: 0  profile=platform
+## app directory writable and providers cached
+writable
+registry.opentofu.org

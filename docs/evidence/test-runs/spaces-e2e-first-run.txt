@@ -1,0 +1,42 @@
+== 1 request validation
+  ok   invalid size rejected with 400
+  ok   malformed JSON rejected with 400
+== 2 create two spaces through the API
+  ok   space A reached ready
+  ok   space B reached ready
+  ok   duplicate name gives 409
+  seconds to ready: A=49 B=49
+  seconds to compliant: A=52 B=52
+== 3 new spaces are fully compliant
+  ok   A controls
+  ok   B controls
+== 4 unsafe request is rejected by the pipeline
+  ok   wildcard admin request rejected
+  ok   no namespace created for rejected request
+== 5 break a managed control, detect, re-apply
+  ok   delete default-deny policy: detected
+  ok   delete default-deny policy: other space unaffected
+  ok   delete default-deny policy: compliant after re-apply
+  ok   make bucket public: detected
+  ok   make bucket public: other space unaffected
+  ok   make bucket public: compliant after re-apply
+  ok   change quota: detected
+  ok   change quota: other space unaffected
+  ok   change quota: compliant after re-apply
+  ok   suspend versioning: detected
+  ok   suspend versioning: other space unaffected
+  ok   suspend versioning: compliant after re-apply
+== 6 object added by hand (not managed by the blueprint)
+  ok   wildcard binding detected
+  ok   re-apply does NOT remove an unmanaged binding (known limit)
+  ok   compliant after manual removal
+== 7 deleted space is reported, not silently passed
+  (checked by unit test test_empty_snapshot_fails_not_crashes)
+
+passed: 24  failed: 0
+== cleanup
+scripts/test_spaces_e2e.sh: line 29: 58546 Terminated: 15          PORT=$PORT python3 -m spaces.server
+  destroyed acme-02583
+  destroyed globex-02583
+scripts/test_spaces_e2e.sh  157.78s user 41.26s system 57% cpu 5:48.76 total
+exit=0

@@ -1,0 +1,16 @@
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl.bak
+.local/
+plan.bin
+plan.json
+__pycache__/
+site/
+
+.env
+*.env
+*.bak
+*.png
+.pytest_cache/
+*.db

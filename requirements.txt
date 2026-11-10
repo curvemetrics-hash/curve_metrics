@@ -1,0 +1,3 @@
+# Runtime dependencies. Tests also need pytest.
+cryptography>=43,<48        # verifies Cloudflare Access tokens
+psycopg[binary]>=3.2,<4     # Postgres (Render). Not needed for local SQLite.

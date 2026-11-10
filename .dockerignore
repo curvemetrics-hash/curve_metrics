@@ -1,0 +1,11 @@
+.git
+.local
+.terraform
+**/.terraform
+**/__pycache__
+site
+docs/evidence
+tests
+*.tfstate*
+plan.bin
+plan.json
