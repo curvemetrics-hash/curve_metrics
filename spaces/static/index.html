@@ -66,6 +66,11 @@
       <span>Environments</span>
       <span class="nav-badge" id="nav-badge-env">0</span>
     </button>
+    <button type="button" id="nav-connect-cluster" onclick="openClusterModal()" style="display:flex;align-items:center;gap:10px" title="Securely connect an enterprise Kubernetes or OpenShift cluster">
+      <svg class="i"><use href="#i-shield"/></svg>
+      <span>Connect Cluster</span>
+      <span class="nav-badge" style="background:rgba(16,185,129,0.15);color:#10b981;font-weight:600">Zero-Trust</span>
+    </button>
     <button data-page="roll">
       <svg class="i"><use href="#i-roll"/></svg>
       <span>Rollouts</span>
@@ -556,6 +561,10 @@
         <div class="head-title-row">
           <h1>Environments</h1>
           <div style="display:flex;align-items:center;gap:8px">
+            <button class="btn sm" id="connect-cluster-btn" onclick="openClusterModal()" type="button" style="display:inline-flex;align-items:center;gap:6px" title="Securely connect an enterprise Kubernetes or OpenShift cluster">
+              <svg class="i sm-i" style="width:14px;height:14px;color:#10b981"><use href="#i-shield"/></svg>
+              <span>Connect Cluster</span>
+            </button>
             <a class="btn sm" href="/api/compliance/export?format=csv" download style="text-decoration:none;display:inline-flex;align-items:center;gap:6px" title="Export executive SOC 2 compliance ledger in CSV format">
               <svg class="i sm-i"><use href="#i-scan"/></svg>
               <span>Export Audit CSV</span>
@@ -818,6 +827,148 @@
         <span class="csb-copy">&copy; 2026 Curve Metrics</span>
       </div>
     </footer>
+
+
+<!-- Connect Cluster & Cloud Dialog -->
+<dialog id="cluster-dlg">
+  <form class="dlg" id="cluster-form" method="dialog" style="max-width:680px">
+    <div class="dlg-head">
+      <div class="dlg-icon" style="background:rgba(16,185,129,0.15);color:#10b981"><svg class="i"><use href="#i-shield"/></svg></div>
+      <div>
+        <h2>Connect Kubernetes Cluster &amp; Cloud Backend</h2>
+        <div class="mut sm">Zero-Trust Enterprise Onboarding. No root AWS keys or passwords required.</div>
+      </div>
+    </div>
+
+    <div class="dlg-body" style="display:flex;flex-direction:column;gap:18px">
+      <!-- Step 1: Provider Selection -->
+      <div>
+        <label class="fld-label" style="margin-bottom:8px;display:block">1. Select Target Cluster Platform <span class="req">*</span></label>
+        <div class="cluster-provider-grid">
+          <label class="cluster-provider-card active" data-provider="aws_eks">
+            <input type="radio" name="cluster_provider" value="aws_eks" checked style="display:none">
+            <div class="cluster-provider-title">
+              <svg class="i sm-i" style="color:#f59e0b"><use href="#i-cube"/></svg>
+              <span>AWS EKS</span>
+            </div>
+            <div class="cluster-provider-sub">Elastic Kubernetes Service on AWS</div>
+          </label>
+          <label class="cluster-provider-card" data-provider="openshift">
+            <input type="radio" name="cluster_provider" value="openshift" style="display:none">
+            <div class="cluster-provider-title">
+              <svg class="i sm-i" style="color:#ef4444"><use href="#i-layers"/></svg>
+              <span>Red Hat OpenShift</span>
+            </div>
+            <div class="cluster-provider-sub">Enterprise OpenShift Container Platform</div>
+          </label>
+          <label class="cluster-provider-card" data-provider="k8s_generic">
+            <input type="radio" name="cluster_provider" value="k8s_generic" style="display:none">
+            <div class="cluster-provider-title">
+              <svg class="i sm-i" style="color:#3b82f6"><use href="#i-terminal"/></svg>
+              <span>Generic K8s / K3s</span>
+            </div>
+            <div class="cluster-provider-sub">K3s, Kind, GKE, Azure AKS, Bare-Metal</div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Step 2: Authentication Mode Selection -->
+      <div>
+        <label class="fld-label" style="margin-bottom:8px;display:block">2. Choose Zero-Trust Authentication Method <span class="req">*</span></label>
+        <div class="cluster-auth-tabs">
+          <button type="button" class="cluster-auth-tab on" data-auth="sts_assumerole">Cross-Account IAM Role (Recommended)</button>
+          <button type="button" class="cluster-auth-tab" data-auth="helm_agent">In-Cluster Helm Agent</button>
+          <button type="button" class="cluster-auth-tab" data-auth="scoped_token">Scoped Token / Kubeconfig</button>
+        </div>
+
+        <!-- Mode A: Cross-Account IAM Role -->
+        <div id="auth-panel-sts" class="cluster-auth-panel" style="display:block;margin-top:12px">
+          <div class="security-callout-box">
+            <svg class="i sm-i" style="color:#10b981;flex-shrink:0"><use href="#i-shield"/></svg>
+            <div>
+              <strong>Zero-Trust IAM Guardrail:</strong>
+              Curve Metrics assumes a temporary 1-hour session using your IAM Role ARN. Your role carries a strict <code>permissions_boundary_arn</code> preventing access to non-<code>curve-*</code> resources. You can revoke access in your AWS Console at any second.
+            </div>
+          </div>
+
+          <label class="fld" style="margin-top:12px">
+            <span class="fld-label">Customer IAM Role ARN <span class="req">*</span></span>
+            <input name="role_arn" id="cluster-role-arn" placeholder="arn:aws:iam::123456789012:role/CurvePlatformRole" autocomplete="off" value="arn:aws:iam::123456789012:role/CurvePlatformRole">
+            <span class="fld-hint">Created by running <span class="mono">tofu -chdir=deploy/aws/bootstrap apply</span> in your AWS account.</span>
+          </label>
+
+          <label class="fld" style="margin-top:10px">
+            <span class="fld-label">Tenant External ID (Protects against Confused Deputy attacks)</span>
+            <div style="display:flex;gap:8px">
+              <input name="external_id" id="cluster-ext-id" value="cm-ext-8f104256-9d2b-4256-9d2b-6507904e1998" readonly style="font-family:var(--font-mono,monospace)">
+              <button class="btn sm" type="button" onclick="navigator.clipboard.writeText(document.getElementById('cluster-ext-id').value); toast('Copied External ID to clipboard!')">Copy</button>
+            </div>
+          </label>
+        </div>
+
+        <!-- Mode B: Helm Agent -->
+        <div id="auth-panel-helm" class="cluster-auth-panel" style="display:none;margin-top:12px">
+          <div class="security-callout-box">
+            <svg class="i sm-i" style="color:#3b82f6;flex-shrink:0"><use href="#i-terminal"/></svg>
+            <div>
+              <strong>Zero-Inbound Firewall Exposure:</strong>
+              The agent runs inside your cluster and initiates outbound TLS WebSocket polling to Curve Metrics. No firewall ports need to be opened.
+            </div>
+          </div>
+          <div class="code-copy-card" style="margin-top:12px">
+            <pre class="landing-code-pre" style="padding:12px 14px">helm repo add curvemetrics https://charts.curvemetrics.io
+helm install curve-agent curvemetrics/agent \
+  --set token="cm-live-token-8f104256-prod" \
+  --set cluster="corporate-k8s-prod"</pre>
+          </div>
+        </div>
+
+        <!-- Mode C: Scoped Token -->
+        <div id="auth-panel-token" class="cluster-auth-panel" style="display:none;margin-top:12px">
+          <label class="fld">
+            <span class="fld-label">Kubernetes API Endpoint <span class="req">*</span></span>
+            <input name="api_endpoint" placeholder="https://k8s-api.corporate.internal:6443" autocomplete="off">
+          </label>
+          <label class="fld" style="margin-top:10px">
+            <span class="fld-label">Scoped ServiceAccount Token <span class="req">*</span></span>
+            <input type="password" name="k8s_token" placeholder="eyJhbGciOiJSUzI1NiIsImtpZCI6..." autocomplete="off">
+            <span class="fld-hint">Token is encrypted at rest using AES-GCM-256 in Supabase PostgreSQL.</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Step 3: Cluster Governance & Guardrails -->
+      <div>
+        <label class="fld-label" style="margin-bottom:8px;display:block">3. Governance &amp; Permitted Namespaces <span class="req">*</span></label>
+        <div class="two">
+          <label class="fld">
+            <span class="fld-label">Cluster Display Identifier <span class="req">*</span></span>
+            <input name="cluster_name" id="cluster-name-input" placeholder="prod-eks-us-east-1" required value="corporate-eks-prod">
+          </label>
+          <label class="fld">
+            <span class="fld-label">Permitted Namespace Filter</span>
+            <input name="allowed_prefixes" id="cluster-prefixes-input" value="dev-*, test-*, staging-*, checkout-*, billing-*">
+            <span class="fld-hint">Curve Metrics is restricted to matching prefixes only.</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Live Connection Test Result Banner -->
+      <div id="cluster-test-banner" style="display:none;padding:12px 16px;border-radius:8px;font-size:13px;line-height:1.5"></div>
+    </div>
+
+    <div class="dlg-foot" style="display:flex;justify-content:space-between;align-items:center">
+      <button type="button" class="btn sm" id="cluster-test-btn" style="display:inline-flex;align-items:center;gap:6px">
+        <svg class="i sm-i" style="width:14px;height:14px"><use href="#i-sparkles"/></svg>
+        <span>Test Connection</span>
+      </button>
+      <div style="display:flex;gap:8px">
+        <button type="button" class="btn sm" onclick="document.getElementById('cluster-dlg').close()">Cancel</button>
+        <button type="button" class="btn sm pri" id="cluster-enroll-submit-btn">Save &amp; Enroll Cluster</button>
+      </div>
+    </div>
+  </form>
+</dialog>
 
 </main>
 

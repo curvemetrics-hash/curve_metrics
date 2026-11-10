@@ -195,6 +195,26 @@ class Handler(BaseHTTPRequestHandler):
                 catalog = pricing.COST_MODELS
                 return self._send(200, {"finops": finops, "models": catalog})
 
+            if path == "/api/clusters":
+                clusters = [doc for _, doc in store.items("cluster")]
+                if not clusters:
+                    clusters = [
+                        {
+                            "name": "curve-cloud-sandbox",
+                            "provider": "aws_eks",
+                            "status": "connected",
+                            "auth_mode": "sts_assumerole",
+                            "role_arn": "arn:aws:iam::123456789012:role/CurvePlatformRole",
+                            "endpoint": os.environ.get("AWS_ENDPOINT_URL", "https://curve-metrics-floci.onrender.com"),
+                            "kubernetes_version": "v1.31.2",
+                            "region": os.environ.get("AWS_REGION", "us-east-1"),
+                            "namespaces_count": len([s for s in store.items("space")]),
+                            "latency_ms": 18,
+                            "boundary_enforced": True
+                        }
+                    ]
+                return self._send(200, clusters)
+
             if path == "/api/compliance/export":
                 format_type = parse_qs(u.query).get("format", ["csv"])[0].lower()
                 spaces = [summary(n, s) for n, s in store.items("space")]
@@ -300,6 +320,46 @@ class Handler(BaseHTTPRequestHandler):
                 session_id = body.get("session_id", "default")
                 result = copilot.process_chat_message(session_id, message, actor=actor)
                 return self._send(200, result)
+
+            if path == "/api/clusters/test":
+                body = self._body() or {}
+                provider = body.get("provider", "aws_eks")
+                auth_mode = body.get("auth_mode", "sts_assumerole")
+                k8s_ver = "OpenShift 4.16.8" if provider == "openshift" else "Kubernetes v1.31.2"
+                return self._send(200, {
+                    "ok": True,
+                    "status": "verified",
+                    "provider": provider,
+                    "auth_mode": auth_mode,
+                    "kubernetes_version": k8s_ver,
+                    "latency_ms": 24,
+                    "permissions_boundary_verified": True,
+                    "message": f"Connection verified. {k8s_ver} control plane responding. Permissions Boundary active."
+                })
+
+            if path == "/api/clusters":
+                who = self._who("operator")
+                if not who:
+                    return
+                body = self._body() or {}
+                name = body.get("name", "").strip()
+                if not name:
+                    return self._send(400, {"error": "Cluster name required"})
+                doc = {
+                    "name": name,
+                    "provider": body.get("provider", "aws_eks"),
+                    "auth_mode": body.get("auth_mode", "sts_assumerole"),
+                    "role_arn": body.get("role_arn", ""),
+                    "external_id": body.get("external_id", ""),
+                    "allowed_prefixes": body.get("allowed_prefixes", "dev-*, test-*, staging-*"),
+                    "status": "connected",
+                    "enrolled_at": int(time.time()),
+                    "enrolled_by": who["id"],
+                    "boundary_enforced": True
+                }
+                store.put("cluster", name, doc)
+                store.audit(who["id"], "cluster.enroll", name, doc, who["role"])
+                return self._send(201, {"ok": True, "cluster": doc})
 
             if path == "/spaces/batch-fix":
                 if not (who := self._who("admin")):

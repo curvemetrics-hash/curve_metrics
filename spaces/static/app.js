@@ -1547,3 +1547,149 @@ if (document.readyState === 'loading') {
 } else {
   initLandingMotions();
 }
+
+
+/* -----------------------------------------------------------------------------
+   Enterprise Cluster & Cloud Backend Onboarding Wizard
+----------------------------------------------------------------------------- */
+window.openClusterModal = function() {
+  const d = document.getElementById('cluster-dlg');
+  if (d) d.showModal();
+};
+
+function initClusterDialog() {
+  // Provider card click selection
+  document.querySelectorAll('.cluster-provider-card').forEach(card => {
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.cluster-provider-card').forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+      const radio = card.querySelector('input[type="radio"]');
+      if (radio) radio.checked = true;
+    });
+  });
+
+  // Auth mode tabs
+  document.querySelectorAll('.cluster-auth-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.cluster-auth-tab').forEach(t => t.classList.remove('on'));
+      tab.classList.add('on');
+      const auth = tab.dataset.auth;
+      const panels = {
+        'sts_assumerole': 'auth-panel-sts',
+        'helm_agent': 'auth-panel-helm',
+        'scoped_token': 'auth-panel-token'
+      };
+      Object.entries(panels).forEach(([k, panelId]) => {
+        const el = document.getElementById(panelId);
+        if (el) el.style.display = (k === auth) ? 'block' : 'none';
+      });
+    });
+  });
+
+  // Test Connection button
+  const testBtn = document.getElementById('cluster-test-btn');
+  const banner = document.getElementById('cluster-test-banner');
+  if (testBtn) {
+    testBtn.addEventListener('click', async () => {
+      testBtn.disabled = true;
+      testBtn.innerHTML = '<i class="spin"></i> <span>Testing Connection...</span>';
+      if (banner) {
+        banner.style.display = 'block';
+        banner.style.background = 'rgba(99, 102, 241, 0.1)';
+        banner.style.border = '1px solid rgba(99, 102, 241, 0.3)';
+        banner.style.color = '#818cf8';
+        banner.innerHTML = 'Establishing secure handshake with cluster control plane...';
+      }
+
+      const activeCard = document.querySelector('.cluster-provider-card.active');
+      const provider = activeCard ? activeCard.dataset.provider : 'aws_eks';
+      const activeTab = document.querySelector('.cluster-auth-tab.on');
+      const authMode = activeTab ? activeTab.dataset.auth : 'sts_assumerole';
+
+      try {
+        const r = await api('/api/clusters/test', {
+          method: 'POST',
+          body: JSON.stringify({ provider, auth_mode: authMode })
+        });
+        testBtn.disabled = false;
+        testBtn.innerHTML = '<svg class="i sm-i"><use href="#i-sparkles"/></svg> <span>Test Connection</span>';
+        if (r.ok) {
+          banner.style.background = 'rgba(16, 185, 129, 0.12)';
+          banner.style.border = '1px solid rgba(16, 185, 129, 0.4)';
+          banner.style.color = '#34d399';
+          banner.innerHTML = '<strong>Connection Verified:</strong> ' + r.data.message + ' (Latency: ' + r.data.latency_ms + 'ms)';
+        } else {
+          banner.style.background = 'rgba(239, 68, 68, 0.12)';
+          banner.style.border = '1px solid rgba(239, 68, 68, 0.4)';
+          banner.style.color = '#f87171';
+          banner.innerHTML = '<strong>Connection Failed:</strong> ' + (r.data.error || 'Failed to reach cluster');
+        }
+      } catch (err) {
+        testBtn.disabled = false;
+        testBtn.innerHTML = '<svg class="i sm-i"><use href="#i-sparkles"/></svg> <span>Test Connection</span>';
+        if (banner) {
+          banner.style.background = 'rgba(239, 68, 68, 0.12)';
+          banner.style.border = '1px solid rgba(239, 68, 68, 0.4)';
+          banner.style.color = '#f87171';
+          banner.innerHTML = '<strong>Connection Error:</strong> ' + err.message;
+        }
+      }
+    });
+  }
+
+  // Save & Enroll button
+  const saveBtn = document.getElementById('cluster-enroll-submit-btn');
+  if (saveBtn) {
+    saveBtn.addEventListener('click', async () => {
+      const nameInput = document.getElementById('cluster-name-input');
+      const name = nameInput ? nameInput.value.trim() : '';
+      if (!name) {
+        toast('Please enter a cluster name');
+        return;
+      }
+      saveBtn.disabled = true;
+      saveBtn.innerHTML = '<i class="spin"></i> <span>Enrolling...</span>';
+
+      const activeCard = document.querySelector('.cluster-provider-card.active');
+      const provider = activeCard ? activeCard.dataset.provider : 'aws_eks';
+      const activeTab = document.querySelector('.cluster-auth-tab.on');
+      const authMode = activeTab ? activeTab.dataset.auth : 'sts_assumerole';
+      const roleArn = document.getElementById('cluster-role-arn') ? document.getElementById('cluster-role-arn').value : '';
+      const extId = document.getElementById('cluster-ext-id') ? document.getElementById('cluster-ext-id').value : '';
+      const prefixes = document.getElementById('cluster-prefixes-input') ? document.getElementById('cluster-prefixes-input').value : '';
+
+      try {
+        const r = await api('/api/clusters', {
+          method: 'POST',
+          body: JSON.stringify({
+            name,
+            provider,
+            auth_mode: authMode,
+            role_arn: roleArn,
+            external_id: extId,
+            allowed_prefixes: prefixes
+          })
+        });
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = 'Save & Enroll Cluster';
+        if (r.ok) {
+          toast('Cluster "' + name + '" enrolled successfully!');
+          const d = document.getElementById('cluster-dlg');
+          if (d) d.close();
+        } else {
+          toast('Enrollment error: ' + (r.data.error || 'Failed'));
+        }
+      } catch (err) {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = 'Save & Enroll Cluster';
+        toast('Error: ' + err.message);
+      }
+    });
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initClusterDialog);
+} else {
+  initClusterDialog();
+}
