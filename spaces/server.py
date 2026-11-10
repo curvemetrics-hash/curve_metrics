@@ -109,7 +109,8 @@ class Handler(BaseHTTPRequestHandler):
             for hk, hv in headers:
                 self.send_header(hk, hv)
         self.end_headers()
-        self.wfile.write(data)
+        if self.command != "HEAD":
+            self.wfile.write(data)
         self._status = code
 
     def _body(self):
@@ -146,6 +147,9 @@ class Handler(BaseHTTPRequestHandler):
         print(f"{self.command} {self.path.split('?')[0]} {getattr(self, '_status', 0)} {who} {int((time.time() - t0) * 1000)}ms", flush=True)
 
     # --- GET -----------------------------------------------------------------------------
+    def do_HEAD(self):
+        self.do_GET()
+
     def do_OPTIONS(self):
         t0 = time.time()
         self.send_response(204)
