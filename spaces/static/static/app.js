@@ -751,11 +751,22 @@ async function loadAct() {
 
 /* ---------- events ---------- */
 function page(p) {
+  window._viewingConsole = true;
+  const pGated = document.getElementById('p-gated');
+  if (pGated) pGated.style.display = 'none';
+  document.body.classList.remove('is-guest');
   $$("#nav button").forEach(b => b.classList.toggle("on", b.dataset.page === p));
-  for (const k of ["env", "roll", "act", "how"]) $("#p-" + k).hidden = k !== p;
+  for (const k of ["env", "roll", "act", "how"]) {
+    const el = $("#p-" + k);
+    if (el) {
+      el.hidden = k !== p;
+      el.style.display = (k === p) ? '' : 'none';
+    }
+  }
   const pageNames = { "env": "Environments", "roll": "Rollouts", "act": "Activity", "how": "Architecture & Docs" };
   const titleEl = $("#topbar-page-name");
   if (titleEl) titleEl.textContent = pageNames[p] || "Console";
+  if (p === "env") { lastList = ""; load(); }
   if (p === "roll") loadRoll();
   if (p === "act") loadAct();
   window.scrollTo(0, 0);
