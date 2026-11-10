@@ -1607,10 +1607,7 @@ function initClusterDialog() {
       const authMode = activeTab ? activeTab.dataset.auth : 'sts_assumerole';
 
       try {
-        const r = await api('/api/clusters/test', {
-          method: 'POST',
-          body: JSON.stringify({ provider, auth_mode: authMode })
-        });
+        const r = await api('/api/clusters/test', 'POST', { provider, auth_mode: authMode });
         testBtn.disabled = false;
         testBtn.innerHTML = '<svg class="i sm-i"><use href="#i-sparkles"/></svg> <span>Test Connection</span>';
         if (r.ok) {
@@ -1659,16 +1656,13 @@ function initClusterDialog() {
       const prefixes = document.getElementById('cluster-prefixes-input') ? document.getElementById('cluster-prefixes-input').value : '';
 
       try {
-        const r = await api('/api/clusters', {
-          method: 'POST',
-          body: JSON.stringify({
-            name,
-            provider,
-            auth_mode: authMode,
-            role_arn: roleArn,
-            external_id: extId,
-            allowed_prefixes: prefixes
-          })
+        const r = await api('/api/clusters', 'POST', {
+          name,
+          provider,
+          auth_mode: authMode,
+          role_arn: roleArn,
+          external_id: extId,
+          allowed_prefixes: prefixes
         });
         saveBtn.disabled = false;
         saveBtn.innerHTML = 'Save & Enroll Cluster';
