@@ -338,7 +338,7 @@ class Handler(BaseHTTPRequestHandler):
                 })
 
             if path == "/api/clusters":
-                who = self._who("operator")
+                who = self._who("viewer")
                 if not who:
                     return
                 body = self._body() or {}
