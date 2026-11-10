@@ -82,9 +82,9 @@ class OrderServiceHandler(BaseHTTPRequestHandler):
         sys.stdout.flush()
 
 if __name__ == "__main__":
-    print(f"🚀 [order-service] Starting on port {PORT}")
-    print(f"📦 Environment: {ENV_NAME} (Team: {TEAM_NAME})")
-    print(f"💾 Connected DB: {DB_HOST}:{DB_PORT}/{DB_NAME}")
-    print(f"🪣 Connected S3: {S3_BUCKET}")
+    print(f"[*] [order-service] Starting on port {PORT}")
+    print(f"[*] Environment: {ENV_NAME} (Team: {TEAM_NAME})")
+    print(f"[*] Connected DB: {DB_HOST}:{DB_PORT}/{DB_NAME}")
+    print(f"[*] Connected S3: {S3_BUCKET}")
     server = HTTPServer(("0.0.0.0", PORT), OrderServiceHandler)
     server.serve_forever()
