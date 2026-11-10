@@ -167,14 +167,6 @@ function applyRole() {
     if (pEnv) pEnv.style.display = '';
     if (titleEl) titleEl.textContent = isGuest ? 'Environments (Visitor View)' : 'Environments';
   }
-    document.body.classList.remove('is-guest');
-    if (topbarAccountBtn) topbarAccountBtn.style.display = 'flex';
-    if (topbarSignInBtn) topbarSignInBtn.style.display = 'none';
-    if (modalLogoutBtn) modalLogoutBtn.style.display = 'inline-flex';
-    if (pGated) pGated.style.display = 'none';
-    if (pEnv) pEnv.style.display = '';
-    if (titleEl) titleEl.textContent = 'Environments';
-  }
 
   // Hook landing page nav buttons
   const landingSignIn = document.getElementById('landing-nav-signin-btn');
