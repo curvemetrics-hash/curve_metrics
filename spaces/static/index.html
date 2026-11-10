@@ -170,6 +170,7 @@
         <span class="landing-nav-patent-pill">Patent No. 20 2025 107 185</span>
       </div>
       <div class="landing-nav-actions">
+        <a href="#usecases" class="btn sm" onclick="event.preventDefault(); document.getElementById('usecases')?.scrollIntoView({behavior:'smooth'})" style="text-decoration:none;font-weight:600">Use Cases</a>
         <a href="#how" class="btn sm" onclick="page('how')" style="text-decoration:none;font-weight:600">Documentation</a>
         <button class="landing-theme-toggle-btn" id="landing-theme-btn" type="button" aria-label="Toggle theme" title="Toggle theme">
           <svg class="i sm-i" style="width:16px;height:16px"><use href="#i-moon"/></svg>
@@ -200,6 +201,10 @@
             <svg class="i"><use href="#i-cube"/></svg>
             <span>Launch Platform Console</span>
           </button>
+          <a href="#usecases" class="landing-btn-secondary" onclick="event.preventDefault(); document.getElementById('usecases')?.scrollIntoView({behavior:'smooth'})" style="text-decoration:none">
+            <svg class="i sm-i"><use href="#i-sparkles"/></svg>
+            <span>Developer Use Cases</span>
+          </a>
           <a href="#how" class="landing-btn-secondary" onclick="page('how')">
             <svg class="i sm-i"><use href="#i-how"/></svg>
             <span>Architecture &amp; Docs</span>
@@ -386,7 +391,7 @@
       </div>
 
       <!-- Real-World Developer Use Case Section -->
-      <div class="landing-usecase-container animate-on-scroll">
+      <div class="landing-usecase-container animate-on-scroll" id="usecases" style="scroll-margin-top:90px">
         <div class="landing-section-header" style="margin-bottom:28px">
           <div class="landing-section-tag">Developer Story &amp; Real-World Use Case</div>
           <h2 class="landing-section-title">How It Powers Your Codebase in 40 Seconds</h2>
