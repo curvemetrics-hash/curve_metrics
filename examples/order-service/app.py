@@ -68,6 +68,37 @@ class OrderServiceHandler(BaseHTTPRequestHandler):
                 "status": "confirmed",
                 "receipt_s3_key": f"s3://{S3_BUCKET}/receipts/ord-{len(MOCK_ORDERS) + 101}.json"
             }
+
+            # If cloud storage is available, upload real receipt to Floci/AWS S3
+            endpoint = os.environ.get("AWS_ENDPOINT_URL")
+            if endpoint and S3_BUCKET:
+                try:
+                    import boto3
+                    from botocore.client import Config
+                    s3_cli = boto3.client(
+                        "s3",
+                        endpoint_url=endpoint,
+                        aws_access_key_id=os.environ.get("AWS_ACCESS_KEY_ID", "test"),
+                        aws_secret_access_key=os.environ.get("AWS_SECRET_ACCESS_KEY", "test"),
+                        region_name=AWS_REGION,
+                        config=Config(
+                            s3={"addressing_style": "path"},
+                            request_checksum_calculation="when_required",
+                            response_checksum_validation="when_required"
+                        )
+                    )
+                    s3_cli.put_object(
+                        Bucket=S3_BUCKET,
+                        Key=f"receipts/{new_order['id']}.json",
+                        Body=json.dumps(new_order, indent=2).encode("utf-8"),
+                        ContentType="application/json"
+                    )
+                    new_order["s3_uploaded"] = True
+                    new_order["s3_endpoint"] = endpoint
+                except Exception as s3_err:
+                    new_order["s3_uploaded"] = False
+                    new_order["s3_error"] = str(s3_err)
+
             MOCK_ORDERS.append(new_order)
             self._send_json(201, {
                 "message": "Order created successfully! S3 receipt saved.",

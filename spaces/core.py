@@ -83,12 +83,13 @@ def run_pipeline(request_rel):
     """Run scripts/ci.sh; returns (ok, last_stage, tail_of_log). Stage progress is written as it happens."""
     name = os.path.basename(request_rel).rsplit(".", 1)[0]
     
-    # Check if we have bash and tofu to run real pipeline scripts
+    # Check if we have bash, tofu, and a reachable cluster to run real pipeline scripts
     import shutil
     has_tofu = bool(shutil.which("tofu") or shutil.which("terraform"))
-    has_aws_backend = bool(os.environ.get("TF_STATE_BUCKET"))
-    if not has_tofu or (config.is_aws() and not has_aws_backend):
-        # In showcase mode without a live AWS account configured (or when tofu is missing),
+    has_k8s = bool(os.environ.get("KUBECONFIG") and os.path.exists(os.environ.get("KUBECONFIG", "")))
+    has_aws_backend = bool(os.environ.get("TF_STATE_BUCKET") and os.environ.get("OIDC_PROVIDER_ARN"))
+    if not has_tofu or not has_k8s or (config.is_aws() and not has_aws_backend):
+        # In showcase mode without a live K8s cluster or complete AWS backend configured (or when tofu is missing),
         # simulate the 10-stage provisioning pipeline cleanly.
         lines = []
         stages = [
