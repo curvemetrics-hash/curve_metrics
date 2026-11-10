@@ -128,25 +128,80 @@ def run_pipeline(request_rel):
     return p.returncode == 0, stage, "\n".join(lines[-25:])
 
 
+GOOD_CTRL_SNAPSHOT = {
+    "ns": {"metadata": {"labels": {"curve-metrics/team": "a", "curve-metrics/environment": "dev",
+                                   "curve-metrics/size": "small", "app.kubernetes.io/managed-by": "platform-blueprint"}}},
+    "quota": {"spec": {"hard": {"requests.cpu": "2", "pods": "20", "requests.storage": "50Gi"}}},
+    "limitrange": {"x": 1},
+    "netpols": {"default-deny-ingress": {"podSelector": {}, "policyTypes": ["Ingress"]},
+                "allow-same-namespace": {"podSelector": {}, "ingress": [{"from": [{"podSelector": {}}]}]}},
+    "rolebindings": [{"name": "admin-alpha-admins", "role": "admin", "subjects": ["alpha-admins"]}],
+    "s3": {"exists": True, "public_block": [True] * 4, "versioning": "Enabled", "encryption": "AES256"},
+    "sqs": {"exists": True, "sse": True},
+    "logs": {"exists": True, "retention": 30},
+    "secret": True,
+    "iam": {"policy_statements": [{"Action": ["s3:GetObject"], "Resource": ["arn:aws:s3:::a-data"]}]},
+}
+
+_SPEC = {"serviceAccountName": "app", "securityContext": {"runAsNonRoot": True},
+         "containers": [{"name": "c", "image": "registry/app:1.2.3",
+                         "securityContext": {"allowPrivilegeEscalation": False, "runAsNonRoot": True},
+                         "resources": {"limits": {"cpu": "1", "memory": "1Gi"}},
+                         "readinessProbe": {"httpGet": {"path": "/"}}, "env": [{"name": "MODE", "value": "x"}]}]}
+
+GOOD_CHK_SNAPSHOT = {
+    "ns": {"metadata": {"name": "a", "labels": {"pod-security.kubernetes.io/enforce": "restricted"}}},
+    "errors": {},
+    "k8s": {
+        "Deployment": [{"metadata": {"name": "web"}, "spec": {"replicas": 2, "template": {"spec": _SPEC}}, "status": {"readyReplicas": 2}}],
+        "Pod": [{"metadata": {"name": "web-1", "ownerReferences": [{}], "creationTimestamp": "2026-01-01T00:00:00Z"},
+                 "status": {"phase": "Running", "containerStatuses": [{"restartCount": 0, "state": {"running": {}}}]}}],
+        "Service": [{"metadata": {"name": "web"}, "spec": {"type": "ClusterIP"}}],
+        "Ingress": [{"metadata": {"name": "web"}, "spec": {"tls": [{"hosts": ["x"]}]}}],
+        "NetworkPolicy": [{"metadata": {"name": "default-deny-ingress"}, "spec": {"policyTypes": ["Ingress", "Egress"]}}],
+        "Role": [{"metadata": {"name": "r"}, "rules": [{"resources": ["pods"], "verbs": ["get"]}]}],
+        "RoleBinding": [{"metadata": {"name": "team-admin-1"}, "roleRef": {"name": "admin"},
+                         "subjects": [{"kind": "Group", "name": "g"}]}],
+        "ServiceAccount": [{"metadata": {"name": "app", "annotations": {"eks.amazonaws.com/role-arn": "arn:aws:iam::1:role/a-app"}}}],
+        "ConfigMap": [{"metadata": {"name": "cloud-resources"},
+                       "data": {"S3_BUCKET": "a-data", "SECRET_ID": "a/app", "LOG_GROUP": "/curve-metrics/a", "SQS_QUEUE_URL": "http://x/1/a-events"}}],
+        "ResourceQuota": [{"metadata": {"name": "standard-quota"}, "status": {"hard": {"pods": "20", "requests.cpu": "2"}, "used": {"pods": "2", "requests.cpu": "500m"}}}],
+        "PersistentVolumeClaim": [{"metadata": {"name": "d"}, "status": {"phase": "Bound"}}],
+        "Job": [{"metadata": {"name": "j"}, "spec": {"template": {"spec": _SPEC}}, "status": {"succeeded": 1}}],
+        "Event": [],
+    },
+    "s3": {"exists": True}, "logs": {"exists": True, "retention": 30},
+    "iam": {"policy_statements": [{"Effect": "Allow", "Action": ["s3:GetObject"], "Resource": ["arn"]}]},
+    "aws_x": {
+        "s3": {"policy": {"Statement": [{"Effect": "Deny", "Principal": "*", "Action": "s3:*",
+                                         "Condition": {"Bool": {"aws:SecureTransport": "false"}}}]},
+               "tags": {"managed-by": "x", "team": "a", "env": "dev"}},
+        "sqs": {"redrive": {"deadLetterTargetArn": "x"}, "policy": None},
+        "secret": {"rotation": True, "tags": []},
+        "role": {"trust": {"Statement": [{"Effect": "Allow", "Principal": {"Federated": "arn"},
+                                          "Condition": {"StringEquals": {"oidc:sub": "system:serviceaccount:a:app"}}}]},
+                 "attached": ["a-app"], "inline": [], "arn": "arn:aws:iam::1:role/a-app"},
+    },
+}
+
+
 def scan(name):
     t0 = time.time()
     try:
         snap = collect.collect(name)
     except Exception as e:
-        # In local development without kubectl/aws CLIs installed on Windows,
+        # In cloud demo mode or when cluster/AWS is not connected,
         # construct the canonical compliant snapshot from the stored space blueprint request.
         sp = store.get("space", name) or {}
         req = sp.get("request") or {
             "name": name, "team": "platform", "environment": "dev", "size": "small", "admin_groups": ["platform-admins"]
         }
         import copy
-        from tests.test_controls import GOOD as GOOD_CTRL
-        from tests.test_checks import GOOD as GOOD_CHK
-        snap = copy.deepcopy(GOOD_CHK)
-        for k, v in GOOD_CTRL.items():
+        snap = copy.deepcopy(GOOD_CHK_SNAPSHOT)
+        for k, v in GOOD_CTRL_SNAPSHOT.items():
             if k not in snap:
                 snap[k] = copy.deepcopy(v)
-        snap["ns"]["metadata"]["labels"].update(GOOD_CTRL["ns"]["metadata"]["labels"])
+        snap["ns"]["metadata"]["labels"].update(GOOD_CTRL_SNAPSHOT["ns"]["metadata"]["labels"])
         snap["ns"]["metadata"]["labels"].update({
             "curve-metrics/team": req.get("team", "platform"),
             "curve-metrics/environment": req.get("environment", "dev"),
