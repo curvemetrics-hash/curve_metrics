@@ -208,7 +208,7 @@ def scan(name):
             "curve-metrics/size": req.get("size", "small"),
             "app.kubernetes.io/managed-by": "spaces"
         })
-        snap["s3"].update(GOOD_CTRL["s3"])
+        snap["s3"].update(GOOD_CTRL_SNAPSHOT["s3"])
         preset = controls.SIZE_PRESETS.get(req.get("size", "small"), controls.SIZE_PRESETS["small"])
         snap["quota"]["spec"]["hard"] = dict(preset)
         snap["rolebindings"] = [
