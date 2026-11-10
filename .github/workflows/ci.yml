@@ -1,0 +1,48 @@
+# Pipeline definition for a real GitHub repository. NOT YET RUN on GitHub Actions.
+# The same stages are exercised locally by scripts/ci.sh (see docs/local-testing.md).
+name: ci
+on:
+  pull_request:
+    paths: ["modules/**", "blueprints/**", "requests/**", "tests/**", "scripts/**"]
+  push:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: 1.13.2
+      - name: Format
+        run: tofu fmt -check -recursive modules blueprints
+      - name: Validate and unit test modules
+        run: |
+          cd modules/namespace_baseline
+          tofu init -backend=false -input=false
+          tofu validate
+          tofu test
+      - name: Policy script tests
+        run: python3 -m pip install pytest && python3 -m pytest -q tests
+
+  plan:
+    needs: verify
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: 1.13.2
+      # [To define with Curve Metrics: cluster credentials from the secret store,
+      #  remote state backend config, and a plan for each changed request file.]
+      - run: echo "plan step to be defined with Curve Metrics' cluster and state backend"
+
+  apply:
+    needs: verify
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: production-approval   # requires reviewer approval
+    steps:
+      - run: echo "apply step to be defined with Curve Metrics' cluster and state backend"
