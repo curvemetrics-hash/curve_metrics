@@ -49,7 +49,7 @@ async function api(path, method = "GET", body) {
   });
   let j = {};
   try { j = await r.json(); } catch (e) {}
-  if (r.status === 401) { toast("Your session expired. Reload the page to sign in again."); }
+  if (r.status === 401 && me.id && me.id !== "guest") { toast("Your session expired. Reload the page to sign in again."); }
   return { ok: r.ok, status: r.status, data: j };
 }
 

@@ -193,6 +193,8 @@ def identify(headers):
 
     # 4. Local Mode or off
     if config.auth_mode() == "off":
+        if config.is_aws() and not session_user:
+            return {"id": "guest", "role": "viewer", "name": "Guest"}
         return {"id": "local", "role": "admin"}
     token = headers.get("Cf-Access-Jwt-Assertion") or _cookie(headers.get("Cookie"), "CF_Authorization")
     if not token:
