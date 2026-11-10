@@ -77,7 +77,10 @@ class Db:
                 return
             with self.tx() as cur:
                 if self.pg:
-                    cur.run("SELECT pg_advisory_xact_lock(7)")
+                    try:
+                        cur.run("SELECT pg_advisory_xact_lock(7)")
+                    except Exception as e:
+                        print(f"pg_advisory_xact_lock notice: {e}", flush=True)
                 for stmt in SCHEMA:
                     cur.run(stmt)
             self._ready = True

@@ -32,6 +32,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 RUN useradd --uid 10001 --create-home app && mkdir -p /opt/tf-plugins && chown app /opt/tf-plugins /app
 COPY --chown=app:app . /app
+RUN chmod +x /app/deploy/entrypoint.sh
 USER app
 
 # Download the Terraform providers once at build time so jobs do not depend on the registry being fast.
