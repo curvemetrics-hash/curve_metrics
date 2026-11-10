@@ -86,8 +86,9 @@ def run_pipeline(request_rel):
     # Check if we have bash and tofu to run real pipeline scripts
     import shutil
     has_tofu = bool(shutil.which("tofu") or shutil.which("terraform"))
-    if not has_tofu and os.name == "nt":
-        # In Windows local development mode without Docker/tofu installed,
+    has_aws_backend = bool(os.environ.get("TF_STATE_BUCKET"))
+    if not has_tofu or (config.is_aws() and not has_aws_backend):
+        # In showcase mode without a live AWS account configured (or when tofu is missing),
         # simulate the 10-stage provisioning pipeline cleanly.
         lines = []
         stages = [
