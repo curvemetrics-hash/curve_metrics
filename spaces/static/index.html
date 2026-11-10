@@ -57,6 +57,10 @@
 
   <div class="nav-label">Navigation</div>
   <nav class="nav" id="nav">
+    <button type="button" onclick="showLanding()" style="display:flex;align-items:center;gap:10px" title="Return to public product showcase and architecture">
+      <svg class="i"><use href="#i-sparkles"/></svg>
+      <span>Product Showcase</span>
+    </button>
     <button data-page="env" class="on">
       <svg class="i"><use href="#i-env"/></svg>
       <span>Environments</span>
@@ -170,6 +174,10 @@
         <span class="landing-nav-patent-pill">Patent No. 20 2025 107 185</span>
       </div>
       <div class="landing-nav-actions">
+        <button class="btn sm pri" onclick="showConsole()" type="button" style="font-weight:600;display:inline-flex;align-items:center;gap:6px">
+          <svg class="i sm-i" style="width:14px;height:14px"><use href="#i-cube"/></svg>
+          <span>Live Environments</span>
+        </button>
         <a href="#usecases" class="btn sm" onclick="event.preventDefault(); document.getElementById('usecases')?.scrollIntoView({behavior:'smooth'})" style="text-decoration:none;font-weight:600">Use Cases</a>
         <a href="#how" class="btn sm" onclick="page('how')" style="text-decoration:none;font-weight:600">Documentation</a>
         <button class="landing-theme-toggle-btn" id="landing-theme-btn" type="button" aria-label="Toggle theme" title="Toggle theme">

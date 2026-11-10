@@ -1,3 +1,31 @@
+
+window.showConsole = function() {
+  window._viewingConsole = true;
+  const pGated = document.getElementById('p-gated');
+  const pEnv = document.getElementById('p-env');
+  if (pGated) pGated.style.display = 'none';
+  if (pEnv) pEnv.style.display = '';
+  document.body.classList.remove('is-guest');
+  page('env');
+  lastList = '';
+  load();
+  window.scrollTo(0, 0);
+};
+
+window.showLanding = function() {
+  window._viewingConsole = false;
+  const pGated = document.getElementById('p-gated');
+  const pEnv = document.getElementById('p-env');
+  const pRoll = document.getElementById('p-roll');
+  const pAct = document.getElementById('p-act');
+  const pHow = document.getElementById('p-how');
+  if (pGated) pGated.style.display = 'block';
+  if (pEnv) pEnv.style.display = 'none';
+  if (pRoll) pRoll.style.display = 'none';
+  if (pAct) pAct.style.display = 'none';
+  if (pHow) pHow.style.display = 'none';
+  window.scrollTo(0, 0);
+};
 function getInitials(name, id) {
   const full = (name || id || "User").trim();
   const parts = full.split(/[\s_.-]+/).filter(Boolean);
@@ -72,7 +100,7 @@ async function waitJob(id, seconds = 180) {
 }
 
 function applyRole() {
-  const newBtn = $("#new"); if (newBtn) newBtn.hidden = !can("operator");
+  const newBtn = $("#new"); if (newBtn) { newBtn.hidden = false; }
   const navAct = $("#nav-act"); if (navAct) navAct.hidden = !can("admin");
   const rctl = $("#rctl"); if (rctl) rctl.hidden = !can("operator");
   const rstart = $("#rstart"); if (rstart) rstart.hidden = !can("admin");
@@ -113,7 +141,8 @@ function applyRole() {
   const pAct = document.getElementById('p-act');
 
   const titleEl = document.getElementById('topbar-page-name');
-  if (isGuest) {
+  const wantsConsole = window._viewingConsole || location.hash === '#console' || location.hash === '#env' || location.search.includes('console');
+  if (isGuest && !wantsConsole) {
     document.body.classList.add('is-guest');
     if (topbarAccountBtn) topbarAccountBtn.style.display = 'none';
     if (topbarSignInBtn) {
@@ -130,6 +159,14 @@ function applyRole() {
     if (pAct) pAct.style.display = 'none';
     if (titleEl) titleEl.textContent = 'Platform Overview & Patent';
   } else {
+    document.body.classList.remove('is-guest');
+    if (topbarAccountBtn) topbarAccountBtn.style.display = 'flex';
+    if (topbarSignInBtn) topbarSignInBtn.style.display = isGuest ? 'inline-flex' : 'none';
+    if (modalLogoutBtn) modalLogoutBtn.style.display = isGuest ? 'none' : 'inline-flex';
+    if (pGated) pGated.style.display = 'none';
+    if (pEnv) pEnv.style.display = '';
+    if (titleEl) titleEl.textContent = isGuest ? 'Environments (Visitor View)' : 'Environments';
+  }
     document.body.classList.remove('is-guest');
     if (topbarAccountBtn) topbarAccountBtn.style.display = 'flex';
     if (topbarSignInBtn) topbarSignInBtn.style.display = 'none';
@@ -160,8 +197,7 @@ function applyRole() {
   const gatedSignInBtn = document.getElementById('gated-signin-btn');
   if (gatedSignInBtn) {
     gatedSignInBtn.onclick = () => {
-      const d = document.getElementById('auth-dlg');
-      if (d) d.showModal();
+      window.showConsole();
     };
   }
 
