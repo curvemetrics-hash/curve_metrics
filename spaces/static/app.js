@@ -43,13 +43,16 @@ const API_BASE = (window.location.hostname.endsWith(".pages.dev") || window.loca
   : "";
 
 async function api(path, method = "GET", body) {
+  const token = localStorage.getItem("platform_token");
+  const headers = {
+    "X-Requested-With": "console",
+    ...(token ? { "Authorization": "Bearer " + token } : {}),
+    ...(body ? { "Content-Type": "application/json" } : {})
+  };
   const r = await fetch(API_BASE + path, {
     method,
     credentials: "include",
-    headers: {
-      "X-Requested-With": "console",
-      ...(body ? { "Content-Type": "application/json" } : {})
-    },
+    headers,
     body: body ? JSON.stringify(body) : undefined
   });
   let j = {};
@@ -1346,6 +1349,7 @@ if (authForm) {
     try {
       const res = await api(endpoint, 'POST', payload);
       if (res.ok) {
+        try { localStorage.setItem('platform_token', username); } catch (e) {}
         const d = document.getElementById('auth-dlg');
         if (d) d.close();
         const u = res.data?.user || res.data;
@@ -1369,6 +1373,7 @@ if (authForm) {
 
 async function handleLogout() {
   try {
+    try { localStorage.removeItem('platform_token'); } catch (e) {}
     if (accountDropdown) accountDropdown.setAttribute('hidden', '');
     await api('/api/auth/logout', 'POST', {});
     toast('Logged out successfully');

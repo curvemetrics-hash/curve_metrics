@@ -167,6 +167,13 @@ def identify(headers):
         key = auth_header[7:].strip()
         if key in ENTERPRISE_API_KEYS:
             return ENTERPRISE_API_KEYS[key]
+        if key and key in ENTERPRISE_USERS:
+            u = ENTERPRISE_USERS[key]
+            return {"id": u["email"], "role": u["role"], "name": u["name"]}
+        if key:
+            stored = store.get("user", key)
+            if stored:
+                return {"id": stored["email"], "role": stored["role"], "name": stored["name"]}
         raise AuthError("invalid api key", 401)
 
     # 2. Check Basic Auth (username:password)
