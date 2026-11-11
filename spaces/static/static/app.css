@@ -4086,3 +4086,390 @@ body.is-guest .app-console-bar {
   color: var(--mut-sub, #64748b);
   line-height: 1.5;
 }
+
+/* ==========================================================================
+   ENTERPRISE UX & CONTENT AUDIT ENHANCEMENTS
+   ========================================================================== */
+
+/* 1. 1-Click Interactive Demo Buttons in Hero */
+.landing-demo-tags {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+.landing-demo-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--mut, #94a3b8);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.landing-demo-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: var(--surface, #1e293b);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+  border-radius: 999px;
+  color: var(--fg, #f8fafc);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.3);
+}
+.landing-demo-pill:hover {
+  transform: translateY(-2px);
+  border-color: var(--acc, #6366f1);
+  background: var(--surface-hover, #334155);
+  box-shadow: 0 6px 16px -4px rgba(99, 102, 241, 0.25);
+}
+.landing-demo-pill .demo-role-badge {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.landing-demo-pill.admin .demo-role-badge {
+  background: rgba(99, 102, 241, 0.2);
+  color: #818cf8;
+  border: 1px solid rgba(99, 102, 241, 0.4);
+}
+.landing-demo-pill.operator .demo-role-badge {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+.landing-demo-pill.viewer .demo-role-badge {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+/* 2. Interactive Metrics Stat Cards */
+.landing-metric-box.interactive {
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.landing-metric-box.interactive:hover {
+  transform: translateY(-4px);
+  border-color: var(--acc, #6366f1);
+  box-shadow: 0 12px 28px -8px rgba(99, 102, 241, 0.25);
+}
+.landing-metric-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  width: 100%;
+}
+.metric-link-pill {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--acc, #818cf8);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: all 0.2s ease;
+}
+.landing-metric-box.interactive:hover .metric-link-pill {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* 3. Interactive 10-Stage Pipeline Stepper & Simulator */
+.pipeline-stepper-wrap {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 18px;
+  scrollbar-width: thin;
+}
+.pipeline-step-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--surface, #1e293b);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  color: var(--mut, #94a3b8);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.pipeline-step-pill span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+}
+.pipeline-step-pill:hover {
+  border-color: var(--acc, #6366f1);
+  color: var(--fg, #f8fafc);
+}
+.pipeline-step-pill.active {
+  background: var(--acc-bg, rgba(99, 102, 241, 0.15));
+  border-color: var(--acc, #6366f1);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 0 16px rgba(99, 102, 241, 0.35);
+}
+.pipeline-step-pill.active span {
+  background: var(--acc, #6366f1);
+  color: #fff;
+}
+.pipeline-step-pill.passed {
+  border-color: rgba(16, 185, 129, 0.4);
+  color: #34d399;
+}
+
+.pipeline-sim-window {
+  background: #0b0f19;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 24px;
+  box-shadow: 0 16px 36px -12px rgba(0, 0, 0, 0.5);
+}
+.pipeline-sim-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 18px;
+  background: #111827;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.pipeline-sim-stage-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg, #f8fafc);
+}
+.pipeline-sim-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sim-meta-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--mut, #94a3b8);
+  font-family: 'JetBrains Mono', monospace;
+}
+.sim-meta-chip.ok {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.pipeline-sim-body {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr;
+  min-height: 240px;
+}
+@media (max-width: 900px) {
+  .pipeline-sim-body {
+    grid-template-columns: 1fr;
+  }
+}
+.pipeline-sim-details {
+  padding: 24px;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.sim-spec-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  font-size: 12px;
+}
+.sim-spec-item {
+  display: flex;
+  gap: 8px;
+}
+.sim-spec-label {
+  color: var(--mut, #94a3b8);
+  font-weight: 600;
+  min-width: 120px;
+}
+.sim-spec-val {
+  color: var(--fg, #e2e8f0);
+}
+.sim-progress-track {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.sim-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1, #10b981);
+  transition: width 0.3s ease;
+}
+.pipeline-sim-terminal {
+  padding: 18px 20px;
+  background: #060911;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: #a5b4fc;
+  overflow-x: auto;
+}
+
+.landing-step-card {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.landing-step-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--acc, #6366f1);
+}
+.landing-step-card.active {
+  border-color: var(--acc, #6366f1);
+  background: rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.25);
+}
+
+/* 4. Copy Code button & callout */
+.landing-copy-code-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  color: var(--fg, #f8fafc);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.landing-copy-code-btn:hover {
+  background: var(--acc, #6366f1);
+  border-color: var(--acc, #6366f1);
+  color: #fff;
+}
+.landing-code-callout {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 18px;
+  background: rgba(16, 185, 129, 0.06);
+  border-top: 1px solid rgba(16, 185, 129, 0.2);
+  font-size: 12px;
+  color: var(--fg, #e2e8f0);
+}
+.code-callout-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.code-callout-tag {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.code-callout-tag.ok {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+/* 5. Compliance Artifacts Bar */
+.compliance-artifacts-bar {
+  margin-top: 24px;
+  padding: 22px 28px;
+  background: linear-gradient(145deg, rgba(16, 185, 129, 0.06), rgba(99, 102, 241, 0.06));
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+.cab-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #34d399;
+  margin-bottom: 6px;
+}
+.cab-left h4 {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--fg, #f8fafc);
+}
+.cab-left p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--mut, #94a3b8);
+  max-width: 580px;
+  line-height: 1.5;
+}
+.cab-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* 6. Audit Preview Modal Table */
+.audit-preview-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  text-align: left;
+}
+.audit-preview-table th {
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--mut, #94a3b8);
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.audit-preview-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  color: var(--fg, #e2e8f0);
+  white-space: nowrap;
+}
+.audit-preview-table tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+

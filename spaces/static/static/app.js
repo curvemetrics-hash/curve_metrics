@@ -1687,3 +1687,320 @@ if (document.readyState === 'loading') {
 } else {
   initClusterDialog();
 }
+
+/* ==========================================================================
+   ENTERPRISE UX & CONTENT ENHANCEMENTS CLIENT LOGIC
+   ========================================================================== */
+
+// 1. 1-Click Auto-Login
+async function autoLogin(username = 'admin', password = 'admin123') {
+  try {
+    toast(`Signing in as ${username}...`);
+    const res = await api('/api/auth/login', 'POST', { username, password });
+    if (res.ok) {
+      try { localStorage.setItem('platform_token', username); } catch (e) {}
+      const d = document.getElementById('auth-dlg');
+      if (d) d.close();
+      const u = res.data?.user || res.data;
+      toast(`Signed in as ${u?.name || u?.id || username} (${u?.role || 'admin'})`);
+      await refreshUser();
+      load();
+      showConsole();
+    } else {
+      toast(`Login error: ${res.data?.error || 'Authentication failed'}`);
+    }
+  } catch (err) {
+    toast(`Network error: ${err.message}`);
+  }
+}
+window.autoLogin = autoLogin;
+
+// 2. Copy deployment.yaml
+function copyDeploymentYaml() {
+  const codeEl = document.getElementById('deployment-yaml-code');
+  const text = codeEl ? codeEl.innerText : '';
+  if (navigator.clipboard && text) {
+    navigator.clipboard.writeText(text).then(() => {
+      const btnText = document.getElementById('copy-yaml-text');
+      if (btnText) {
+        btnText.textContent = 'Copied!';
+        setTimeout(() => { btnText.textContent = 'Copy YAML'; }, 2000);
+      }
+      toast('Copied deployment.yaml to clipboard!');
+    }).catch(() => {
+      toast('Failed to copy');
+    });
+  }
+}
+window.copyDeploymentYaml = copyDeploymentYaml;
+
+// 3. 10-Stage Pipeline Simulator Data & Engine
+const PIPELINE_SIM_DATA = {
+  1: {
+    badge: 'STAGE 01 • Format & Lint',
+    time: '~2.1s',
+    status: 'Conforming',
+    title: 'Canonical Linting & Formatting',
+    desc: 'Ensures all declarative infrastructure-as-code files and Kubernetes manifests adhere strictly to organizational formatting conventions.',
+    action: 'Executes terraform fmt -check and yamllint rules',
+    gate: 'Rejects unformatted files before any cloud API call',
+    scope: 'Namespace manifests, quotas, network policies',
+    file: 'scripts/ci.sh:stage_01',
+    log: `$ terraform fmt -check -diff\nAll Terraform source files conform to canonical format.\n$ yamllint -c .yamllint.yml k8s/blueprints/\n[OK] 0 errors, 0 warnings across 8 manifest files.\nStage 01 completed cleanly in 2.1s.`
+  },
+  2: {
+    badge: 'STAGE 02 • Validation',
+    time: '~1.8s',
+    status: 'Valid Schema',
+    title: 'Syntax & Parameter Schema Validation',
+    desc: 'Validates type constraints, mandatory variables, team tags, environment tiers, and naming syntax matching RFC 1123.',
+    action: 'Executes terraform validate and custom JSON schema validator',
+    gate: 'Blocks uppercase letters, illegal characters, and missing parameters',
+    scope: 'Team labels, size presets, admin group bindings',
+    file: 'scripts/ci.sh:stage_02',
+    log: `$ terraform validate\nSuccess! The configuration is valid.\n$ python -m spaces.core validate payload.json\n[PASS] Name 'payments-dev' matches ^[a-z0-9]([a-z0-9]|-)*[a-z0-9]$\n[PASS] Size preset 'small' (CPU: 2, Mem: 4Gi, Storage: 20Gi)\nStage 02 validated in 1.8s.`
+  },
+  3: {
+    badge: 'STAGE 03 • Unit Testing',
+    time: '~3.4s',
+    status: 'Tests Passed',
+    title: 'Isolated Module Unit Testing',
+    desc: 'Evaluates isolated Terraform module configurations against mocked variable fixtures to guarantee deterministic output rendering.',
+    action: 'Executes pytest tests/ and terraform test',
+    gate: 'Blocks module evaluation if any parameter returns unexpected CIDR or ARN',
+    scope: 'Composable modules (k8s-ns, s3-bucket, sqs-queue, irsa)',
+    file: 'scripts/ci.sh:stage_03',
+    log: `$ pytest tests/unit/ -q\n.................                                            [100%]\n17 passed in 3.12s\n[OK] Mock S3 policy rendered private with AES-256 server-side encryption.\nStage 03 unit tests passed in 3.4s.`
+  },
+  4: {
+    badge: 'STAGE 04 • Remote State Init',
+    time: '~4.2s',
+    status: 'Lock Acquired',
+    title: 'Remote State & Distributed DynamoDB Lock',
+    desc: 'Initializes isolated state file in remote encrypted S3 bucket and acquires state lock on DynamoDB to prevent concurrent pipeline execution.',
+    action: 'terraform init -backend-config with DynamoDB lock table',
+    gate: 'Rejects execution if another pipeline run holds the state lock',
+    scope: 's3://curve-metrics-tfstate/env/payments-dev.tfstate',
+    file: 'scripts/ci.sh:stage_04',
+    log: `$ terraform init -reconfigure -backend-config="bucket=curve-metrics-tfstate"\nInitializing the backend...\nAcquiring state lock on DynamoDB table 'curve-metrics-tflock'...\nLock acquired (LockID: 8f104256-9d2b-4256-9d2b). State synced.\nStage 04 initialized in 4.2s.`
+  },
+  5: {
+    badge: 'STAGE 05 • Plan Generation',
+    time: '~5.1s',
+    status: 'Diff Generated',
+    title: 'Speculative Execution Plan Generation',
+    desc: 'Compiles the full speculative resource graph and calculates precise infrastructure delta, resource additions, and FinOps cost impact.',
+    action: 'terraform plan -out=tfplan.binary',
+    gate: 'Ensures zero destructive resource replacements without approval flag',
+    scope: '8 to add, 0 to change, 0 to destroy',
+    file: 'scripts/ci.sh:stage_05',
+    log: `$ terraform plan -out=tfplan.binary\nPlan: 8 to add, 0 to change, 0 to destroy.\n+ kubernetes_namespace.ns "payments-dev"\n+ aws_s3_bucket.app_bucket "curve-payments-dev-receipts"\n+ aws_sqs_queue.app_queue "checkout-events"\n+ aws_iam_role.app_irsa "payments-dev-app-role"\nCost Delta: +$14.20/month (within small tier budget).\nStage 05 plan compiled in 5.1s.`
+  },
+  6: {
+    badge: 'STAGE 06 • Policy Gate (OPA / Conftest)',
+    time: '~2.4s',
+    status: '14/14 Rules Passed',
+    title: 'Continuous Compliance Policy Gate',
+    desc: 'Runs Open Policy Agent (OPA) Conftest rules over the planned execution graph before a single real resource is created.',
+    action: 'Evaluates 14 baseline security policies in memory',
+    gate: 'Hard rejection: Blocks wildcard IAM actions, open CIDRs, and cluster-admin bindings',
+    scope: 'Default-deny network policies, KMS encryption, IAM boundary',
+    file: 'scripts/ci.sh:stage_06',
+    log: `$ conftest test tfplan.json -p policy/baseline/\nPASS - rule_01_mandatory_labels: Team and Env labels present.\nPASS - rule_02_no_cluster_admin: No cluster-admin role bindings detected.\nPASS - rule_03_default_deny_network: Default-deny egress & ingress present.\nPASS - rule_04_s3_public_access_block: Public access strictly blocked.\nPASS - rule_05_iam_no_wildcards: No Action:* allowed.\n[SUCCESS] 14/14 baseline security controls passing (0 violations).\nStage 06 policy gate cleared in 2.4s.`
+  },
+  7: {
+    badge: 'STAGE 07 • Security Approval',
+    time: '~0.8s',
+    status: 'Authorized',
+    title: 'RBAC Authorization Check',
+    desc: 'Verifies the requesting actor possesses sufficient entitlement (operator or admin) to provision the requested tier.',
+    action: 'Curve Metrics Token Authentication & RBAC Engine',
+    gate: 'Blocks unauthorized guest or viewer executions',
+    scope: 'Actor: admin@enterprise.internal (Role: admin)',
+    file: 'scripts/ci.sh:stage_07',
+    log: `[RBAC] Evaluating actor authorization token...\nActor: 'admin@enterprise.internal' | Role: 'admin'\nTarget Environment: 'payments-dev' (Tier: dev, Size: small)\nAuthorized for autonomous non-interactive apply.\nStage 07 authorization approved in 0.8s.`
+  },
+  8: {
+    badge: 'STAGE 08 • Terraform Apply',
+    time: '~14.6s',
+    status: 'Applied (8/8)',
+    title: 'Atomic Multi-Cloud Orchestration',
+    desc: 'Provisions Kubernetes namespace, resource quotas, limit ranges, and binds AWS cloud broker resources with least-privilege IAM roles.',
+    action: 'terraform apply tfplan.binary',
+    gate: 'Automatic rollback if any resource fails health check',
+    scope: 'Target Cluster: AWS EKS / OpenShift | AWS us-east-1',
+    file: 'scripts/ci.sh:stage_08',
+    log: `$ terraform apply tfplan.binary\nkubernetes_namespace.ns: Creating...\nkubernetes_namespace.ns: Creation complete after 1s [id=payments-dev]\naws_s3_bucket.app_bucket: Creating...\naws_s3_bucket.app_bucket: Creation complete after 3s\naws_iam_role.app_irsa: Creating...\naws_iam_role.app_irsa: Creation complete after 4s\nApply complete! Resources: 8 added, 0 changed, 0 destroyed.\nStage 08 executed in 14.6s.`
+  },
+  9: {
+    badge: 'STAGE 09 • Runtime Verify',
+    time: '~6.8s',
+    status: 'Probes Healthy',
+    title: 'Live Runtime Probe & Drift Inspection',
+    desc: 'Runs live telemetry probes against the provisioned environment: pod scheduling check, IAM IRSA credential exchange test, and S3 upload test.',
+    action: 'Synthesizes order receipt upload to S3 and SQS message delivery',
+    gate: 'Rejects environment if pod network isolation or S3 upload fails',
+    scope: 'Live test payload verification against cloud backend',
+    file: 'scripts/ci.sh:stage_09',
+    log: `[PROBE] Verifying Kubernetes namespace status: Active\n[PROBE] Testing IRSA STS credential exchange: OK (session active)\n[PROBE] Synthesizing order receipt upload: s3://curve-payments-dev-receipts/ord-101.json\n[PROBE] Upload 200 OK | Byte-for-byte SHA256 verified.\n[OK] 42/42 extended security checks healthy.\nStage 09 runtime verified in 6.8s.`
+  },
+  10: {
+    badge: 'STAGE 10 • Metric Recording',
+    time: '~2.8s',
+    status: 'Ledger Sealed',
+    title: 'Cryptographic Audit Recording & Telemetry',
+    desc: 'Records full execution telemetry, releases DynamoDB state lock, seals immutable audit record in SQLite and Supabase, and updates dashboard.',
+    action: 'Releases lock, writes audit log, emits webhook telemetry',
+    gate: 'Guarantees audit traceability for SOC 2 Type II audit trail',
+    scope: 'Audit Action: environment.create | Total Latency: 44.0s',
+    file: 'scripts/ci.sh:stage_10',
+    log: `Releasing state lock on DynamoDB table 'curve-metrics-tflock'...\nState lock released successfully.\nRecording audit record in SQLite & Supabase ledger (Actor: admin)...\nSLA Telemetry: Total provisioning latency: 44.0s | Grade: healthy | Compliant: True\nFleet dashboard notified. Webhook emitted.\nPipeline lifecycle completed in 44.0 seconds.`
+  }
+};
+
+let currentSimStage = 1;
+let simInterval = null;
+
+function selectSimStage(num) {
+  currentSimStage = num;
+  const data = PIPELINE_SIM_DATA[num] || PIPELINE_SIM_DATA[1];
+  
+  // Update stepper pills
+  document.querySelectorAll('.pipeline-step-pill').forEach(pill => {
+    const s = parseInt(pill.dataset.stage, 10);
+    pill.classList.toggle('active', s === num);
+    if (s < num) pill.classList.add('passed');
+  });
+
+  // Update quick selector cards
+  document.querySelectorAll('.landing-step-card').forEach(card => {
+    const s = parseInt(card.dataset.stage, 10);
+    card.classList.toggle('active', s === num);
+  });
+
+  // Update simulator view elements
+  const bText = document.getElementById('sim-badge-text');
+  if (bText) bText.textContent = data.badge;
+  
+  const mTime = document.getElementById('sim-meta-timing');
+  if (mTime) mTime.innerHTML = `<svg class="i sm-i" style="width:12px;height:12px"><use href="#i-clock"/></svg> ${data.time}`;
+  
+  const mStatus = document.getElementById('sim-meta-status');
+  if (mStatus) mStatus.innerHTML = `<svg class="i sm-i" style="width:12px;height:12px"><use href="#i-check"/></svg> ${data.status}`;
+  
+  const dTitle = document.getElementById('sim-detail-title');
+  if (dTitle) dTitle.textContent = data.title;
+  
+  const dDesc = document.getElementById('sim-detail-desc');
+  if (dDesc) dDesc.textContent = data.desc;
+  
+  const sAction = document.getElementById('sim-spec-action');
+  if (sAction) sAction.textContent = data.action;
+  
+  const sGate = document.getElementById('sim-spec-gate');
+  if (sGate) sGate.textContent = data.gate;
+  
+  const sScope = document.getElementById('sim-spec-scope');
+  if (sScope) sScope.textContent = data.scope;
+  
+  const pBar = document.getElementById('sim-progress-bar');
+  if (pBar) pBar.style.width = `${num * 10}%`;
+  
+  const tFile = document.getElementById('sim-terminal-file');
+  if (tFile) tFile.textContent = data.file;
+  
+  const tOutput = document.getElementById('sim-terminal-output');
+  if (tOutput) tOutput.innerHTML = `<code>${data.log}</code>`;
+}
+window.selectSimStage = selectSimStage;
+
+function prevSimStage() {
+  const next = currentSimStage > 1 ? currentSimStage - 1 : 10;
+  selectSimStage(next);
+}
+window.prevSimStage = prevSimStage;
+
+function nextSimStage() {
+  const next = currentSimStage < 10 ? currentSimStage + 1 : 1;
+  selectSimStage(next);
+}
+window.nextSimStage = nextSimStage;
+
+function toggleSimPlayback() {
+  const playBtn = document.getElementById('sim-play-btn');
+  const playText = document.getElementById('sim-play-text');
+  
+  if (simInterval) {
+    clearInterval(simInterval);
+    simInterval = null;
+    if (playText) playText.textContent = 'Play 44s Simulation';
+    if (playBtn) playBtn.classList.remove('sec');
+    toast('Simulation paused');
+  } else {
+    if (playText) playText.textContent = 'Pause Simulation';
+    if (playBtn) playBtn.classList.add('sec');
+    toast('Playing automated 44s pipeline lifecycle simulation...');
+    
+    simInterval = setInterval(() => {
+      if (currentSimStage >= 10) {
+        selectSimStage(1);
+      } else {
+        selectSimStage(currentSimStage + 1);
+      }
+    }, 1800);
+  }
+}
+window.toggleSimPlayback = toggleSimPlayback;
+
+// 4. Preview Audit CSV Modal
+async function previewAuditLedger() {
+  const dlg = document.getElementById('audit-preview-dlg');
+  if (!dlg) return;
+  dlg.showModal();
+  
+  const container = document.getElementById('audit-csv-table-container');
+  const summary = document.getElementById('audit-csv-summary');
+  if (container) {
+    container.innerHTML = '<div style="display:flex;align-items:center;gap:10px;color:var(--mut);padding:24px 0"><i class="spin"></i> Loading live cryptographic audit ledger...</div>';
+  }
+  
+  try {
+    const res = await fetch('/api/compliance/export?format=csv', {
+      headers: { 'X-Requested-With': 'console' }
+    });
+    if (!res.ok) throw new Error('Failed to fetch CSV');
+    const text = await res.text();
+    const rows = text.trim().split('\n').map(r => r.split(',').map(c => c.replace(/^"|"$/g, '')));
+    if (rows.length < 2) throw new Error('No records found');
+    
+    const headers = rows[0];
+    const dataRows = rows.slice(1);
+    
+    let html = '<table class="audit-preview-table"><thead><tr>';
+    headers.forEach(h => { html += `<th>${esc(h)}</th>`; });
+    html += '</tr></thead><tbody>';
+    
+    dataRows.forEach(row => {
+      html += '<tr>';
+      row.forEach((cell, idx) => {
+        if (cell === 'True' || cell === 'ready' || cell === 'healthy') {
+          html += `<td><span class="pill ok" style="font-size:11px">${esc(cell)}</span></td>`;
+        } else if (cell === 'False' || cell === 'failed' || cell === 'non-compliant') {
+          html += `<td><span class="pill err" style="font-size:11px">${esc(cell)}</span></td>`;
+        } else {
+          html += `<td>${esc(cell)}</td>`;
+        }
+      });
+      html += '</tr>';
+    });
+    html += '</tbody></table>';
+    
+    if (container) container.innerHTML = html;
+    if (summary) summary.textContent = `Showing ${dataRows.length} live environments • 14 Baseline Controls • 42 Extended Audits`;
+  } catch (err) {
+    if (container) {
+      container.innerHTML = `<div style="color:#ef4444;padding:20px 0">Error loading audit ledger: ${esc(err.message)}</div>`;
+    }
+  }
+}
+window.previewAuditLedger = previewAuditLedger;

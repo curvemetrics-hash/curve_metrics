@@ -183,6 +183,10 @@
           <svg class="i sm-i" style="width:14px;height:14px"><use href="#i-cube"/></svg>
           <span>Live Environments</span>
         </button>
+        <button class="btn sm landing-nav-demo-btn" onclick="autoLogin('admin', 'admin123')" type="button" style="font-weight:600;display:inline-flex;align-items:center;gap:6px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.35);color:#818cf8" title="Instant 1-click evaluation as Platform Administrator">
+          <svg class="i sm-i" style="width:14px;height:14px"><use href="#i-sparkles"/></svg>
+          <span>1-Click Demo</span>
+        </button>
         <a href="#usecases" class="btn sm" onclick="event.preventDefault(); document.getElementById('usecases')?.scrollIntoView({behavior:'smooth'})" style="text-decoration:none;font-weight:600">Use Cases</a>
         <a href="#how" class="btn sm" onclick="page('how')" style="text-decoration:none;font-weight:600">Documentation</a>
         <button class="landing-theme-toggle-btn" id="landing-theme-btn" type="button" aria-label="Toggle theme" title="Toggle theme">
@@ -225,32 +229,53 @@
         </div>
 
         <div class="landing-demo-tags">
-          <span>Explore Demo Accounts:</span>
-          <code>admin / admin123</code> &bull; 
-          <code>operator / operator123</code> &bull; 
-          <code>viewer / viewer123</code>
+          <span class="landing-demo-label"><svg class="i sm-i" style="width:14px;height:14px;color:#f59e0b"><use href="#i-sparkles"/></svg> 1-Click Interactive Evaluation:</span>
+          <button type="button" class="landing-demo-pill admin" onclick="autoLogin('admin', 'admin123')" title="1-Click Login: Platform Administrator with full provisioning &amp; cluster control">
+            <span class="demo-role-badge">Admin</span>
+            <span>Launch as Platform Admin</span>
+          </button>
+          <button type="button" class="landing-demo-pill operator" onclick="autoLogin('operator', 'operator123')" title="1-Click Login: DevOps Lead with workspace &amp; pipeline privileges">
+            <span class="demo-role-badge">DevOps</span>
+            <span>DevOps Lead</span>
+          </button>
+          <button type="button" class="landing-demo-pill viewer" onclick="autoLogin('viewer', 'viewer123')" title="1-Click Login: Security Auditor with SOC 2 compliance &amp; policy visibility">
+            <span class="demo-role-badge">Auditor</span>
+            <span>Security Auditor</span>
+          </button>
         </div>
       </header>
 
-      <!-- Metric Ticker Strip -->
+      <!-- Interactive Metric Ticker Strip -->
       <div class="landing-metrics-strip animate-on-scroll">
-        <div class="landing-metric-box">
-          <div class="landing-metric-num">38<span class="unit">Active</span></div>
+        <div class="landing-metric-box interactive" onclick="showConsole()" title="Click to inspect active environments in the console">
+          <div class="landing-metric-top">
+            <div class="landing-metric-num">38<span class="unit">Active</span></div>
+            <span class="metric-link-pill">Explore Fleet &rarr;</span>
+          </div>
           <div class="landing-metric-title">Managed Environments</div>
           <div class="landing-metric-sub">Isolated Kubernetes namespaces across Dev, Staging, and Prod</div>
         </div>
-        <div class="landing-metric-box">
-          <div class="landing-metric-num">44<span class="unit">sec</span></div>
+        <div class="landing-metric-box interactive" onclick="document.getElementById('pipeline-section')?.scrollIntoView({behavior:'smooth'})" title="Click to simulate the 10-Stage Pipeline Engine">
+          <div class="landing-metric-top">
+            <div class="landing-metric-num">44<span class="unit">sec</span></div>
+            <span class="metric-link-pill">See Pipeline &rarr;</span>
+          </div>
           <div class="landing-metric-title">Avg Time to Ready</div>
           <div class="landing-metric-sub">Full declarative provisioning with remote state &amp; AWS IAM</div>
         </div>
-        <div class="landing-metric-box">
-          <div class="landing-metric-num">56<span class="unit">Rules</span></div>
+        <div class="landing-metric-box interactive" onclick="document.getElementById('compliance-section')?.scrollIntoView({behavior:'smooth'})" title="Click to view the 56 Continuous Compliance Controls">
+          <div class="landing-metric-top">
+            <div class="landing-metric-num">56<span class="unit">Rules</span></div>
+            <span class="metric-link-pill">Audit Engine &rarr;</span>
+          </div>
           <div class="landing-metric-title">Continuous Compliance</div>
           <div class="landing-metric-sub">14 baseline controls + 42 extended security audits</div>
         </div>
-        <div class="landing-metric-box">
-          <div class="landing-metric-num">99.98<span class="unit">%</span></div>
+        <div class="landing-metric-box interactive" onclick="page('how')" title="Click to inspect Sovereign Cloud Architecture &amp; Trust Center">
+          <div class="landing-metric-top">
+            <div class="landing-metric-num">99.98<span class="unit">%</span></div>
+            <span class="metric-link-pill">Trust Center &rarr;</span>
+          </div>
           <div class="landing-metric-title">Verified SLA Uptime</div>
           <div class="landing-metric-sub">Zero Trust IRSA with automated drift restoration</div>
         </div>
@@ -292,7 +317,7 @@
       </section>
 
       <!-- 3 Strategic Pillars -->
-      <div>
+      <div id="compliance-section" style="scroll-margin-top:90px">
         <div class="landing-section-header">
           <div class="landing-section-tag">Enterprise Capabilities</div>
           <h2 class="landing-section-title">Engineered for Sovereign Cloud &amp; Security</h2>
@@ -339,63 +364,157 @@
             </ul>
           </div>
         </div>
+
+        <!-- Enterprise Compliance Artifacts Bar -->
+        <div class="compliance-artifacts-bar animate-on-scroll">
+          <div class="cab-left">
+            <div class="cab-badge"><svg class="i sm-i" style="width:14px;height:14px;color:#10b981"><use href="#i-shield"/></svg> SOC 2 Type II &bull; Continuous Ledger</div>
+            <h4>Verifiable Compliance Artifacts &amp; Cryptographic Audit Trail</h4>
+            <p>Every environment creation, drift detection, and policy audit produces an immutable audit record with zero manual overhead.</p>
+          </div>
+          <div class="cab-actions">
+            <button type="button" class="btn sm" onclick="previewAuditLedger()" style="display:inline-flex;align-items:center;gap:6px">
+              <svg class="i sm-i" style="width:14px;height:14px"><use href="#i-scan"/></svg>
+              <span>Preview Audit CSV</span>
+            </button>
+            <a href="/api/compliance/export?format=csv" download class="btn sm" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px">
+              <svg class="i sm-i" style="width:14px;height:14px"><use href="#i-copy"/></svg>
+              <span>Download CSV</span>
+            </a>
+            <a href="#how" onclick="page('how')" class="btn sm pri" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px">
+              <svg class="i sm-i" style="width:14px;height:14px"><use href="#i-how"/></svg>
+              <span>Explore Trust Center</span>
+            </a>
+          </div>
+        </div>
       </div>
 
-      <!-- 10-Stage Pipeline Visualizer -->
-      <div class="landing-pipeline-container animate-on-scroll">
-        <div class="landing-section-header" style="margin-bottom:24px">
-          <div class="landing-section-tag">Continuous Delivery Lifecycle</div>
+      <!-- 10-Stage Pipeline Visualizer & Simulator -->
+      <div class="landing-pipeline-container animate-on-scroll" id="pipeline-section" style="scroll-margin-top:90px">
+        <div class="landing-section-header" style="margin-bottom:20px">
+          <div class="landing-section-tag">Continuous Delivery Lifecycle &bull; 44s Window</div>
           <h2 class="landing-section-title" style="font-size:24px">The Automated 10-Stage CI/CD Engine</h2>
-          <p class="landing-section-desc">Every environment request executes through a deterministic, strictly auditable verification flow.</p>
+          <p class="landing-section-desc">Click any stage below to inspect the deterministic verification flow, or play the live simulation.</p>
         </div>
 
+        <!-- Horizontal Stage Stepper Tabs -->
+        <div class="pipeline-stepper-wrap" id="pipeline-stepper-tabs">
+          <button type="button" class="pipeline-step-pill active" data-stage="1" onclick="selectSimStage(1)"><span>01</span> Format &amp; Lint</button>
+          <button type="button" class="pipeline-step-pill" data-stage="2" onclick="selectSimStage(2)"><span>02</span> Validation</button>
+          <button type="button" class="pipeline-step-pill" data-stage="3" onclick="selectSimStage(3)"><span>03</span> Unit Testing</button>
+          <button type="button" class="pipeline-step-pill" data-stage="4" onclick="selectSimStage(4)"><span>04</span> Remote State</button>
+          <button type="button" class="pipeline-step-pill" data-stage="5" onclick="selectSimStage(5)"><span>05</span> Plan Generation</button>
+          <button type="button" class="pipeline-step-pill" data-stage="6" onclick="selectSimStage(6)"><span>06</span> Policy Gate</button>
+          <button type="button" class="pipeline-step-pill" data-stage="7" onclick="selectSimStage(7)"><span>07</span> Security Approval</button>
+          <button type="button" class="pipeline-step-pill" data-stage="8" onclick="selectSimStage(8)"><span>08</span> Terraform Apply</button>
+          <button type="button" class="pipeline-step-pill" data-stage="9" onclick="selectSimStage(9)"><span>09</span> Runtime Verify</button>
+          <button type="button" class="pipeline-step-pill" data-stage="10" onclick="selectSimStage(10)"><span>10</span> Metric Recording</button>
+        </div>
+
+        <!-- Live Interactive Simulation Window -->
+        <div class="pipeline-sim-window">
+          <div class="pipeline-sim-header">
+            <div class="pipeline-sim-stage-badge">
+              <span class="landing-pulse-dot" style="background:#10b981;box-shadow:0 0 8px #10b981"></span>
+              <span id="sim-badge-text">STAGE 01 &bull; Format &amp; Lint</span>
+            </div>
+            <div class="pipeline-sim-controls">
+              <span class="sim-meta-chip" id="sim-meta-timing"><svg class="i sm-i" style="width:12px;height:12px"><use href="#i-clock"/></svg> ~2.1s</span>
+              <span class="sim-meta-chip ok" id="sim-meta-status"><svg class="i sm-i" style="width:12px;height:12px"><use href="#i-check"/></svg> Conforming</span>
+              <button type="button" class="btn sm" onclick="prevSimStage()" title="Previous Stage" style="padding:4px 8px">&larr;</button>
+              <button type="button" class="btn sm" onclick="nextSimStage()" title="Next Stage" style="padding:4px 8px">&rarr;</button>
+              <button type="button" class="btn sm pri" id="sim-play-btn" onclick="toggleSimPlayback()" style="display:inline-flex;align-items:center;gap:6px">
+                <svg class="i sm-i" style="width:12px;height:12px"><use href="#i-act"/></svg>
+                <span id="sim-play-text">Play 44s Simulation</span>
+              </button>
+            </div>
+          </div>
+          <div class="pipeline-sim-body">
+            <div class="pipeline-sim-details">
+              <div>
+                <h3 id="sim-detail-title" style="margin:0 0 8px;font-size:17px;color:#f8fafc">Canonical Linting &amp; Formatting</h3>
+                <p id="sim-detail-desc" style="margin:0 0 16px;font-size:13px;line-height:1.6;color:#94a3b8">Ensures all declarative infrastructure-as-code files and Kubernetes manifests adhere strictly to organizational formatting conventions.</p>
+                <div class="sim-spec-box">
+                  <div class="sim-spec-item">
+                    <span class="sim-spec-label">Engine Action:</span>
+                    <span id="sim-spec-action" class="sim-spec-val">Executes terraform fmt -check and yamllint rules</span>
+                  </div>
+                  <div class="sim-spec-item">
+                    <span class="sim-spec-label">Governance Gate:</span>
+                    <span id="sim-spec-gate" class="sim-spec-val">Rejects unformatted files before any cloud API call</span>
+                  </div>
+                  <div class="sim-spec-item">
+                    <span class="sim-spec-label">Target Scope:</span>
+                    <span id="sim-spec-scope" class="sim-spec-val">Namespace manifests, quotas, network policies</span>
+                  </div>
+                </div>
+              </div>
+              <div class="sim-progress-track" style="margin-top:16px">
+                <div class="sim-progress-bar" id="sim-progress-bar" style="width:10%"></div>
+              </div>
+            </div>
+            <div class="pipeline-sim-terminal">
+              <div class="terminal-top-row" style="display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.08);padding-bottom:6px;font-size:11px">
+                <span style="font-weight:700;letter-spacing:0.05em;color:#e2e8f0">TERMINAL TELEMETRY</span>
+                <span class="mut" id="sim-terminal-file" style="color:#64748b">scripts/ci.sh:stage_01</span>
+              </div>
+              <pre id="sim-terminal-output" style="margin:8px 0 0;font-family:inherit;font-size:11.5px;line-height:1.6;color:#a5b4fc"><code>$ terraform fmt -check -diff
+All Terraform source files conform to canonical format.
+$ yamllint -c .yamllint.yml k8s/blueprints/
+[OK] 0 errors, 0 warnings across 8 manifest files.
+Stage 01 completed cleanly in 2.1s.</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- Compact 10-Stage Quick Selector Grid -->
         <div class="landing-pipeline-steps">
-          <div class="landing-step-card">
+          <div class="landing-step-card active" data-stage="1" onclick="selectSimStage(1)">
             <span class="landing-step-num">STAGE 01</span>
             <div class="landing-step-name">Format &amp; Lint</div>
-            <div class="landing-step-desc">Ensures Terraform and YAML specifications conform to organizational standards.</div>
+            <div class="landing-step-desc">Ensures Terraform and YAML specifications conform to standards.</div>
           </div>
-          <div class="landing-step-card">
+          <div class="landing-step-card" data-stage="2" onclick="selectSimStage(2)">
             <span class="landing-step-num">STAGE 02</span>
             <div class="landing-step-name">Validation</div>
-            <div class="landing-step-desc">Validates syntax, schema parameters, and naming convention constraints.</div>
+            <div class="landing-step-desc">Validates syntax, schema parameters, and naming conventions.</div>
           </div>
-          <div class="landing-step-card">
+          <div class="landing-step-card" data-stage="3" onclick="selectSimStage(3)">
             <span class="landing-step-num">STAGE 03</span>
             <div class="landing-step-name">Unit Testing</div>
             <div class="landing-step-desc">Runs automated tests against isolated Terraform module definitions.</div>
           </div>
-          <div class="landing-step-card">
+          <div class="landing-step-card" data-stage="4" onclick="selectSimStage(4)">
             <span class="landing-step-num">STAGE 04</span>
             <div class="landing-step-name">Remote State Init</div>
-            <div class="landing-step-desc">Initializes isolated backend state in encrypted S3 with DynamoDB lock table.</div>
+            <div class="landing-step-desc">Initializes isolated backend state in encrypted S3 with DynamoDB lock.</div>
           </div>
-          <div class="landing-step-card">
+          <div class="landing-step-card" data-stage="5" onclick="selectSimStage(5)">
             <span class="landing-step-num">STAGE 05</span>
             <div class="landing-step-name">Plan Generation</div>
-            <div class="landing-step-desc">Produces speculative execution plan without applying infrastructure changes.</div>
+            <div class="landing-step-desc">Produces speculative execution plan without applying changes.</div>
           </div>
-          <div class="landing-step-card">
+          <div class="landing-step-card" data-stage="6" onclick="selectSimStage(6)">
             <span class="landing-step-num">STAGE 06</span>
             <div class="landing-step-name">Policy Gate</div>
-            <div class="landing-step-desc">Evaluates plan against 14 baseline security rules, blocking non-compliant plans.</div>
+            <div class="landing-step-desc">Evaluates plan against 14 baseline security rules, blocking violations.</div>
           </div>
-          <div class="landing-step-card">
+          <div class="landing-step-card" data-stage="7" onclick="selectSimStage(7)">
             <span class="landing-step-num">STAGE 07</span>
             <div class="landing-step-name">Security Approval</div>
             <div class="landing-step-desc">Role-based approval check ensuring tier and size change authorizations.</div>
           </div>
-          <div class="landing-step-card">
+          <div class="landing-step-card" data-stage="8" onclick="selectSimStage(8)">
             <span class="landing-step-num">STAGE 08</span>
             <div class="landing-step-name">Terraform Apply</div>
-            <div class="landing-step-desc">Orchestrates atomic provisioning across Kubernetes cluster and cloud services.</div>
+            <div class="landing-step-desc">Orchestrates atomic provisioning across Kubernetes &amp; AWS cloud broker.</div>
           </div>
-          <div class="landing-step-card">
+          <div class="landing-step-card" data-stage="9" onclick="selectSimStage(9)">
             <span class="landing-step-num">STAGE 09</span>
             <div class="landing-step-name">Runtime Verify</div>
             <div class="landing-step-desc">Probes namespace, quotas, network isolation, and AWS bucket permissions.</div>
           </div>
-          <div class="landing-step-card">
+          <div class="landing-step-card" data-stage="10" onclick="selectSimStage(10)">
             <span class="landing-step-num">STAGE 10</span>
             <div class="landing-step-name">Metric Recording</div>
             <div class="landing-step-desc">Records execution latency, audit trail ledger, and fleet telemetry events.</div>
@@ -517,12 +636,18 @@
         <!-- Visual Code Snippet: How Clean Your Codebase Becomes -->
         <div class="landing-code-demo">
           <div class="landing-code-header">
-            <span class="landing-code-dot red"></span>
-            <span class="landing-code-dot yellow"></span>
-            <span class="landing-code-dot green"></span>
-            <span class="landing-code-title">deployment.yaml &bull; How your application connects cleanly</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span class="landing-code-dot red"></span>
+              <span class="landing-code-dot yellow"></span>
+              <span class="landing-code-dot green"></span>
+              <span class="landing-code-title">deployment.yaml &bull; Zero-Credential Application Wiring</span>
+            </div>
+            <button type="button" class="landing-copy-code-btn" id="copy-yaml-btn" onclick="copyDeploymentYaml()" title="Copy clean production deployment YAML to clipboard">
+              <svg class="i sm-i" style="width:13px;height:13px"><use href="#i-copy"/></svg>
+              <span id="copy-yaml-text">Copy YAML</span>
+            </button>
           </div>
-          <pre class="landing-code-pre"><code><span class="tok-comment"># In your app deployment, zero AWS secrets or complex configs required</span>
+          <pre class="landing-code-pre"><code id="deployment-yaml-code"><span class="tok-comment"># In your app deployment, zero AWS secrets or complex configs required</span>
 <span class="tok-key">apiVersion</span>: <span class="tok-val">apps/v1</span>
 <span class="tok-key">kind</span>: <span class="tok-val">Deployment</span>
 <span class="tok-key">metadata</span>:
@@ -531,13 +656,23 @@
 <span class="tok-key">spec</span>:
   <span class="tok-key">template</span>:
     <span class="tok-key">spec</span>:
-      <span class="tok-key">serviceAccountName</span>: <span class="tok-val">app</span>  <span class="tok-comment"># &lt;-- Pre-wired with least-privilege IAM role!</span>
+      <span class="tok-key">serviceAccountName</span>: <span class="tok-val" style="color:#fbbf24;font-weight:700">app</span>  <span class="tok-comment"># &lt;-- Pre-wired with least-privilege IAM IRSA role!</span>
       <span class="tok-key">containers</span>:
         - <span class="tok-key">name</span>: <span class="tok-val">api</span>
           <span class="tok-key">image</span>: <span class="tok-val">mycompany/payments:v1.0.0</span>
           <span class="tok-key">envFrom</span>:
             - <span class="tok-key">configMapRef</span>:
-                <span class="tok-key">name</span>: <span class="tok-val">cloud-resources</span>  <span class="tok-comment"># &lt;-- Auto-injects S3_BUCKET, SQS_QUEUE, SECRET_ID!</span></code></pre>
+                <span class="tok-key">name</span>: <span class="tok-val" style="color:#34d399;font-weight:700">cloud-resources</span>  <span class="tok-comment"># &lt;-- Auto-injects S3_BUCKET, SQS_QUEUE, SECRET_ID!</span></code></pre>
+          <div class="landing-code-callout">
+            <div class="code-callout-item">
+              <span class="code-callout-tag ok">Auto-Injected Cloud Env</span>
+              <span><code>S3_BUCKET=curve-payments-dev-receipts</code>, <code>SQS_QUEUE=checkout-events</code> auto-wired via native ConfigMap.</span>
+            </div>
+            <div class="code-callout-item">
+              <span class="code-callout-tag ok">Zero Hardcoded Keys</span>
+              <span>Pod authenticates via AWS IAM Roles for Service Accounts (IRSA) with auto-rotating 1-hour STS credentials.</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1192,6 +1327,36 @@ helm install curve-agent curvemetrics/agent \
         </div>
       </div>
     </form>
+  </div>
+</dialog>
+
+<!-- SOC 2 Audit Ledger CSV Preview Dialog -->
+<dialog id="audit-preview-dlg">
+  <div class="dlg" style="max-width:880px">
+    <div class="dlg-head">
+      <div class="dlg-icon" style="background:rgba(16,185,129,0.15);color:#10b981"><svg class="i"><use href="#i-scan"/></svg></div>
+      <div>
+        <h2>SOC 2 Type II Compliance Ledger Preview</h2>
+        <div class="mut sm">Live continuous compliance verification log across all fleet environments.</div>
+      </div>
+    </div>
+    <div class="dlg-body" style="padding:16px 24px;overflow-x:auto;max-height:60vh">
+      <div id="audit-csv-table-container">
+        <div style="display:flex;align-items:center;gap:10px;color:var(--mut);padding:24px 0">
+          <i class="spin"></i> Loading live cryptographic audit ledger...
+        </div>
+      </div>
+    </div>
+    <div class="dlg-foot" style="display:flex;justify-content:space-between;align-items:center">
+      <span class="mut sm" id="audit-csv-summary">14 Baseline Controls &bull; 42 Extended Audits</span>
+      <div style="display:flex;gap:8px">
+        <a href="/api/compliance/export?format=csv" download class="btn sm pri" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px">
+          <svg class="i sm-i"><use href="#i-copy"/></svg>
+          <span>Download CSV File</span>
+        </a>
+        <button type="button" class="btn sm" onclick="document.getElementById('audit-preview-dlg').close()">Close</button>
+      </div>
+    </div>
   </div>
 </dialog>
 
