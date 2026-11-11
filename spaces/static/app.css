@@ -614,7 +614,8 @@ main {
 .head-title-row {
   display: flex;
   align-items: center;
-  gap: 16px;
+  flex-wrap: wrap;
+  gap: 12px 16px;
   margin-top: 2px;
 }
 
@@ -1757,79 +1758,97 @@ dialog::backdrop {
   to { transform: rotate(360deg); }
 }
 
-/* ---------------- MOBILE & RESPONSIVE ---------------- */
+/* ---------------- MOBILE & RESPONSIVE: VERTICAL SIDEBAR PRESERVED ---------------- */
 @media (max-width: 920px) {
   body:not(.is-guest) {
-    grid-template-columns: 1fr !important;
-    grid-template-rows: auto 1fr !important;
+    display: grid !important;
+    grid-template-columns: var(--sidebar-w, 240px) minmax(0, 1fr) !important;
+    grid-template-rows: 1fr !important;
     height: 100vh !important;
     max-height: 100vh !important;
     overflow: hidden !important;
   }
   body.sidebar-collapsed {
-    --sidebar-w: 100%;
+    --sidebar-w: 68px !important;
   }
   .side {
-    position: static !important;
-    height: auto !important;
-    min-height: auto !important;
-    max-height: none !important;
-    width: 100% !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    padding: 8px 14px !important;
-    border-right: 0 !important;
-    border-bottom: 1px solid var(--line) !important;
+    position: relative !important;
+    height: 100vh !important;
+    width: var(--sidebar-w, 240px) !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    padding: 16px 12px !important;
+    border-right: 1px solid var(--line) !important;
+    border-bottom: 0 !important;
     gap: 8px !important;
-    overflow-x: auto !important;
-    overflow-y: hidden !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    display: flex !important;
     flex-shrink: 0 !important;
+    z-index: 20 !important;
+  }
+  body.sidebar-collapsed .side {
+    padding: 16px 8px !important;
+    align-items: center !important;
   }
   .brand {
-    padding: 0 10px 0 0 !important;
-    border-bottom: 0 !important;
-    flex-shrink: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 2px 4px 14px !important;
+    border-bottom: 1px solid var(--line) !important;
   }
-  .brand-sub, .nav-label, .side-spacer, .side-foot-action, #collapse-sidebar-btn {
-    display: none !important;
+  body.sidebar-collapsed .brand {
+    justify-content: center !important;
+    padding: 2px 0 14px !important;
   }
   .nav {
-    flex-direction: row !important;
-    width: auto !important;
-    flex-wrap: nowrap !important;
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 4px !important;
   }
   .nav button {
-    width: auto !important;
-    height: auto !important;
-    padding: 8px 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    width: 100% !important;
+    padding: 9px 12px !important;
     white-space: nowrap !important;
   }
-  .nav button.on::before {
-    display: none !important;
-  }
-  .side .foot {
-    margin: 0 0 0 auto !important;
+  body.sidebar-collapsed .nav button {
+    justify-content: center !important;
+    width: 44px !important;
+    height: 44px !important;
     padding: 0 !important;
-    border-top: 0 !important;
-    flex-direction: row !important;
   }
-  .user-card {
+  body.sidebar-collapsed .nav-label,
+  body.sidebar-collapsed .brand-sub,
+  body.sidebar-collapsed .nav button span:not(.nav-badge),
+  body.sidebar-collapsed .collapse-sidebar-btn span {
     display: none !important;
   }
-  .col-t, .col-c {
-    display: none !important;
-  }
-  .m-only {
+  .side-spacer {
+    flex: 1 !important;
     display: block !important;
-    margin-top: 8px !important;
+  }
+  .side-foot-action, #collapse-sidebar-btn {
+    display: flex !important;
   }
   .toggle-sidebar-btn {
-    display: none !important;
+    display: inline-flex !important;
+  }
+  .col-t, .col-c {
+    display: none;
+  }
+  .m-only {
+    display: block;
+    margin-top: 8px;
   }
   main {
-    height: 100% !important;
-    min-height: 0 !important;
+    height: 100vh !important;
     overflow-y: auto !important;
+    overflow-x: hidden !important;
+    min-height: 0 !important;
     width: 100% !important;
   }
 }
@@ -1985,6 +2004,13 @@ dialog::backdrop {
   border-bottom: 1px solid var(--border);
   background: var(--panel2);
   scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.chatbot-quick-chips::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 .cb-chip {
@@ -4429,29 +4455,36 @@ body.is-guest .app-console-bar,
 
 /* 3. Interactive 10-Stage Pipeline Stepper & Simulator */
 .pipeline-stepper-wrap {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  padding: 2px 0 8px;
-  margin-bottom: 16px;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 2px 0 8px !important;
+  margin-bottom: 16px !important;
+  overflow-x: hidden !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
 }
 .pipeline-stepper-wrap::-webkit-scrollbar {
-  display: none;
-  width: 0;
-  height: 0;
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 @media (max-width: 767px) {
   .pipeline-stepper-wrap {
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    overflow-x: auto;
-    padding-bottom: 8px;
-    -webkit-overflow-scrolling: touch;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    overflow-x: hidden !important;
+    padding-bottom: 8px !important;
+    gap: 6px !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+  .pipeline-step-pill {
+    padding: 6px 10px !important;
+    font-size: 11px !important;
   }
 }
 .pipeline-step-pill {

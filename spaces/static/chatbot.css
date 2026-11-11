@@ -120,6 +120,13 @@
   border-bottom: 1px solid var(--border);
   background: var(--panel2);
   scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.chatbot-quick-chips::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 .cb-chip {
