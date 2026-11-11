@@ -4449,8 +4449,17 @@ body.is-guest .app-console-bar {
 }
 
 /* 6. Audit Preview Modal Table */
+#audit-preview-dlg {
+  width: min(960px, calc(100% - 32px));
+  max-width: 960px;
+}
+#audit-preview-dlg .dlg {
+  max-width: 100%;
+  padding: 24px 28px;
+}
 .audit-preview-table {
   width: 100%;
+  min-width: 800px;
   border-collapse: collapse;
   font-size: 12px;
   text-align: left;
