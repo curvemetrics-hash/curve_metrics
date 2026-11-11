@@ -235,20 +235,20 @@ class Handler(BaseHTTPRequestHandler):
                     l = s.get("latest") or {}
                     ext_sm = l.get("extended_summary") or {}
                     row = [
-                        s.get("name", ""),
-                        s.get("team", ""),
-                        s.get("environment", ""),
-                        s.get("size", ""),
-                        s.get("status", ""),
-                        l.get("grade", "not scanned"),
+                        s.get("name") or "",
+                        s.get("team") or "",
+                        s.get("environment") or "",
+                        s.get("size") or "",
+                        s.get("status") or "",
+                        l.get("grade") or "not scanned",
                         str(l.get("compliant", False)),
                         str(l.get("passed", 0)),
                         str(l.get("total", 0)),
                         str(ext_sm.get("failed", 0)),
-                        str(s.get("seconds_to_ready", ""))
+                        str(s.get("seconds_to_ready") or "")
                     ]
-                    # Escape CSV commas
-                    csv_lines.append(",".join(f'"{x}"' if "," in x else x for x in row))
+                    # Escape CSV commas safely
+                    csv_lines.append(",".join(f'"{str(x)}"' if "," in str(x) else str(x) for x in row))
                 csv_data = "\n".join(csv_lines)
                 return self._send(
                     200,
