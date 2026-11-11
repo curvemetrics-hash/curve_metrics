@@ -200,6 +200,28 @@ function applyRole() {
     };
   }
 
+  const btmLaunchBtn = document.getElementById('bottom-cta-launch-btn');
+  if (btmLaunchBtn) {
+    btmLaunchBtn.onclick = () => {
+      window.showConsole();
+    };
+  }
+
+  const btmDemoBtn = document.getElementById('bottom-cta-demo-btn');
+  if (btmDemoBtn) {
+    btmDemoBtn.onclick = () => {
+      autoLogin('admin', 'admin123');
+    };
+  }
+
+  const btmSignInBtn = document.getElementById('bottom-cta-signin-btn');
+  if (btmSignInBtn) {
+    btmSignInBtn.onclick = () => {
+      const d = document.getElementById('auth-dlg');
+      if (d) d.showModal();
+    };
+  }
+
   const topbarInitials = document.getElementById('topbar-user-initials');
   if (topbarInitials) {
     topbarInitials.textContent = isGuest ? '?' : getInitials(me.name, me.id);

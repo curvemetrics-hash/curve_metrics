@@ -38,7 +38,7 @@ MAX_BODY = 64 * 1024
 validate, write_request = core.validate, core.write_request
 
 SECURITY_HEADERS = {
-    "Content-Security-Policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; "
+    "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; "
                                "connect-src 'self' https://*.pages.dev https://curve-metrics-platform.onrender.com;  frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
     "X-Content-Type-Options": "nosniff",
     "X-Frame-Options": "DENY",
