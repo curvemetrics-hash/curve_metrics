@@ -956,14 +956,81 @@ th {
   letter-spacing: 0.07em;
   color: var(--mut);
   font-weight: 600;
-  padding: 11px 18px;
+  padding: 11px 14px;
   background: var(--panel2);
   border-bottom: 1px solid var(--line);
+  box-sizing: border-box;
 }
 
 td {
-  padding: 14px 18px;
+  padding: 13px 14px;
   border-top: 1px solid var(--line);
+  vertical-align: middle;
+  box-sizing: border-box;
+}
+
+/* Strictly fixed Checkbox Column - No empty gap */
+th.th-chk, th:first-child,
+td:first-child {
+  width: 44px !important;
+  min-width: 44px !important;
+  max-width: 44px !important;
+  padding: 12px 4px 12px 14px !important;
+  text-align: center !important;
+}
+
+th:first-child input[type="checkbox"],
+td:first-child input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0 auto;
+  display: block;
+  cursor: pointer;
+  accent-color: var(--acc);
+}
+
+/* Environment Column - starts immediately next to checkbox */
+th.th-env, th:nth-child(2),
+td:nth-child(2) {
+  padding-left: 8px !important;
+  width: 28%;
+}
+
+/* Pipeline Stage Column */
+th.th-stage, th:nth-child(3),
+td:nth-child(3) {
+  width: 24%;
+}
+
+/* Compliance Column */
+th.th-comp, th.col-c,
+td.col-c {
+  width: 28%;
+}
+
+/* Time to Ready Column */
+th.th-time, th.col-t,
+td.col-t {
+  width: 16%;
+}
+
+/* Strictly fixed Action Buttons Column - Full room for Fix and Scan */
+th.th-actions, th:last-child,
+td:last-child {
+  width: 145px !important;
+  min-width: 145px !important;
+  max-width: 145px !important;
+  text-align: right !important;
+  white-space: nowrap !important;
+  padding: 12px 14px 12px 4px !important;
+}
+
+td:last-child .btn.sm {
+  padding: 4px 9px !important;
+  font-size: 11.5px !important;
+  gap: 5px !important;
+  margin-left: 4px !important;
+  display: inline-flex !important;
   vertical-align: middle;
 }
 
@@ -1837,12 +1904,24 @@ dialog::backdrop {
   .toggle-sidebar-btn {
     display: inline-flex !important;
   }
-  .col-t, .col-c {
-    display: none;
+  .col-t {
+    display: none !important;
   }
-  .m-only {
-    display: block;
-    margin-top: 8px;
+  th.th-env, th:nth-child(2), td:nth-child(2) {
+    width: 31% !important;
+  }
+  th.th-stage, th:nth-child(3), td:nth-child(3) {
+    width: 37% !important;
+  }
+  th.th-comp, th.col-c, td.col-c {
+    width: 32% !important;
+  }
+  .search {
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+  .chips {
+    width: 100% !important;
   }
   main {
     height: 100vh !important;
@@ -1850,6 +1929,31 @@ dialog::backdrop {
     overflow-x: hidden !important;
     min-height: 0 !important;
     width: 100% !important;
+  }
+}
+
+@media (max-width: 680px) {
+  .col-c {
+    display: none !important;
+  }
+  .m-only {
+    display: block !important;
+    margin-top: 6px !important;
+  }
+  th.th-env, th:nth-child(2), td:nth-child(2) {
+    width: 48% !important;
+  }
+  th.th-stage, th:nth-child(3), td:nth-child(3) {
+    width: 52% !important;
+  }
+  th.th-actions, th:last-child, td:last-child {
+    width: 125px !important;
+    min-width: 125px !important;
+    padding-right: 8px !important;
+  }
+  td:last-child .btn.sm {
+    padding: 3px 7px !important;
+    font-size: 11px !important;
   }
 }
 
