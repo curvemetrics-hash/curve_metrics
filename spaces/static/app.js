@@ -387,14 +387,52 @@ function renderChips() {
 
 let selectedEnvNames = new Set();
 
+function toggleEnvSelect(name, isChecked) {
+  if (isChecked) {
+    selectedEnvNames.add(name);
+  } else {
+    selectedEnvNames.delete(name);
+  }
+  const selectAll = $("#select-all-env");
+  const visible = filtered();
+  if (selectAll) {
+    selectAll.checked = visible.length > 0 && visible.every(s => selectedEnvNames.has(s.name));
+  }
+  updateBatchBar();
+}
+window.toggleEnvSelect = toggleEnvSelect;
+
+function toggleSelectAll(isChecked) {
+  const visible = filtered();
+  if (isChecked) {
+    visible.forEach(s => selectedEnvNames.add(s.name));
+  } else {
+    visible.forEach(s => selectedEnvNames.delete(s.name));
+  }
+  renderRows();
+  updateBatchBar();
+}
+window.toggleSelectAll = toggleSelectAll;
+
 function updateBatchBar() {
   const bar = $("#batch-bar");
   const countLabel = $("#batch-selected-count");
+  const fixSelectedBtn = $("#batch-fix-btn");
   if (!bar) return;
   const count = selectedEnvNames.size;
-  if (count > 0 || (list && list.some(s => s.latest && !s.latest.compliant))) {
+  const hasDegraded = list && list.some(s => 
+    s.status === "failed" || s.status === "rejected" || 
+    (s.latest && (!s.latest.compliant || s.latest.grade === "needs attention" || s.latest.grade === "at risk" || s.latest.grade === "non-compliant"))
+  );
+  if (count > 0 || hasDegraded) {
     bar.style.display = "flex";
     if (countLabel) countLabel.textContent = `${count} selected`;
+    if (fixSelectedBtn) {
+      fixSelectedBtn.disabled = count === 0;
+      fixSelectedBtn.style.opacity = count === 0 ? "0.55" : "1";
+      fixSelectedBtn.style.cursor = count === 0 ? "not-allowed" : "pointer";
+      fixSelectedBtn.title = count === 0 ? "Select one or more environments using the checkboxes below" : `Re-apply blueprint to ${count} selected environment(s)`;
+    }
   } else {
     bar.style.display = "none";
   }
@@ -440,7 +478,7 @@ function renderRows() {
     const isChecked = selectedEnvNames.has(s.name) ? "checked" : "";
     return `<tr class="row" data-open="${esc(s.name)}">
       <td style="text-align:center" onclick="event.stopPropagation()">
-        <input type="checkbox" class="env-chk" data-select-name="${esc(s.name)}" ${isChecked}>
+        <input type="checkbox" class="env-chk" data-select-name="${esc(s.name)}" ${isChecked} onchange="toggleEnvSelect('${esc(s.name)}', this.checked)">
       </td>
       <td>
         <div class="nm"><span class="mono">${esc(s.name)}</span></div>
@@ -1053,25 +1091,16 @@ document.addEventListener("click", async e => {
     }
   }
 
-  // Handle select-all checkbox change
-  if (t.id === "select-all-env") {
-    const visibleRows = filtered();
-    if (t.checked) {
-      visibleRows.forEach(s => selectedEnvNames.add(s.name));
-    } else {
-      visibleRows.forEach(s => selectedEnvNames.delete(s.name));
-    }
-    renderRows();
-  }
+});
 
-  // Handle individual environment checkbox change
-  if (t.classList.contains("env-chk")) {
-    const name = t.dataset.selectName;
-    if (name) {
-      if (t.checked) selectedEnvNames.add(name);
-      else selectedEnvNames.delete(name);
-      updateBatchBar();
-    }
+// Reliable document-level change listener for checkboxes
+document.addEventListener("change", e => {
+  const target = e.target;
+  if (!target) return;
+  if (target.classList && target.classList.contains("env-chk") && target.dataset.selectName) {
+    toggleEnvSelect(target.dataset.selectName, target.checked);
+  } else if (target.id === "select-all-env") {
+    toggleSelectAll(target.checked);
   }
 });
 

@@ -826,7 +826,7 @@ Stage 01 completed cleanly in 2.1s.</code></pre>
         <table>
           <thead>
             <tr>
-              <th class="th-chk"><input type="checkbox" id="select-all-env" title="Select all visible"></th>
+              <th class="th-chk"><input type="checkbox" id="select-all-env" onchange="toggleSelectAll(this.checked)" title="Select all visible"></th>
               <th class="th-env">Environment</th>
               <th class="th-stage">Pipeline Stage</th>
               <th class="th-comp col-c">Compliance &amp; Health</th>
@@ -1482,6 +1482,6 @@ helm install curve-agent curvemetrics/agent \
   </div>
 </div>
 
-<script src="/static/app.js?v=2.3.2"></script>
+<script src="/static/app.js?v=2.3.3"></script>
 </body>
 </html>
