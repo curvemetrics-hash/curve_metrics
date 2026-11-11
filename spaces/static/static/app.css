@@ -3357,23 +3357,34 @@ body.sidebar-collapsed.sidebar-hover-expanded .sidebar-collapse-action-btn {
 
 /* Bottom CTA Banner */
 .landing-bottom-cta {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(13, 18, 30, 0.8) 100%), var(--panel);
-  border: 1px solid var(--line-focus);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.14) 0%, rgba(30, 41, 59, 0.5) 100%), var(--panel);
+  border: 1px solid var(--border);
   border-radius: 20px;
-  padding: 40px 32px;
+  padding: 36px 32px;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 18px;
-  box-shadow: 0 16px 36px -12px rgba(0, 0, 0, 0.5);
+  gap: 16px;
+  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.35);
+  transition: all 0.25s ease;
+}
+
+[data-theme="light"] .landing-bottom-cta {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(241, 245, 249, 0.95) 100%), #ffffff;
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  box-shadow: 0 12px 32px -8px rgba(99, 102, 241, 0.12);
 }
 
 .landing-bottom-cta h3 {
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 600;
   margin: 0;
   color: var(--fg);
+}
+
+[data-theme="light"] .landing-bottom-cta h3 {
+  color: #0f172a;
 }
 
 .landing-bottom-cta p {
@@ -3381,7 +3392,11 @@ body.sidebar-collapsed.sidebar-hover-expanded .sidebar-collapse-action-btn {
   line-height: 1.6;
   max-width: 620px;
   margin: 0;
-  color: var(--mut);
+  color: var(--fg-sec);
+}
+
+[data-theme="light"] .landing-bottom-cta p {
+  color: #475569;
 }
 
 
@@ -3551,12 +3566,10 @@ body.is-guest main {
   box-shadow: 0 4px 16px rgba(99, 102, 241, 0.5);
 }
 
-/* Landing footer override when full width */
-body.is-guest .app-console-bar {
-  max-width: 1180px;
-  margin: 48px auto 0;
-  width: calc(100% - 32px);
-  box-sizing: border-box;
+/* Hide console utility bar on public landing page to prevent duplicate footers */
+body.is-guest .app-console-bar,
+#p-gated:not([style*="display: none"]) ~ .app-console-bar {
+  display: none !important;
 }
 
 

@@ -3,8 +3,10 @@ window.showConsole = function() {
   window._viewingConsole = true;
   const pGated = document.getElementById('p-gated');
   const pEnv = document.getElementById('p-env');
+  const consoleBar = document.querySelector('.app-console-bar');
   if (pGated) pGated.style.display = 'none';
   if (pEnv) pEnv.style.display = '';
+  if (consoleBar) consoleBar.style.display = '';
   document.body.classList.remove('is-guest');
   page('env');
   lastList = '';
@@ -19,11 +21,13 @@ window.showLanding = function() {
   const pRoll = document.getElementById('p-roll');
   const pAct = document.getElementById('p-act');
   const pHow = document.getElementById('p-how');
+  const consoleBar = document.querySelector('.app-console-bar');
   if (pGated) pGated.style.display = 'block';
   if (pEnv) pEnv.style.display = 'none';
   if (pRoll) pRoll.style.display = 'none';
   if (pAct) pAct.style.display = 'none';
   if (pHow) pHow.style.display = 'none';
+  if (consoleBar) consoleBar.style.display = 'none';
   window.scrollTo(0, 0);
 };
 function getInitials(name, id) {
@@ -754,6 +758,8 @@ function page(p) {
   window._viewingConsole = true;
   const pGated = document.getElementById('p-gated');
   if (pGated) pGated.style.display = 'none';
+  const consoleBar = document.querySelector('.app-console-bar');
+  if (consoleBar) consoleBar.style.display = '';
   document.body.classList.remove('is-guest');
   $$("#nav button").forEach(b => b.classList.toggle("on", b.dataset.page === p));
   for (const k of ["env", "roll", "act", "how"]) {
