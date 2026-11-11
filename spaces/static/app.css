@@ -3152,56 +3152,64 @@ body.sidebar-collapsed.sidebar-hover-expanded .sidebar-collapse-action-btn {
 /* Feature 3-Pillar Cards */
 .landing-feature-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 24px;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 960px) {
   .landing-feature-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
   }
 }
 
 .landing-feature-card {
-  background: var(--panel);
-  border: 1px solid var(--line);
+  background: var(--panel, #0f172a);
+  border: 1px solid var(--line, rgba(255, 255, 255, 0.08));
   border-radius: 18px;
-  padding: 32px 28px;
+  padding: 26px 24px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 16px;
+  align-items: flex-start;
+  text-align: left;
+  gap: 12px;
   position: relative;
   overflow: hidden;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 4px 18px -4px rgba(0, 0, 0, 0.25);
 }
 
 .landing-feature-card:hover {
   transform: translateY(-4px);
-  border-color: var(--line-focus);
-  box-shadow: 0 14px 28px -12px rgba(0, 0, 0, 0.3);
+  border-color: var(--line-focus, #6366f1);
+  box-shadow: 0 14px 28px -10px rgba(0, 0, 0, 0.35);
 }
 
 .landing-feature-icon {
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 4px;
+  transition: transform 0.25s ease;
+}
+
+.landing-feature-card:hover .landing-feature-icon {
+  transform: scale(1.08);
 }
 
 .landing-feature-icon.indigo {
   background: rgba(99, 102, 241, 0.15);
   border: 1px solid rgba(99, 102, 241, 0.3);
-  color: var(--acc);
+  color: var(--acc, #818cf8);
 }
 
 .landing-feature-icon.emerald {
   background: rgba(16, 185, 129, 0.15);
   border: 1px solid rgba(16, 185, 129, 0.3);
-  color: var(--ok);
+  color: var(--ok, #34d399);
 }
 
 .landing-feature-icon.cyan {
@@ -3214,36 +3222,47 @@ body.sidebar-collapsed.sidebar-hover-expanded .sidebar-collapse-action-btn {
   margin: 0;
   font-size: 18px;
   font-weight: 600;
-  color: var(--fg);
+  color: var(--fg, #f8fafc);
+  letter-spacing: -0.01em;
 }
 
 .landing-feature-card p {
   margin: 0;
   font-size: 13.5px;
-  line-height: 1.6;
-  color: var(--mut);
+  line-height: 1.55;
+  color: var(--mut, #94a3b8);
 }
 
 .landing-feature-list {
   list-style: none;
   padding: 0;
-  margin: 4px 0 0 0;
+  margin: 6px 0 0 0;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
-  font-size: 13px;
-  color: var(--fg);
+  gap: 8px;
 }
 
 .landing-feature-list li {
   display: flex;
   align-items: center;
   gap: 10px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  font-size: 12.5px;
+  color: var(--fg, #f1f5f9);
+  line-height: 1.4;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .landing-feature-list li svg {
-  color: var(--ok);
+  width: 14px;
+  height: 14px;
+  color: #10b981;
+  stroke: #10b981;
   flex-shrink: 0;
 }
 
@@ -3624,42 +3643,6 @@ body.is-guest .app-console-bar {
   justify-content: center;
   color: var(--acc);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* Feature 3-Pillars Card Animations */
-.landing-feature-card {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  padding: 32px 28px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 16px;
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.35s ease;
-}
-
-.landing-feature-card:hover {
-  transform: translateY(-6px);
-  border-color: var(--line-focus);
-  box-shadow: 0 16px 36px -12px rgba(0, 0, 0, 0.4);
-}
-
-.landing-feature-card:hover .landing-feature-icon {
-  transform: scale(1.12);
-}
-
-.landing-feature-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* 10-Stage Pipeline Active Sequence Wave */
