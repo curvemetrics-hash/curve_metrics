@@ -4450,8 +4450,8 @@ body.is-guest .app-console-bar {
 
 /* 6. Audit Preview Modal Table */
 #audit-preview-dlg {
-  width: min(960px, calc(100% - 32px));
-  max-width: 960px;
+  width: min(1080px, calc(100% - 32px));
+  max-width: 1080px;
 }
 #audit-preview-dlg .dlg {
   max-width: 100%;
@@ -4459,13 +4459,13 @@ body.is-guest .app-console-bar {
 }
 .audit-preview-table {
   width: 100%;
-  min-width: 800px;
+  table-layout: auto !important;
   border-collapse: collapse;
   font-size: 12px;
   text-align: left;
 }
 .audit-preview-table th {
-  padding: 10px 12px;
+  padding: 10px 14px;
   background: rgba(255, 255, 255, 0.04);
   color: var(--mut, #94a3b8);
   font-weight: 600;
@@ -4473,7 +4473,7 @@ body.is-guest .app-console-bar {
   white-space: nowrap;
 }
 .audit-preview-table td {
-  padding: 10px 12px;
+  padding: 10px 14px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
   color: var(--fg, #e2e8f0);
   white-space: nowrap;
