@@ -2826,13 +2826,21 @@ body.sidebar-collapsed.sidebar-hover-expanded .sidebar-collapse-action-btn {
 
 /* ---------------- WORLD-CLASS LANDING PAGE & PATENT SHOWCASE ---------------- */
 
+#p-gated {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
 .landing-container {
-  max-width: 1180px;
+  max-width: min(1180px, 100%);
   margin: 0 auto;
   padding: 10px 10px 48px;
   display: flex;
   flex-direction: column;
   gap: 48px;
+  overflow-x: hidden;
+  box-sizing: border-box;
   animation: landingFadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
@@ -3472,6 +3480,39 @@ body.is-guest main {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+@media (max-width: 1024px) {
+  .landing-nav-actions {
+    gap: 8px;
+  }
+  .landing-nav-actions a.btn {
+    display: none !important;
+  }
+}
+
+@media (max-width: 680px) {
+  .landing-top-nav {
+    padding: 10px 14px;
+  }
+  #nav-live-envs-btn {
+    display: none !important;
+  }
+  .landing-nav-actions {
+    gap: 6px;
+  }
+}
+
+@media (max-width: 520px) {
+  .landing-nav-demo-btn {
+    display: none !important;
+  }
+}
+
+@media (max-width: 440px) {
+  .landing-nav-brand-title {
+    display: none !important;
+  }
 }
 
 .landing-theme-toggle-btn {
@@ -4204,11 +4245,29 @@ body.is-guest .app-console-bar {
 /* 3. Interactive 10-Stage Pipeline Stepper & Simulator */
 .pipeline-stepper-wrap {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
   gap: 8px;
-  overflow-x: auto;
-  padding-bottom: 8px;
-  margin-bottom: 18px;
-  scrollbar-width: thin;
+  padding: 4px 2px 14px;
+  margin-bottom: 20px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.pipeline-stepper-wrap::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+@media (max-width: 767px) {
+  .pipeline-stepper-wrap {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 .pipeline-step-pill {
   display: flex;
@@ -4222,6 +4281,7 @@ body.is-guest .app-console-bar {
   font-size: 12px;
   font-weight: 500;
   white-space: nowrap;
+  flex-shrink: 0;
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: var(--shadow-sm);

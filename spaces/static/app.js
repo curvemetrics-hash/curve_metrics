@@ -1896,8 +1896,12 @@ function selectSimStage(num) {
   // Update stepper pills
   document.querySelectorAll('.pipeline-step-pill').forEach(pill => {
     const s = parseInt(pill.dataset.stage, 10);
-    pill.classList.toggle('active', s === num);
+    const isActive = s === num;
+    pill.classList.toggle('active', isActive);
     if (s < num) pill.classList.add('passed');
+    if (isActive && pill.scrollIntoView && window.innerWidth < 768) {
+      pill.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
   });
 
   // Update quick selector cards
