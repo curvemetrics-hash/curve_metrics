@@ -1,6 +1,17 @@
 
+// Ensure default route is always the Platform Console
+if (!location.hash || location.hash === '#' || location.hash === '#/' || location.hash === '#console') {
+  window._viewingConsole = true;
+  try {
+    history.replaceState(null, '', '#env');
+  } catch (e) {
+    location.hash = '#env';
+  }
+}
+
 window.showConsole = function() {
   window._viewingConsole = true;
+  try { history.pushState(null, '', '#env'); } catch (e) { location.hash = '#env'; }
   const pGated = document.getElementById('p-gated');
   const pEnv = document.getElementById('p-env');
   const consoleBar = document.querySelector('.app-console-bar');
@@ -16,6 +27,7 @@ window.showConsole = function() {
 
 window.showLanding = function() {
   window._viewingConsole = false;
+  try { history.pushState(null, '', '#showcase'); } catch (e) { location.hash = '#showcase'; }
   const pGated = document.getElementById('p-gated');
   const pEnv = document.getElementById('p-env');
   const pRoll = document.getElementById('p-roll');
@@ -156,8 +168,8 @@ function applyRole() {
 
   const titleEl = document.getElementById('topbar-page-name');
   const consoleBar = document.querySelector('.app-console-bar');
-  const wantsConsole = window._viewingConsole || location.hash === '#console' || location.hash === '#env' || location.search.includes('console');
-  if (isGuest && !wantsConsole) {
+  const wantsShowcase = location.hash === '#showcase' || location.hash === '#landing';
+  if (wantsShowcase) {
     document.body.classList.add('is-guest');
     if (topbarAccountBtn) topbarAccountBtn.style.display = 'none';
     if (topbarSignInBtn) {
@@ -175,6 +187,7 @@ function applyRole() {
     if (consoleBar) consoleBar.style.display = 'none';
     if (titleEl) titleEl.textContent = 'Platform Overview';
   } else {
+    window._viewingConsole = true;
     document.body.classList.remove('is-guest');
     if (topbarAccountBtn) topbarAccountBtn.style.display = 'flex';
     if (topbarSignInBtn) topbarSignInBtn.style.display = isGuest ? 'inline-flex' : 'none';
@@ -182,7 +195,7 @@ function applyRole() {
     if (pGated) pGated.style.display = 'none';
     if (pEnv) pEnv.style.display = '';
     if (consoleBar) consoleBar.style.display = '';
-    if (titleEl) titleEl.textContent = isGuest ? 'Environments (Visitor View)' : 'Environments';
+    if (titleEl) titleEl.textContent = isGuest ? 'Environments' : 'Environments';
   }
 
   // Hook landing page nav buttons
@@ -1191,12 +1204,17 @@ $("#f").addEventListener("submit", async e => {
 
 (function () {
   const root = document.documentElement;
+  let saved = null;
   try {
-    const v = localStorage.getItem("theme");
-    if (v) root.dataset.theme = v;
+    saved = localStorage.getItem("theme");
   } catch (e) {}
 
-  const isDark = () => root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme:dark)").matches;
+  // Explicit default is "light" (never black screen) unless user chose dark
+  const currentTheme = saved === "dark" ? "dark" : "light";
+  root.dataset.theme = currentTheme;
+  try { localStorage.setItem("theme", currentTheme); } catch (e) {}
+
+  const isDark = () => root.dataset.theme === "dark";
   const updateIcon = () => {
     const dark = isDark();
     const iconName = dark ? "sun" : "moon";
@@ -1210,12 +1228,31 @@ $("#f").addEventListener("submit", async e => {
   const themeBtn = $("#theme");
   if (themeBtn) {
     themeBtn.addEventListener("click", () => {
-      root.dataset.theme = isDark() ? "light" : "dark";
-      try { localStorage.setItem("theme", root.dataset.theme); } catch (e) {}
+      const nextTheme = isDark() ? "light" : "dark";
+      root.dataset.theme = nextTheme;
+      try { localStorage.setItem("theme", nextTheme); } catch (e) {}
       updateIcon();
     });
   }
 })();
+
+window.addEventListener("hashchange", () => {
+  const h = location.hash;
+  if (h === "#showcase" || h === "#landing") {
+    window.showLanding();
+  } else if (h === "#roll") {
+    page("roll");
+  } else if (h === "#how") {
+    page("how");
+  } else if (h === "#act") {
+    page("act");
+  } else {
+    window.showConsole();
+    if (h.startsWith("#env/")) {
+      openDrawer(decodeURIComponent(h.slice(5)));
+    }
+  }
+});
 
 if (location.hash.startsWith("#env/")) {
   setTimeout(() => openDrawer(decodeURIComponent(location.hash.slice(5))), 0);
