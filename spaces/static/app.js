@@ -1719,17 +1719,45 @@ window.autoLogin = autoLogin;
 function copyDeploymentYaml() {
   const codeEl = document.getElementById('deployment-yaml-code');
   const text = codeEl ? codeEl.innerText : '';
-  if (navigator.clipboard && text) {
-    navigator.clipboard.writeText(text).then(() => {
-      const btnText = document.getElementById('copy-yaml-text');
-      if (btnText) {
-        btnText.textContent = 'Copied!';
-        setTimeout(() => { btnText.textContent = 'Copy YAML'; }, 2000);
-      }
-      toast('Copied deployment.yaml to clipboard!');
-    }).catch(() => {
-      toast('Failed to copy');
+  if (!text) return;
+
+  function onCopied() {
+    const btnText = document.getElementById('copy-yaml-text');
+    if (btnText) {
+      btnText.textContent = 'Copied!';
+      setTimeout(() => { btnText.textContent = 'Copy YAML'; }, 2000);
+    }
+    toast('Copied deployment.yaml to clipboard!');
+  }
+
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(onCopied).catch(() => {
+      // Fallback if clipboard permission is denied or in automated environment
+      tryFallback();
     });
+  } else {
+    tryFallback();
+  }
+
+  function tryFallback() {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      const ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      if (ok) {
+        onCopied();
+      } else {
+        toast('Please copy manually (Ctrl+C)');
+      }
+    } catch (e) {
+      toast('Please copy manually (Ctrl+C)');
+    }
   }
 }
 window.copyDeploymentYaml = copyDeploymentYaml;
@@ -1963,9 +1991,15 @@ async function previewAuditLedger() {
   if (container) {
     container.innerHTML = '<div style="display:flex;align-items:center;gap:10px;color:var(--mut);padding:24px 0"><i class="spin"></i> Loading live cryptographic audit ledger...</div>';
   }
+
+  // Ensure download button inside modal points to actual API host
+  const modalDownload = document.getElementById('audit-csv-modal-download');
+  if (modalDownload) {
+    modalDownload.href = API_BASE + '/api/compliance/export?format=csv';
+  }
   
   try {
-    const res = await fetch('/api/compliance/export?format=csv', {
+    const res = await fetch(API_BASE + '/api/compliance/export?format=csv', {
       headers: { 'X-Requested-With': 'console' }
     });
     if (!res.ok) throw new Error('Failed to fetch CSV');

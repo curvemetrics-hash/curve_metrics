@@ -1350,7 +1350,7 @@ helm install curve-agent curvemetrics/agent \
     <div class="dlg-foot" style="display:flex;justify-content:space-between;align-items:center">
       <span class="mut sm" id="audit-csv-summary">14 Baseline Controls &bull; 42 Extended Audits</span>
       <div style="display:flex;gap:8px">
-        <a href="/api/compliance/export?format=csv" download class="btn sm pri" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px">
+        <a id="audit-csv-modal-download" href="/api/compliance/export?format=csv" download class="btn sm pri" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px">
           <svg class="i sm-i"><use href="#i-copy"/></svg>
           <span>Download CSV File</span>
         </a>
