@@ -4112,50 +4112,204 @@ body.is-guest .app-console-bar,
   overflow: hidden;
 }
 
-/* Landing Page Footer */
+/* ==================== ENTERPRISE MULTI-COLUMN LANDING FOOTER ==================== */
 .landing-footer {
-  margin-top: 0;
-  padding: 24px 0 32px;
-  border-top: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  margin-top: 32px;
+  padding: 48px 0 88px;
+  border-top: 1px solid var(--border);
 }
-.landing-footer-inner {
+
+.landing-footer-main {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 40px;
+  text-align: left;
+}
+
+.footer-col-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.footer-brand-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.footer-brand-header .logo {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--acc), #4f46e5);
+}
+
+.footer-brand-header .logo svg {
+  width: 15px;
+  height: 15px;
+  stroke: #ffffff;
+}
+
+.footer-brand-title {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--fg);
+}
+
+.footer-brand-desc {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--fg-sec, var(--mut));
+  max-width: 320px;
+  margin: 0;
+}
+
+.footer-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 500;
+  background: var(--ok-soft, rgba(16, 185, 129, 0.1));
+  border: 1px solid var(--ok-border, rgba(16, 185, 129, 0.25));
+  color: var(--ok, #10b981);
+  width: fit-content;
+}
+
+.footer-status-pill .csb-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+  display: inline-block;
+}
+
+.footer-status-sep {
+  opacity: 0.5;
+}
+
+.footer-col-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fg);
+  margin-bottom: 14px;
+}
+
+.footer-col-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer-col-links a {
+  font-size: 13px;
+  color: var(--fg-sec, var(--mut));
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.footer-col-links a:hover {
+  color: var(--acc);
+  transform: translateX(2px);
+}
+
+.landing-footer-bottom {
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
   gap: 16px;
-  font-size: 13px;
-  color: var(--mut, #94a3b8);
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--mut);
 }
-.landing-footer-left {
+
+.footer-bottom-left {
   display: flex;
   align-items: center;
-  gap: 8px;
 }
-.landing-footer-brand {
-  font-weight: 600;
-  color: var(--fg, #f8fafc);
-}
-.landing-footer-right {
+
+.footer-bottom-right {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   flex-wrap: wrap;
 }
-.landing-footer-link {
-  color: var(--mut, #94a3b8);
+
+.footer-bottom-links {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.footer-ip-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--fg);
+  background: var(--panel2, var(--surface));
+  padding: 3px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+.footer-sub-link {
+  color: var(--mut);
   text-decoration: none;
-  font-size: 13px;
   transition: color 0.15s ease;
 }
-.landing-footer-link:hover {
-  color: var(--acc, #6366f1);
+
+.footer-sub-link:hover {
+  color: var(--acc);
 }
-.landing-footer-legal {
-  margin-top: 14px;
-  font-size: 11.5px;
-  color: var(--mut-sub, #64748b);
-  line-height: 1.5;
+
+@media (max-width: 900px) {
+  .landing-footer-main {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+}
+
+@media (max-width: 640px) {
+  .landing-footer {
+    padding-bottom: 120px; /* Safe space above floating Copilot button on mobile */
+  }
+  .landing-footer-main {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .landing-footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .footer-bottom-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .footer-bottom-links {
+    gap: 8px;
+  }
 }
 
 /* ==========================================================================

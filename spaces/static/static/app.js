@@ -145,6 +145,7 @@ function applyRole() {
   const pAct = document.getElementById('p-act');
 
   const titleEl = document.getElementById('topbar-page-name');
+  const consoleBar = document.querySelector('.app-console-bar');
   const wantsConsole = window._viewingConsole || location.hash === '#console' || location.hash === '#env' || location.search.includes('console');
   if (isGuest && !wantsConsole) {
     document.body.classList.add('is-guest');
@@ -161,6 +162,7 @@ function applyRole() {
     if (pEnv) pEnv.style.display = 'none';
     if (pRoll) pRoll.style.display = 'none';
     if (pAct) pAct.style.display = 'none';
+    if (consoleBar) consoleBar.style.display = 'none';
     if (titleEl) titleEl.textContent = 'Platform Overview';
   } else {
     document.body.classList.remove('is-guest');
@@ -169,6 +171,7 @@ function applyRole() {
     if (modalLogoutBtn) modalLogoutBtn.style.display = isGuest ? 'none' : 'inline-flex';
     if (pGated) pGated.style.display = 'none';
     if (pEnv) pEnv.style.display = '';
+    if (consoleBar) consoleBar.style.display = '';
     if (titleEl) titleEl.textContent = isGuest ? 'Environments (Visitor View)' : 'Environments';
   }
 

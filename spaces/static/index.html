@@ -8,8 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/app.css?v=2.2.5">
-  <link rel="stylesheet" href="/static/chatbot.css?v=2.2.5">
+  <link rel="stylesheet" href="/static/app.css?v=2.2.6">
+  <link rel="stylesheet" href="/static/chatbot.css?v=2.2.6">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute"><defs>
@@ -686,33 +686,81 @@ Stage 01 completed cleanly in 2.1s.</code></pre>
         </button>
       </div>
 
-      <!-- Landing Page Muted Footer -->
+      <!-- Enterprise Multi-Column Footer -->
       <footer class="landing-footer">
-        <div class="landing-footer-inner">
-          <div class="landing-footer-left">
-            <span class="csb-pill ok" style="padding:2px 8px;font-size:11px;display:inline-flex;align-items:center;gap:5px;border-radius:999px;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.25);color:var(--ok)">
-              <span class="csb-dot" style="width:6px;height:6px;border-radius:50%;background:#10b981;display:inline-block"></span>
+        <div class="landing-footer-main">
+          <!-- Col 1: Brand & Status -->
+          <div class="footer-col footer-col-brand">
+            <div class="footer-brand-header">
+              <div class="logo">
+                <svg class="i"><use href="#i-layers"/></svg>
+              </div>
+              <span class="footer-brand-title">Curve Metrics</span>
+            </div>
+            <p class="footer-brand-desc">
+              Autonomous Kubernetes platform engineering governed by deterministic continuous compliance.
+            </p>
+            <div class="footer-status-pill ok">
+              <span class="csb-dot"></span>
               <span>All Systems Operational</span>
-            </span>
-            <span class="csb-bullet">&bull;</span>
-            <span class="landing-footer-brand">Curve Metrics</span>
-            <span class="csb-bullet">&bull;</span>
-            <span class="landing-footer-copy">&copy; 2026 Curve Metrics Platform</span>
+              <span class="footer-status-sep">&bull;</span>
+              <span>99.98% SLA</span>
+            </div>
           </div>
-          <div class="landing-footer-right">
-            <a href="#how" onclick="page('how')" class="landing-footer-link">Architecture &amp; Docs</a>
-            <span class="csb-bullet">&bull;</span>
-            <a href="#usecases" onclick="event.preventDefault(); document.getElementById('usecases')?.scrollIntoView({behavior:'smooth'})" class="landing-footer-link">Developer Use Cases</a>
-            <span class="csb-bullet">&bull;</span>
-            <a href="#how" onclick="page('how')" class="landing-footer-link">Trust &amp; Compliance</a>
-            <span class="csb-bullet">&bull;</span>
-            <a href="/api/compliance/export?format=csv" download class="landing-footer-link">Audit CSV</a>
-            <span class="csb-bullet">&bull;</span>
-            <a href="/healthz" target="_blank" class="landing-footer-link">Healthz</a>
+
+          <!-- Col 2: Platform -->
+          <div class="footer-col">
+            <div class="footer-col-title">Platform</div>
+            <ul class="footer-col-links">
+              <li><a href="#pipeline-section" onclick="event.preventDefault(); document.getElementById('pipeline-section')?.scrollIntoView({behavior:'smooth'})">10-Stage Pipeline Engine</a></li>
+              <li><a href="#compliance-section" onclick="event.preventDefault(); document.getElementById('compliance-section')?.scrollIntoView({behavior:'smooth'})">Autonomous Compliance</a></li>
+              <li><a href="#usecases" onclick="event.preventDefault(); document.getElementById('usecases')?.scrollIntoView({behavior:'smooth'})">Zero-Credential App Wiring</a></li>
+              <li><a href="#how" onclick="page('how')">Blueprinted Architecture</a></li>
+              <li><a href="#how" onclick="page('how')">Canary &amp; Rollouts</a></li>
+            </ul>
+          </div>
+
+          <!-- Col 3: Trust & Security -->
+          <div class="footer-col">
+            <div class="footer-col-title">Security &amp; Trust</div>
+            <ul class="footer-col-links">
+              <li><a href="#compliance-section" onclick="previewAuditLedger()">SOC 2 Type II Ledger</a></li>
+              <li><a href="/api/compliance/export?format=csv" download>Download Audit CSV</a></li>
+              <li><a href="#how" onclick="page('how')">German Utility Model IP</a></li>
+              <li><a href="#how" onclick="page('how')">56 Security Controls</a></li>
+              <li><a href="#how" onclick="page('how')">Zero Trust IRSA</a></li>
+            </ul>
+          </div>
+
+          <!-- Col 4: Resources & Docs -->
+          <div class="footer-col">
+            <div class="footer-col-title">Resources &amp; Docs</div>
+            <ul class="footer-col-links">
+              <li><a href="#how" onclick="page('how')">Architecture &amp; Docs</a></li>
+              <li><a href="#usecases" onclick="event.preventDefault(); document.getElementById('usecases')?.scrollIntoView({behavior:'smooth'})">Developer Use Cases</a></li>
+              <li><a href="/healthz" target="_blank">Health &amp; Uptime API</a></li>
+              <li><a href="#" onclick="event.preventDefault(); autoLogin('admin', 'admin123')">1-Click Admin Demo</a></li>
+              <li><a href="#" onclick="event.preventDefault(); autoLogin('operator', 'operator123')">DevOps Lead Demo</a></li>
+            </ul>
           </div>
         </div>
-        <div class="landing-footer-legal">
-          Intellectual Property: System aligned with German Utility Model (Gebrauchsmuster) No. 20 2025 107 185 (<em>"System for blueprinted Platform Engineering using Terraform Modules on Kubernetes/Openshift with CI/CD"</em>).
+
+        <!-- Footer Bottom Bar -->
+        <div class="landing-footer-bottom">
+          <div class="footer-bottom-left">
+            <span>&copy; 2026 Curve Metrics Platform. All rights reserved.</span>
+          </div>
+          <div class="footer-bottom-right">
+            <span class="footer-ip-badge">
+              <svg class="i sm-i" style="width:13px;height:13px;color:var(--acc)"><use href="#i-shield"/></svg>
+              <span>DE Utility Model No. 20 2025 107 185</span>
+            </span>
+            <div class="footer-bottom-links">
+              <a href="#how" onclick="page('how')" class="footer-sub-link">Trust Center</a>
+              <span class="csb-bullet">&bull;</span>
+              <a href="#how" onclick="page('how')" class="footer-sub-link">Privacy &amp; Security</a>
+            </div>
+          </div>
         </div>
       </footer>
     </div>
@@ -1424,6 +1472,6 @@ helm install curve-agent curvemetrics/agent \
   </div>
 </div>
 
-<script src="/static/app.js?v=2.2.5"></script>
+<script src="/static/app.js?v=2.2.6"></script>
 </body>
 </html>
