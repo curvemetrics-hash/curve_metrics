@@ -883,56 +883,82 @@ document.addEventListener("click", async e => {
   if (t.dataset.scan) {
     e.stopPropagation();
     const n = t.dataset.scan;
-    busy.add(n);
-    lastList = lastDetail = "";
-    load();
-    const r = await api(`/spaces/${encodeURIComponent(n)}/scan`, "POST");
-    if (!r.ok) {
-      toast(r.data.error || "Scan failed");
-    } else {
-      const j = await waitJob(r.data.job);
-      const res = j && j.result || {};
-      toast(j && j.status === "done" ? `${n}: ${res.grade}` : (j ? `Scan failed: ${res.error || "unknown error"}` : "Scan is still running"));
-    }
-    busy.delete(n);
-    lastList = lastDetail = "";
-    return load();
-  }
-
-  if (t.dataset.fix) {
-    e.stopPropagation();
-    const n = t.dataset.fix;
     if (busy.has(n)) {
-      toast("Re-application is already in progress...");
+      toast(`${n} is already scanning...`);
       return;
     }
     busy.add(n);
     lastList = lastDetail = "";
     renderRows();
     if (sel === n) renderDrawer();
-    const r = await api(`/spaces/${encodeURIComponent(n)}/fix`, "POST");
-    if (!r.ok) {
-      busy.delete(n);
-      toast(r.data.error || "Could not start re-application");
-    } else {
-      toast("Re-applying blueprint... Running policy gate & validation");
-      if (r.data && r.data.job) {
-        waitJob(r.data.job).then(j => {
-          busy.delete(n);
-          lastList = lastDetail = "";
-          load();
-          if (j && j.status === "done") {
-            toast(`${n}: Blueprint re-applied successfully!`);
-          } else if (j && j.status === "failed") {
-            toast(`${n}: Re-application failed: ${(j.result || {}).error || "Policy gate rejected"}`);
-          }
-        });
-      } else {
+    api(`/spaces/${encodeURIComponent(n)}/scan`, "POST").then(r => {
+      if (!r.ok) {
         busy.delete(n);
+        toast(r.data.error || "Scan failed");
+        renderRows();
+        if (sel === n) renderDrawer();
+      } else {
+        toast(`Scan running for ${n}... Inspecting live controls`);
+        if (r.data && r.data.job) {
+          waitJob(r.data.job).then(j => {
+            busy.delete(n);
+            lastList = lastDetail = "";
+            load();
+            const res = (j && j.result) || {};
+            toast(j && j.status === "done" ? `${n}: ${res.grade || "Healthy"}` : (j ? `Scan failed: ${res.error || "unknown error"}` : "Scan completed"));
+          });
+        } else {
+          busy.delete(n);
+          renderRows();
+        }
       }
+    }).catch(err => {
+      busy.delete(n);
+      renderRows();
+    });
+    return;
+  }
+
+  if (t.dataset.fix) {
+    e.stopPropagation();
+    const n = t.dataset.fix;
+    if (busy.has(n)) {
+      toast(`${n} blueprint re-application is already in progress...`);
+      return;
     }
+    busy.add(n);
     lastList = lastDetail = "";
-    return load();
+    renderRows();
+    if (sel === n) renderDrawer();
+    api(`/spaces/${encodeURIComponent(n)}/fix`, "POST").then(r => {
+      if (!r.ok) {
+        busy.delete(n);
+        toast(r.data.error || "Could not start re-application");
+        renderRows();
+        if (sel === n) renderDrawer();
+      } else {
+        toast(`Re-applying blueprint for ${n}... Running policy gate & validation`);
+        if (r.data && r.data.job) {
+          waitJob(r.data.job).then(j => {
+            busy.delete(n);
+            lastList = lastDetail = "";
+            load();
+            if (j && j.status === "done") {
+              toast(`${n}: Blueprint re-applied successfully!`);
+            } else if (j && j.status === "failed") {
+              toast(`${n}: Re-application failed: ${(j.result || {}).error || "Policy gate rejected"}`);
+            }
+          });
+        } else {
+          busy.delete(n);
+          renderRows();
+        }
+      }
+    }).catch(err => {
+      busy.delete(n);
+      renderRows();
+    });
+    return;
   }
 
   if (t.id === "batch-fix-btn") {
