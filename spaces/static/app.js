@@ -157,7 +157,7 @@ function applyRole() {
     if (pEnv) pEnv.style.display = 'none';
     if (pRoll) pRoll.style.display = 'none';
     if (pAct) pAct.style.display = 'none';
-    if (titleEl) titleEl.textContent = 'Platform Overview & Patent';
+    if (titleEl) titleEl.textContent = 'Platform Overview';
   } else {
     document.body.classList.remove('is-guest');
     if (topbarAccountBtn) topbarAccountBtn.style.display = 'flex';
