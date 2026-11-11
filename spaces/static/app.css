@@ -2835,10 +2835,10 @@ body.sidebar-collapsed.sidebar-hover-expanded .sidebar-collapse-action-btn {
 .landing-container {
   max-width: min(1180px, 100%);
   margin: 0 auto;
-  padding: 10px 10px 48px;
+  padding: 10px 10px 36px;
   display: flex;
   flex-direction: column;
-  gap: 48px;
+  gap: 40px;
   overflow-x: hidden;
   box-sizing: border-box;
   animation: landingFadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -2859,7 +2859,7 @@ body.sidebar-collapsed.sidebar-hover-expanded .sidebar-collapse-action-btn {
 .landing-hero {
   position: relative;
   text-align: center;
-  padding: 48px 24px 36px;
+  padding: 42px 28px 32px;
   background: radial-gradient(circle at 50% 20%, rgba(99, 102, 241, 0.15) 0%, rgba(13, 18, 30, 0) 70%), var(--panel);
   border: 1px solid var(--line);
   border-radius: 24px;
@@ -2890,7 +2890,7 @@ body.sidebar-collapsed.sidebar-hover-expanded .sidebar-collapse-action-btn {
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.03em;
-  margin-bottom: 22px;
+  margin-bottom: 16px;
   box-shadow: 0 0 16px rgba(99, 102, 241, 0.2);
   animation: pulsePill 3s infinite;
 }
@@ -2919,7 +2919,7 @@ body.sidebar-collapsed.sidebar-hover-expanded .sidebar-collapse-action-btn {
   font-weight: 600;
   line-height: 1.15;
   letter-spacing: -0.03em;
-  margin: 0 auto 18px;
+  margin: 0 auto 14px;
   max-width: 900px;
   color: var(--fg);
 }
@@ -2935,7 +2935,7 @@ body.sidebar-collapsed.sidebar-hover-expanded .sidebar-collapse-action-btn {
   line-height: 1.6;
   color: var(--mut);
   max-width: 760px;
-  margin: 0 auto 32px;
+  margin: 0 auto 22px;
 }
 
 .landing-cta-group {
@@ -2944,7 +2944,7 @@ body.sidebar-collapsed.sidebar-hover-expanded .sidebar-collapse-action-btn {
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
-  margin-bottom: 28px;
+  margin-bottom: 16px;
 }
 
 .landing-btn-hero {
@@ -3566,7 +3566,7 @@ body.is-guest .app-console-bar {
 .landing-hero {
   position: relative;
   text-align: center;
-  padding: 56px 28px 42px;
+  padding: 42px 28px 32px;
   background: radial-gradient(circle at 50% 15%, rgba(99, 102, 241, 0.18) 0%, rgba(13, 18, 30, 0) 70%), var(--panel);
   border: 1px solid var(--line);
   border-radius: 24px;
@@ -3757,8 +3757,7 @@ body.is-guest .app-console-bar {
 
 /* Real-World Developer Use Case Section */
 .landing-usecase-container {
-  margin-top: 56px;
-  margin-bottom: 56px;
+  margin: 0;
   text-align: center;
 }
 
@@ -4102,8 +4101,8 @@ body.is-guest .app-console-bar {
 
 /* Landing Page Footer */
 .landing-footer {
-  margin-top: 56px;
-  padding: 28px 0 36px;
+  margin-top: 0;
+  padding: 24px 0 32px;
   border-top: 1px solid var(--border, rgba(255, 255, 255, 0.08));
 }
 .landing-footer-inner {
@@ -4157,7 +4156,7 @@ body.is-guest .app-console-bar {
   justify-content: center;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: 18px;
+  margin-top: 0;
 }
 .landing-demo-label {
   font-size: 12px;
@@ -4249,8 +4248,8 @@ body.is-guest .app-console-bar {
   justify-content: center;
   align-items: center;
   gap: 8px;
-  padding: 4px 2px 14px;
-  margin-bottom: 20px;
+  padding: 2px 0 8px;
+  margin-bottom: 16px;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }

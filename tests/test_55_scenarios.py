@@ -271,9 +271,9 @@ def s37():
     assert "simulation failure" in updated["result"].get("error", "")
 
 def s38():
-    initial_len = len(store.audit_log())
+    initial_len = len(store.audit_log(limit=10000))
     store.audit("admin-user", "test.action", "target-1", {"meta": "data"}, "admin")
-    entries = store.audit_log()
+    entries = store.audit_log(limit=10000)
     assert len(entries) >= initial_len + 1
     assert any(e["action"] == "test.action" and e["actor"] == "admin-user" for e in entries)
 
