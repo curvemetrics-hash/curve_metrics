@@ -464,9 +464,9 @@ function renderRows() {
       </td>
       <td style="text-align:right;white-space:nowrap" onclick="event.stopPropagation()">
         ${can("admin") && (l && (!l.compliant || l.grade === "needs attention" || l.grade === "at risk" || l.grade === "non-compliant") || s.status === "failed" || s.status === "rejected") ? `
-          <button class="btn sm" data-fix="${esc(s.name)}" title="Re-apply blueprint and remediate compliance drift">
-            ${ic("fix")}
-            <span>Fix</span>
+          <button class="btn sm" data-fix="${esc(s.name)}" ${busy.has(s.name) || s.status === "provisioning" ? "disabled" : ""} title="Re-apply blueprint and remediate compliance drift">
+            ${busy.has(s.name) ? '<i class="spin"></i>' : ic("fix")}
+            <span>${busy.has(s.name) ? "Fixing..." : "Fix"}</span>
           </button>
         ` : ""}
         <button class="btn sm" data-scan="${esc(s.name)}" ${busy.has(s.name) || !can("operator") ? "disabled" : ""}>
@@ -673,7 +673,7 @@ function renderDrawer() {
           ${busy.has(sel) ? '<i class="spin"></i>' : ic("scan")}
           <span>Scan now</span>
         </button>
-        ${fixable ? `<button class="btn pri" data-fix="${esc(sel)}" style="background:var(--acc);color:#fff">${ic("fix")}<span>Re-apply blueprint (Fix)</span></button>` : ""}
+        ${fixable ? `<button class="btn pri" data-fix="${esc(sel)}" ${busy.has(sel) || s.status === "provisioning" ? "disabled" : ""} style="background:var(--acc);color:#fff">${busy.has(sel) ? '<i class="spin"></i>' : ic("fix")}<span>${busy.has(sel) ? "Re-applying..." : "Re-apply blueprint (Fix)"}</span></button>` : ""}
         ${can("admin") ? `<button class="btn" data-delete-env="${esc(sel)}" style="color:var(--bad);border-color:rgba(239,68,68,0.3)" title="Tear down and decommission environment">${ic("trash")}<span>Decommission</span></button>` : ""}
       </div>
       <div class="tabs">
@@ -901,8 +901,36 @@ document.addEventListener("click", async e => {
 
   if (t.dataset.fix) {
     e.stopPropagation();
-    const r = await api(`/spaces/${encodeURIComponent(t.dataset.fix)}/fix`, "POST");
-    toast(r.ok ? "Re-applying blueprint..." : (r.data.error || "Could not start"));
+    const n = t.dataset.fix;
+    if (busy.has(n)) {
+      toast("Re-application is already in progress...");
+      return;
+    }
+    busy.add(n);
+    lastList = lastDetail = "";
+    renderRows();
+    if (sel === n) renderDrawer();
+    const r = await api(`/spaces/${encodeURIComponent(n)}/fix`, "POST");
+    if (!r.ok) {
+      busy.delete(n);
+      toast(r.data.error || "Could not start re-application");
+    } else {
+      toast("Re-applying blueprint... Running policy gate & validation");
+      if (r.data && r.data.job) {
+        waitJob(r.data.job).then(j => {
+          busy.delete(n);
+          lastList = lastDetail = "";
+          load();
+          if (j && j.status === "done") {
+            toast(`${n}: Blueprint re-applied successfully!`);
+          } else if (j && j.status === "failed") {
+            toast(`${n}: Re-application failed: ${(j.result || {}).error || "Policy gate rejected"}`);
+          }
+        });
+      } else {
+        busy.delete(n);
+      }
+    }
     lastList = lastDetail = "";
     return load();
   }
@@ -910,7 +938,10 @@ document.addEventListener("click", async e => {
   if (t.id === "batch-fix-btn") {
     const names = Array.from(selectedEnvNames);
     if (!names.length) return toast("No environments selected");
+    if (t.disabled) return;
+    t.disabled = true;
     const r = await api("/spaces/batch-fix", "POST", { names });
+    t.disabled = false;
     if (r.ok) {
       toast(`Enqueued blueprint fix for ${r.data.count} environment(s)`);
       selectedEnvNames.clear();
@@ -923,7 +954,10 @@ document.addEventListener("click", async e => {
   }
 
   if (t.id === "batch-fix-all-btn") {
+    if (t.disabled) return;
+    t.disabled = true;
     const r = await api("/spaces/batch-fix", "POST", {});
+    t.disabled = false;
     if (r.ok) {
       toast(r.data.count > 0 ? `Enqueued fix for ${r.data.count} degraded environment(s)` : "All environments are already healthy");
       selectedEnvNames.clear();
