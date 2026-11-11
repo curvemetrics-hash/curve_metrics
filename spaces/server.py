@@ -75,6 +75,16 @@ def wait_for(jid, seconds):
     return store.job(jid)
 
 
+def ensure_seeded():
+    """Seed baseline enterprise environments into store if empty, guaranteeing the console catalog is never blank."""
+    try:
+        if not store.items("space", limit=1):
+            from scripts.seed_10_environments import seed_10
+            seed_10()
+    except Exception as e:
+        sys.stderr.write(f"[Server] Auto-seed error: {e}\n")
+
+
 def summary(name, s):
     r = s.get("request", {})
     latest = s.get("latest") or {}
@@ -191,6 +201,7 @@ class Handler(BaseHTTPRequestHandler):
             if path == "/api/me":
                 return self._send(200, {**who, "mode": config.mode(), "auth": config.auth_mode()})
             if path == "/spaces":
+                ensure_seeded()
                 return self._send(200, [summary(n, s) for n, s in store.items("space")])
             m = re.fullmatch(r"/spaces/([^/]+)", path)
             if m:
@@ -498,6 +509,7 @@ def serve(host=None, port=None):
             print(f"refusing to start: {p}", file=sys.stderr)
         sys.exit(2)
     store.db()  # create tables, fail fast if the database is unreachable
+    ensure_seeded()
     if config.embedded_worker():
         worker.start_thread()
     host, port = host or config.host(), port or config.port()

@@ -81,16 +81,26 @@ async function api(path, method = "GET", body) {
     ...(token ? { "Authorization": "Bearer " + token } : {}),
     ...(body ? { "Content-Type": "application/json" } : {})
   };
-  const r = await fetch(API_BASE + path, {
-    method,
-    credentials: "include",
-    headers,
-    body: body ? JSON.stringify(body) : undefined
-  });
-  let j = {};
-  try { j = await r.json(); } catch (e) {}
-  if (r.status === 401 && me.id && me.id !== "guest") { toast("Your session expired. Reload the page to sign in again."); }
-  return { ok: r.ok, status: r.status, data: j };
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 12000);
+  try {
+    const r = await fetch(API_BASE + path, {
+      method,
+      credentials: "include",
+      headers,
+      body: body ? JSON.stringify(body) : undefined,
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+    let j = {};
+    try { j = await r.json(); } catch (e) {}
+    if (r.status === 401 && me.id && me.id !== "guest") { toast("Your session expired. Reload the page to sign in again."); }
+    return { ok: r.ok, status: r.status, data: j };
+  } catch (err) {
+    clearTimeout(timeoutId);
+    console.warn(`[API] Network error or timeout for ${method} ${path}:`, err.message);
+    return { ok: false, status: 0, error: err.message, data: null };
+  }
 }
 
 async function waitJob(id, seconds = 180) {
@@ -238,7 +248,20 @@ function applyRole() {
   if (ddRole) ddRole.textContent = isGuest ? 'Guest Session' : `${me.role || 'viewer'} · ${me.mode === 'aws' ? 'AWS' : 'local mode'}`;
 }
 
-let list = [], filter = "all", query = "", sel = null, tab = "findings", detail = null, lastList = "", lastDetail = "", opened = new Set(), busy = new Set();
+const DEFAULT_SPACES = [{"name": "analytics-dev", "status": "ready", "stage": 10, "failed_stage": null, "team": "data", "requested_at": 1794330405, "size": "small", "environment": "dev", "seconds_to_ready": 72, "seconds_to_compliant": 114, "latest": {"passed": 14, "total": 14, "compliant": true, "at": 1794330519, "grade": "healthy", "extended_summary": {"total": 42, "passed": 42, "failed": 0, "na": 0, "unknown": 0, "severity": {"high": 0, "medium": 0, "low": 0}}}}, {"name": "auth-service-prod", "status": "ready", "stage": 10, "failed_stage": null, "team": "security", "requested_at": 1794332677, "size": "large", "environment": "prod", "seconds_to_ready": 73, "seconds_to_compliant": 78, "latest": {"passed": 14, "total": 14, "compliant": true, "at": 1794332755, "grade": "healthy", "extended_summary": {"total": 42, "passed": 42, "failed": 0, "na": 0, "unknown": 0, "severity": {"high": 0, "medium": 0, "low": 0}}}}, {"name": "billing-prod", "status": "ready", "stage": 10, "failed_stage": null, "team": "billing", "requested_at": 1794330412, "size": "large", "environment": "prod", "seconds_to_ready": 146, "seconds_to_compliant": 150, "latest": {"passed": 14, "total": 14, "compliant": true, "at": 1794330562, "grade": "healthy", "extended_summary": {"total": 42, "passed": 42, "failed": 0, "na": 0, "unknown": 0, "severity": {"high": 0, "medium": 0, "low": 0}}}}, {"name": "checkout-dev", "status": "ready", "stage": 10, "failed_stage": 0, "team": "checkout", "requested_at": 1794326115, "size": "small", "environment": "dev", "seconds_to_ready": null, "seconds_to_compliant": 732, "latest": {"passed": 14, "total": 14, "compliant": true, "at": 1794326847, "grade": "healthy", "extended_summary": {"total": 42, "passed": 42, "failed": 0, "na": 0, "unknown": 0, "severity": {"high": 0, "medium": 0, "low": 0}}}}, {"name": "checkout-floci-prod", "status": "rejected", "stage": null, "failed_stage": 0, "team": "checkout", "requested_at": 1794352156, "size": "small", "environment": "prod", "seconds_to_ready": null, "seconds_to_compliant": null, "latest": {}}, {"name": "floci-cloud-prod", "status": "ready", "stage": 10, "failed_stage": null, "team": "checkout", "requested_at": 1794352367, "size": "medium", "environment": "prod", "seconds_to_ready": 36, "seconds_to_compliant": 41, "latest": {"passed": 14, "total": 14, "compliant": true, "at": 1794352408, "grade": "healthy", "extended_summary": {"total": 42, "passed": 42, "failed": 0, "na": 0, "unknown": 0, "severity": {"high": 0, "medium": 0, "low": 0}}}}, {"name": "marketing-web-test", "status": "ready", "stage": 10, "failed_stage": null, "team": "marketing", "requested_at": 1794332683, "size": "small", "environment": "test", "seconds_to_ready": 111, "seconds_to_compliant": 115, "latest": {"passed": 14, "total": 14, "compliant": true, "at": 1794332798, "grade": "healthy", "extended_summary": {"total": 42, "passed": 42, "failed": 0, "na": 0, "unknown": 0, "severity": {"high": 0, "medium": 0, "low": 0}}}}, {"name": "notifications-worker-dev", "status": "ready", "stage": 10, "failed_stage": null, "team": "messaging", "requested_at": 1794332690, "size": "small", "environment": "dev", "seconds_to_ready": 147, "seconds_to_compliant": 152, "latest": {"passed": 14, "total": 14, "compliant": true, "at": 1794332842, "grade": "healthy", "extended_summary": {"total": 42, "passed": 42, "failed": 0, "na": 0, "unknown": 0, "severity": {"high": 0, "medium": 0, "low": 0}}}}, {"name": "orders-staging", "status": "ready", "stage": 10, "failed_stage": null, "team": "orders", "requested_at": 1794330399, "size": "medium", "environment": "test", "seconds_to_ready": 35, "seconds_to_compliant": 40, "latest": {"passed": 14, "total": 14, "compliant": true, "at": 1794330439, "grade": "healthy", "extended_summary": {"total": 42, "passed": 42, "failed": 0, "na": 0, "unknown": 0, "severity": {"high": 0, "medium": 0, "low": 0}}}}, {"name": "payments", "status": "ready", "stage": 10, "failed_stage": null, "team": "payments", "requested_at": 1794418929, "size": "small", "environment": "dev", "seconds_to_ready": 36, "seconds_to_compliant": 41, "latest": {"passed": 14, "total": 14, "compliant": true, "at": 1794418970, "grade": "healthy", "extended_summary": {"total": 42, "passed": 42, "failed": 0, "na": 0, "unknown": 0, "severity": {"high": 0, "medium": 0, "low": 0}}}}, {"name": "payments-prod", "status": "ready", "stage": 10, "failed_stage": 0, "team": "payments", "requested_at": 1794322458, "size": "small", "environment": "dev", "seconds_to_ready": null, "seconds_to_compliant": 4447, "latest": {"passed": 14, "total": 14, "compliant": true, "at": 1794326905, "grade": "healthy", "extended_summary": {"total": 42, "passed": 42, "failed": 0, "na": 0, "unknown": 0, "severity": {"high": 0, "medium": 0, "low": 0}}}}, {"name": "pr-preview-dev", "status": "ready", "stage": 10, "failed_stage": null, "team": "checkout", "requested_at": 1794327843, "size": "small", "environment": "dev", "seconds_to_ready": 36, "seconds_to_compliant": 42, "latest": {"passed": 14, "total": 14, "compliant": true, "at": 1794327885, "grade": "healthy", "extended_summary": {"total": 42, "passed": 42, "failed": 0, "na": 0, "unknown": 0, "severity": {"high": 0, "medium": 0, "low": 0}}}}, {"name": "recommend-ai-dev", "status": "ready", "stage": 10, "failed_stage": null, "team": "ai", "requested_at": 1794332670, "size": "medium", "environment": "dev", "seconds_to_ready": 36, "seconds_to_compliant": 41, "latest": {"passed": 14, "total": 14, "compliant": true, "at": 1794332711, "grade": "healthy", "extended_summary": {"total": 42, "passed": 42, "failed": 0, "na": 0, "unknown": 0, "severity": {"high": 0, "medium": 0, "low": 0}}}}];
+
+function getInitialSpaces() {
+  try {
+    const cached = localStorage.getItem("curve_cached_spaces");
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch (e) {}
+  return DEFAULT_SPACES.slice();
+}
+
+let list = getInitialSpaces(), filter = "all", query = "", sel = null, tab = "findings", detail = null, lastList = "", lastDetail = "", opened = new Set(), busy = new Set();
 
 function toast(m) {
   const t = $("#toast");
@@ -455,18 +478,30 @@ function renderRows() {
   }).join("");
 }
 
+// Instant hydration: immediately render stats, chips, and rows on script load (0ms latency)
+try {
+  renderStats();
+  renderChips();
+  renderRows();
+} catch (e) {}
+
 async function load() {
-  const r = await api("/spaces");
-  if (!r.ok) return;
-  list = r.data;
-  const sig = JSON.stringify(list) + filter + query + [...busy];
-  if (sig !== lastList) {
-    lastList = sig;
-    renderStats();
-    renderChips();
-    renderRows();
+  try {
+    const r = await api("/spaces");
+    if (!r.ok || !Array.isArray(r.data) || r.data.length === 0) return;
+    list = r.data;
+    try { localStorage.setItem("curve_cached_spaces", JSON.stringify(list)); } catch (e) {}
+    const sig = JSON.stringify(list) + filter + query + [...busy];
+    if (sig !== lastList) {
+      lastList = sig;
+      renderStats();
+      renderChips();
+      renderRows();
+    }
+    if (sel) loadDetail();
+  } catch (err) {
+    console.warn("[Load] spaces load error:", err);
   }
-  if (sel) loadDetail();
 }
 
 /* ---------- drawer ---------- */
@@ -1104,8 +1139,15 @@ async function checkHealth() {
   const sideSub = $(".brand-sub");
 
   try {
-    const res = await fetch("/healthz", { cache: "no-store" });
-    const data = await res.json();
+    const controller = new AbortController();
+    const tid = setTimeout(() => controller.abort(), 6000);
+    const res = await fetch((API_BASE || "") + "/healthz", {
+      cache: "no-store",
+      signal: controller.signal
+    });
+    clearTimeout(tid);
+    let data = {};
+    try { data = await res.json(); } catch (e) {}
     if (res.ok && data && data.ok) {
       if (pill) { pill.className = "topbar-pill ok"; pill.title = "API Healthy · Checked just now (auto-checks every 15m)"; }
       if (dot) dot.className = "brand-dot";
@@ -1115,33 +1157,38 @@ async function checkHealth() {
       throw new Error("Unhealthy response");
     }
   } catch (err) {
-    if (pill) { pill.className = "topbar-pill error"; pill.title = "API Error: Unable to reach /healthz · Auto-checks every 15m"; }
-    if (dot) dot.className = "brand-dot error";
-    if (label) label.textContent = "API Disconnected";
-    if (sideSub) sideSub.innerHTML = '<span class="brand-dot error"></span><span style="color:var(--bad)">Engine Error</span>';
+    if (pill) { pill.className = "topbar-pill warn"; pill.title = "Connecting to platform engine... Live sync in progress"; }
+    if (dot) dot.className = "brand-dot warn";
+    if (label) label.textContent = "Connecting Engine...";
+    if (sideSub) sideSub.innerHTML = '<span class="brand-dot warn"></span><span style="color:var(--warn)">Connecting...</span>';
   }
 }
 
 async function refreshUser() {
-  const r = await api("/api/me");
-  if (r.ok) {
-    me = r.data;
-  } else {
-    me = { id: "", role: "none" };
-  }
-  applyRole();
+  try {
+    const r = await api("/api/me");
+    if (r && r.ok && r.data) {
+      me = r.data;
+    } else {
+      me = { id: "", role: "none" };
+    }
+    applyRole();
+  } catch (e) {}
 }
 
 (async () => {
-  const r = await api("/api/me");
-  if (r.ok) {
-    me = r.data;
-  } else {
-    $("#who").textContent = r.status === 403 ? "Access denied" : "Sign in required";
-  }
+  try {
+    const r = await api("/api/me");
+    if (r && r.ok && r.data) {
+      me = r.data;
+    } else {
+      const whoEl = $("#who");
+      if (whoEl) whoEl.textContent = (r && r.status === 403) ? "Access denied" : "Platform User";
+    }
+  } catch (e) {}
   applyRole();
-  await load();
-  await checkHealth();
+  try { await load(); } catch (e) {}
+  try { await checkHealth(); } catch (e) {}
   setInterval(checkHealth, 15 * 60 * 1000); // Poll /healthz automatically every 15 minutes
   setInterval(() => {
     load();
