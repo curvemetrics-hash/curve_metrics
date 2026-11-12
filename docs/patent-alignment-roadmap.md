@@ -1,365 +1,305 @@
-# Curve Metrics — Patent Alignment & Delivery Roadmap
+# Curve Metrics — EB-1A Patent Adoption & Product Delivery Roadmap
 
+**Planning baseline:** 12 November 2026  
 **Patent reference:** German Utility Model No. 20 2025 107 185  
-**Title:** System for Blueprinted Platform Engineering using Terraform Modules on Kubernetes/Openshift with CI/CD  
-**Planning baseline:** 11 November 2026  
-**Target platform:** Kubernetes. OpenShift is an alternative and is not a prerequisite for this plan.  
-**Status:** Working engineering plan; dates are estimates, not commitments.
+**Target platform:** Kubernetes (OpenShift is optional and not a delivery requirement)  
+**Purpose:** Build a credible implementation and adoption record that may support an EB-1A petition.  
+**Status:** Planning estimate, not a legal opinion or guaranteed immigration outcome.
 
-## 1. Objective
+## 1. Correct objective
 
-Evolve the existing Curve Metrics reference build into a tested, deployable platform whose implementation can be traced element-by-element to the supplied utility-model specification and Claims 1–10.
+This programme is designed to establish that the inventor's original work is being genuinely adopted and used, that the inventor's personal contribution is documented, and that the use produces measurable value.
 
-For each claim element, preserve this chain:
+**We do not need to implement or map every patent claim simply to document adoption for an EB-1A petition.** A claim-by-claim chart may be useful for a separate patent-coverage/legal analysis, but it is not the central deliverable of this adoption programme.
 
-1. Exact requirement in the supplied specification/claim.
-2. Architecture decision and component.
-3. Source-code location and commit SHA.
-4. Unit, integration, negative and recovery tests.
-5. Runtime evidence from Kubernetes.
-6. Dated evidence artifact and technical/legal review outcome.
+For EB-1A, the relevant possible criterion is 8 C.F.R. § 204.5(h)(3)(v): original scientific, scholarly, artistic, athletic or business-related contributions of major significance in the field. USCIS guidance recognizes patents, licences, testimonials and evidence of commercial use as potentially relevant evidence, but a patent or licence by itself does not necessarily establish major significance. The case must be supported by credible evidence of the work's significance and considered in the context of the whole petition, including the final merits determination.
 
-This is an engineering roadmap, not a legal opinion. Source code, test results and similar component names do not by themselves establish that a legal claim is met. Patent counsel must review claim interpretation, legal status, ownership and licence scope.
+This roadmap supports evidence-building. It does not determine eligibility. Immigration counsel should decide which EB-1A criteria the complete petition will rely on and how this evidence fits the overall case.
 
-## 2. Patent components and claim scope
+## 2. What success should look like
 
-The supplied specification identifies these components:
+By the end of this programme, we want to be able to show:
 
-| Ref. | Component | Described responsibility |
-|---:|---|---|
-| 1 | Blueprint compiler | Type-checks/version-resolves blueprint components and creates an acyclic Terraform-module dependency graph |
-| 2 | Module registry | Stores content-addressed module versions, signatures, attestations and compatibility metadata |
-| 3 | Policy and compliance engine | Enforces compile-time, pre-provision and post-provision policy and environment overlays |
-| 4 | Environment orchestrator | Coordinates graph-based Terraform lifecycle and Kubernetes Custom Resources/controllers |
-| 5 | Drift/reconciliation engine | Compares desired, Terraform and live state; computes minimal graph-aware corrective plans |
-| 6 | Secretless connection broker | Issues short-lived, identity-bound, just-in-time credentials |
-| 7 | Provenance ledger | Retains linked blueprint, module, attestation, policy, plan, drift and runtime evidence in tamper-evident form |
-| 8 | CI/CD pipeline controller | Controls signed/attested staged promotion and SLO-aware canary verification |
-| 9 | Ephemeral sandbox manager | Creates branch-based preview environments and cleans them up on merge/expiry |
-| 11 | Adaptive cost governor | Simulates plan cost and adjusts approved parameters within policy bounds |
-| 12 | Multi-tenant isolation fabric | Described as an optional tenant-isolation component |
+1. The utility model exists, its legal/ownership status has been checked, and the inventor's role is documented.
+2. The relevant company or companies have formally authorized and genuinely adopted the technology under valid written terms.
+3. The platform is actually deployed and used in a real company workflow—not merely demonstrated locally or described in a proposal.
+4. Contemporaneous records establish what the inventor personally designed, developed or led.
+5. The company can explain why it selected the system, what problem it solved, how it is used and what changed.
+6. Actual results are measured against a defensible baseline.
+7. Knowledgeable decision-makers and, where possible, independent experts corroborate the contribution and its significance.
+8. The evidence is consistent, dated, verifiable and suitable for review by immigration counsel.
 
-The supplied Claims section contains Claims 1–10. Claim 1 combines components 1, 2, 3, 4, 8, 5 and 7. Claims 2–10 add specific limitations/components.
+Adoption by two organizations can strengthen the record, particularly where they are genuinely separate users with real operational use. Do not imply independent adoption if the organizations are affiliated, controlled by the same people or merely signing supportive letters without real use. Counsel should assess independence and evidentiary weight.
 
-Component 12 is described in the specification but is not a separate numbered dependent claim in the supplied Claims section. Track it as an optional product/specification scope item and ask counsel whether it matters to the intended interpretation. Do not invent a Claim 11.
+## 3. Existing product baseline
 
-Kubernetes is the selected implementation platform. OpenShift deployment is not a delivery gate.
+The current Curve Metrics repository is a useful local reference build. Repository documentation reports:
+- Versioned standard-team blueprint and reusable Terraform modules.
+- Kubernetes namespace, quotas, limits, network policies, role bindings and standard labels.
+- Ten-stage provisioning script.
+- Console, API, queue and worker.
+- 14 baseline controls and 42 extended checks.
+- Blueprint version rollout with preview, canary, batches and rollback.
+- Reported local results: 19 module tests, 85 Python tests, 24 console end-to-end checks and 12 rollout-demo checks.
 
-## 3. Current repository baseline (reviewed 11 November 2026)
+The repository also states that real AWS/EKS and hosted deployment have not been run, GitHub Actions have not been run, and company adoption has not yet occurred. These are repository-reported local results, not production/customer evidence.
 
-This is a working local reference build, not a production deployment. The statuses below are based on repository source and documentation; reported tests were not independently rerun for this roadmap.
+For the EB-1A adoption objective, the immediate priority is not to add every advanced feature described in the patent. It is to turn the strongest existing capabilities into a secure, usable product, deploy it in a real environment and prove genuine use and impact.
 
-| Patent component | Existing Curve Metrics foundation | Main gap |
-|---|---|---|
-| 1 Blueprint compiler | Versioned standard-team blueprint, typed Terraform variables, two composed modules | No dedicated compiler, component interface contracts, dependency graph generation, cycle detection or compatibility resolution |
-| 2 Module registry | Git-based catalog, version tags and version materialization | No enforced content-addressed registry, cryptographic signature verification or required attestations |
-| 3 Policy engine | Plan policy gate, 14 baseline controls and 42 extended checks, local post-provision scans | No unified compile/plan/runtime policy context, complete environment overlays, admission/topology/residency/cost gates |
-| 4 Orchestrator | API, queue, worker, ten-stage script pipeline and Terraform state/apply | No graph-driven Kubernetes CRDs/controllers or operator reconciliation |
-| 5 Drift engine | Terraform drift check, scheduled scans and blueprint re-apply/remediation jobs | No minimal graph-aware corrective sub-plan; re-apply may affect more than the impacted component |
-| 6 Secretless broker | OIDC/IRSA-style service-account role wiring | No dedicated broker issuing just-in-time credentials to Terraform and CI/CD; real IAM/OIDC is untested |
-| 7 Provenance ledger | Database audit events, job records, scan history and rollout history | Mutable database records; no demonstrated append-only/hash-linked ledger connecting all required artifacts |
-| 8 CI/CD controller | Ten-stage local pipeline; rollout preview, canary, batches and rollback | GitHub Actions not run; signing/attestation is not enforced; canary is not SLO-driven workload promotion |
-| 9 Ephemeral sandbox | Provisioning and rollout-preview foundations | No branch-created temporary environment with automatic merge/TTL cleanup and retained evidence |
-| 11 Cost governor | Size presets and resource quotas | No provider-price simulation or policy-controlled parameter optimization |
-| 12 Tenant isolation | Namespace quotas, labels, network policies and role bindings | No complete tenant identity-to-policy overlay fabric or cross-tenant isolation proof |
+### Product scope for the first adoption
 
-Repository documentation reports 19 module tests, 85 Python tests, 24 console end-to-end checks and 12 rollout-demo checks passing locally. It also states that real AWS/EKS, GitHub Actions, hosted deployment and company adoption have not yet occurred. These are repository-reported local results, not production evidence.
+Prioritize the smallest complete, valuable product slice:
+- Self-service request for a standardized Kubernetes environment.
+- Versioned Terraform/OpenTofu blueprint and reusable modules.
+- Automated plan, validation, policy gate, approved apply and verification.
+- Resource quotas, network policies, role bindings and standard labels.
+- Post-provision checks and clear compliance/findings output.
+- Blueprint re-application/rollout with preview and safe rollback where needed.
+- Audit trail showing who requested, approved and executed each operation.
 
-### Existing issues to address before client production
+Do not delay adoption to build optional features such as a full graph compiler, signed OCI module registry, CRD/operator control plane, Merkle ledger, dedicated secret broker, ephemeral preview manager or adaptive cost optimizer unless a real adopter's use case requires them or counsel/technical review identifies a specific reason to prioritize them.
 
-- Production authentication code contains sample hardcoded credentials/API keys and plaintext password handling; remove these and enforce secure enterprise identity.
-- The worker can simulate successful pipeline stages when required tools/backend/cluster configuration is missing. Production must fail closed and label simulation distinctly.
-- Approval behavior must be explicit; the local worker flow currently does not provide a second independent approver.
-- Team-level authorization is not implemented.
-- Request validation accepts blueprint/service choices that are not all passed through to the generated Terraform request.
-- Real cloud IAM, workload identity, remote state, restore and hosted deployment behavior require verification.
+## 4. Evidence collection plan
 
-Preserve the existing working prototype and extend it incrementally; do not replace it without a reviewed reason.
+### A. Patent and authorship
+- Official registration certificate and register extract showing number, title, owner and status.
+- Complete specification and drawings as context; claim chart only if needed for separate patent advice.
+- Certified/appropriate translations if required by counsel.
+- Inventorship/ownership records and signed licence or authorization.
+- Dated design notes, architecture decisions, source-control history, commits, code reviews and technical materials demonstrating the beneficiary's own contribution.
+- Clear distinction between the inventor's work and work performed by employees, contractors or other contributors.
 
-## 4. Delivery phases
+### B. Formal adoption
+For each adopting company, retain:
+- Executed licence, assignment or permission agreement with exact scope, territory, term, permitted production/client use and consideration (including royalty-free terms where applicable).
+- Signed adoption decision or internal approval by an authorized decision-maker.
+- A specific statement of the business/technical problem that led to adoption.
+- Architecture approval, implementation plan, accountable product/platform owner and intended users.
+- Actual deployment record: environment, date, release/version, sanitized resource inventory and responsible team.
+- Real request records, change tickets, CI/CD run IDs, plan/apply logs, verification outputs, audit records and usage history.
+- Proof of ongoing use over time, not just a one-time demo.
+- If applicable, contracts, purchase orders, invoices or other commercial records. Do not characterize a free internal licence as revenue or paid commercial adoption.
 
-### Phase 0 — Patent/document baseline and governance
-**Estimate:** 1–2 weeks | **Target:** 11–24 November 2026
+### C. Impact and significance
+Establish a baseline before or at the start of real use. Measure after adoption:
+- Request-to-ready time.
+- Manual platform-team steps/hours per environment.
+- Time to onboard a team.
+- Number/percentage of environments conforming to the approved baseline.
+- Provisioning failure rate and recovery time.
+- Drift detection and remediation time.
+- Security/configuration findings before and after.
+- Infrastructure cost where reliable billing data is available.
+- Number of teams, users, environments, repeated deployments and duration of use.
 
-- [ ] Verify that the supplied specification is the exact registered/final version.
-- [ ] Obtain/verify official DPMA register extract, registration documents and current status.
-- [ ] Confirm owner/inventor information and executed licence terms, including permitted client/production/commercial use.
-- [ ] Freeze a dated copy of the claims and drawings for engineering traceability.
-- [ ] Ask patent counsel to confirm claim interpretation and representation limits.
-- [ ] Separate mandatory claim elements from optional specification embodiments.
+For every metric record definition, data source, sample size, measurement period, assumptions and responsible company owner. Compare like with like. Do not use kind/LocalStack laptop timings as a client baseline or production result.
 
-**Exit:** Official document set and licence basis verified; exact claim text selected; no unsupported claim-coverage statement.
+### D. Corroboration by knowledgeable people
+Obtain detailed letters from actual adopters and qualified experts. Good letters should explain:
+- The writer's title, expertise and basis of personal knowledge.
+- The company's actual prior problem and why existing approaches were inadequate.
+- How the technology was evaluated and why it was selected.
+- Which parts were actually deployed and how often they are used.
+- The beneficiary's specific original contribution and role.
+- Concrete operational results and why those results matter beyond a routine internal project.
+- Whether the writer is independent or has a relationship/interest in the beneficiary or company.
 
-### Phase 1 — Claim-to-code mapping and target architecture
-**Estimate:** 1–2 weeks | **Target:** 25 November–8 December 2026
+Letters should be corroborated by dated technical and business records. Generic praise, unsupported superlatives or letters that say "adopted" without proof of use are weak.
 
-- [ ] Decompose Claim 1 and Claims 2–10 into individual testable elements.
-- [ ] Create claim → component → code → test → evidence matrix.
-- [ ] Mark each element: gap, implemented, locally verified, integration verified, live verified or client accepted.
-- [ ] Assign an engineering owner and reviewer to each element.
-- [ ] Define architecture decisions for compiler, registry, policy engine, orchestrator, CRDs/controllers, ledger and broker.
-- [ ] Define contracts, event schemas, versioning, failure semantics and security boundaries.
-- [ ] Select the production Kubernetes and CI/CD reference environment.
-- [ ] Establish quality, security, performance, recovery and audit requirements.
+### E. External recognition and overall EB-1A case
+- Preserve independent publications, conference invitations, expert commentary, citations, awards, judging work, selective memberships, remuneration evidence or leading/critical-role evidence where genuinely applicable.
+- Do not manufacture press, endorsements, usage or metrics.
+- EB-1A normally requires a one-time major award or evidence meeting at least three of the listed regulatory criteria, followed by a final merits assessment. This project may support the original-contribution criterion and possibly other criteria only where the facts genuinely satisfy them.
+- Coordinate the complete case strategy and evidence weighting with immigration counsel.
 
-**Exit:** Every element has an owner, implementation path, acceptance test and evidence requirement; target architecture approved.
+## 5. Delivery phases and target dates
 
-### Phase 2 — Claim 1 core system, including detailed Claims 2–5
-**Estimate:** 12–16 weeks | **Target:** 9 December 2026–30 March 2027
+### Phase 0 — Confirm legal basis and inventor contribution
+**Estimate:** 1–2 weeks | **Target:** 12–25 November 2026
 
-**2A. Blueprint compiler (component 1; Claim 2)**
-- [ ] Define a typed, versioned YAML/JSON blueprint schema.
-- [ ] Define component inputs/outputs, required/provided interfaces and parameter contracts.
-- [ ] Resolve module/provider versions and compatibility metadata.
-- [ ] Generate a normalized dependency graph and deterministic execution order.
-- [ ] Reject unsatisfied interfaces, incompatible versions and cycles before apply.
-- [ ] Produce reproducible compiler outputs and machine-readable diagnostics.
+- [ ] Verify the official registration record, registered title, number, owner and current status.
+- [ ] Confirm the supplied specification matches the registered document.
+- [ ] Confirm inventor/contributor attribution and ownership chain.
+- [ ] Locate and verify the executed Curve Metrics licence and any second-company licence/authorization.
+- [ ] Confirm rights to use the invention in client, hosted and production deployments.
+- [ ] Ask immigration counsel which EB-1A criterion/criteria this evidence is intended to support.
+- [ ] Ask patent counsel about any separate ownership, licensing or patent-law issue; do not turn this into a requirement to chart every claim for EB-1A adoption.
 
-**2B. Signed module registry (component 2; Claim 3)**
-- [ ] Select an OCI-compatible or equivalent module registry design.
-- [ ] Store immutable/content-addressed module versions.
-- [ ] Sign module artifacts and verify signatures before use.
-- [ ] Generate/verify build provenance and attestations; select the required SLSA level.
-- [ ] Store compatibility metadata and reject untrusted versions.
-- [ ] Demonstrate reconstruction using pinned digests.
+**Exit:** Patent and licence documents verified; contribution narrative and evidence responsibilities identified.
 
-**2C. Unified policy engine (component 3; Claim 4)**
-- [ ] Define policy bundles and environment classes (development, staging, production, regulated where applicable).
-- [ ] Bind overlays to blueprint components and inject constraints before planning.
-- [ ] Gate plans for quotas, topology, segmentation, encryption, residency and agreed controls.
-- [ ] Verify post-provision Kubernetes admission/runtime posture.
-- [ ] Return machine-readable decisions and status to orchestration.
-- [ ] Keep policy decisions consistent across compile, plan, apply and runtime.
+### Phase 1 — Secure genuine adopters and define the pilot
+**Estimate:** 2–3 weeks | **Target:** 26 November–16 December 2026
 
-**2D. Kubernetes orchestrator (component 4; Claim 5)**
-- [ ] Define CRDs such as Blueprint, BlueprintComponent and promotion/status resources.
-- [ ] Implement Kubernetes controllers/operators to reconcile desired state.
-- [ ] Coordinate graph-based Terraform init/plan/approval/apply/destroy.
-- [ ] Expose phase, readiness, plan reference, errors and outputs through CRD status.
-- [ ] Implement checkpoints, retries, locking, idempotency and partial-failure handling.
-- [ ] Propagate admission/readiness failures back to orchestrator status.
+For each intended adopter (e.g. Curve Metrics and Abhishree Labs, if each genuinely intends to use it):
+- [ ] Identify an authorized executive/platform decision-maker and actual operational sponsor.
+- [ ] Hold a discovery session and document the real platform-engineering problem.
+- [ ] Confirm whether the organization will use the system, where, for which teams and for what workflow.
+- [ ] Agree the pilot scope, success measures, baseline, sample size and duration.
+- [ ] Execute the correct licence/adoption/authorization documents before use.
+- [ ] Identify security, data, cloud budget and infrastructure approvals.
+- [ ] Record why the organization selected this technology and what alternatives were considered.
 
-**2E. Claim 1 vertical slice**
-- [ ] Connect compiler, registry, policy engine and orchestrator end to end.
-- [ ] Compile a real blueprint request, resolve signed modules, pass policy, create graph-ordered plans and provision Kubernetes resources.
-- [ ] Test failures, reproducibility and pinned-version reconstruction.
+**Exit:** At least one real pilot sponsor, approved use case, signed use authorization and agreed measurement plan. A letter of intent alone is not adoption.
 
-**Exit:** Components 1–4 integrated; Claim 1 interfaces to components 5, 7 and 8 agreed and connected for an end-to-end vertical slice; Claims 2–5 have test evidence for their added limitations.
+### Phase 2 — Productize the existing core for safe real use
+**Estimate:** 6–9 weeks | **Target:** 17 December 2026–19 February 2027
 
-### Phase 3 — Remaining Claim 1 components and Claims 6–10
-**Estimate:** 8–12 weeks | **Target:** 31 March–22 June 2027
+- [ ] Remove all sample hardcoded API keys, sample accounts and plaintext password handling; enforce secure identity.
+- [ ] Make production provisioning fail closed when OpenTofu/Terraform, cluster credentials, state backend or cloud prerequisites are missing; never simulate success in production.
+- [ ] Enforce team/project-level authorization and least privilege.
+- [ ] Implement a genuine independent approval step for production changes.
+- [ ] Fix the request-to-Terraform path so selected blueprint/services are either honored or not presented as functional options.
+- [ ] Harden CORS, CSP, CSRF protection, secrets handling, audit access and rate limits.
+- [ ] Validate repeatable provisioning, idempotency, drift detection, failed apply and rollback.
+- [ ] Run CI in the actual selected CI/CD provider; pin dependencies/actions and retain artifacts.
+- [ ] Add useful operator logs, health checks, backups, restore and basic alerting.
+- [ ] Create release notes, operator guide and security/deployment runbook.
+- [ ] Keep a dated contribution record showing the beneficiary's design/engineering leadership.
 
-**3A. Secretless broker (component 6; Claim 6)**
-- [ ] Implement workload-identity/JIT exchange for CI/CD and Terraform providers.
-- [ ] Issue least-privilege short-lived credentials scoped to an operation.
-- [ ] Enforce expiry, rotation and revocation.
-- [ ] Remove long-lived pipeline secrets where supported.
-- [ ] Test denied, expired, revoked and cross-identity cases.
+**Exit:** Secure release candidate, automated tests passing, production simulation disabled, approval and access controls verified, deployment runbook ready.
 
-**3B. CI/CD controller and SLO progressive delivery (component 8; Claim 7)**
-- [ ] Execute the actual CI workflow with protected environments and approvals.
-- [ ] Sign source/build/module artifacts and verify attestations before promotion.
-- [ ] Define SLOs and canary signals in the blueprint.
-- [ ] Gate dev → staging → production promotion on policy, provenance and SLO evidence.
-- [ ] Pause/rollback on threshold breach or missing evidence.
-- [ ] Preserve promotion and rollback records in the ledger.
+### Phase 3 — Real Kubernetes pilot and first live use
+**Estimate:** 4–6 weeks | **Target:** 22 February–2 April 2027
 
-**3C. Ephemeral sandbox (component 9; Claim 8)**
-- [ ] Create preview environments from branch/blueprint events.
-- [ ] Isolate resources and credentials.
-- [ ] Enforce TTL and cleanup on merge, branch closure or expiry.
-- [ ] Retain lifecycle evidence after deletion.
-- [ ] Test cleanup failures and orphan detection.
+- [ ] Provision an approved non-production Kubernetes environment for the adopting organization.
+- [ ] Deploy the release candidate using real state and approved credentials.
+- [ ] Run actual, authorized environment requests from the adopter's workflow.
+- [ ] Capture request, approval, plan, apply, verification and audit evidence.
+- [ ] Test failure, rejected policy, drift and safe recovery.
+- [ ] Onboard the first real team and record training/operational ownership.
+- [ ] Capture first user feedback and resolve blocking issues.
+- [ ] Record actual usage, environment count and measurement data.
 
-**3D. Graph-aware drift (component 5; Claim 9)**
-- [ ] Compare blueprint intent, Terraform state and live Kubernetes/provider state.
-- [ ] Map drift to dependency-graph nodes and edges.
-- [ ] Calculate the smallest corrective subgraph and plan.
-- [ ] Freeze unaffected nodes and respect maintenance windows/disruption budgets.
-- [ ] Prove that only the selected subgraph changes.
-- [ ] Test dependent and unrelated simultaneous drift.
+**Exit:** First organization has genuinely used the platform for an agreed workflow; the adopter confirms acceptance; original records are retained.
 
-**3E. Adaptive cost governor (component 11; Claim 10)**
-- [ ] Integrate provider price catalog and versioned pricing inputs.
-- [ ] Estimate cost from graph, module parameters and environment class before apply.
-- [ ] Enforce cost envelopes and budget policy.
-- [ ] Rewrite only approved tunable values within allowed ranges.
-- [ ] Produce before/after plans and required approval records.
-- [ ] Test price changes, budget overruns and infeasible requests.
+**Target first pilot/live use:** March 2027, subject to adopter readiness and infrastructure approvals.
 
-**3F. Multi-tenant isolation (component 12; optional descriptive component)**
-- [ ] Decide with product owner and counsel whether it is included in delivery scope.
-- [ ] If included, bind tenant identity to namespace, network, storage and policy overlays.
-- [ ] Prove cross-tenant isolation with positive and negative tests.
+### Phase 4 — Production adoption and repeat use
+**Estimate:** 4–8 weeks | **Target:** 5 April–28 May 2027
 
-**Exit:** Selected Claims 1–10 features integrated with evidence. Component 12 is either separately tested or explicitly excluded; it is not a separate numbered claim in the supplied claims section.
+- [ ] Resolve pilot blockers and complete production security review.
+- [ ] Obtain written production approval and confirm licence scope.
+- [ ] Execute controlled production deployment with rollback tested.
+- [ ] Move agreed team/environment workflows into real recurring use.
+- [ ] If the second organization is a genuine adopter, deploy and document its own actual use separately.
+- [ ] Capture recurring usage, release history, support records and business owner confirmation.
+- [ ] Measure outcomes against the agreed baseline and preserve source data.
+- [ ] Obtain signed adopter statements only after actual use; describe scope and dates accurately.
 
-### Phase 4 — Security, reliability and full-system verification
-**Estimate:** 4–6 weeks | **Target:** 23 June–3 August 2027
+**Exit:** At least one controlled production use case with recurring use and verifiable outcomes. Second-adopter evidence is included only if separately real.
 
-- [ ] Remove hardcoded sample credentials and plaintext password handling.
-- [ ] Enforce enterprise authentication, team-level authorization and least privilege.
-- [ ] Prohibit production fallback to static credentials or simulated provisioning.
-- [ ] Add dependency, container, IaC, secret and code security scanning.
-- [ ] Pin CI actions/dependencies and verify artifact signatures.
-- [ ] Test concurrency, retries, controller restarts, partial apply, rollback and disaster recovery.
-- [ ] Test ledger integrity, retention, backup and restore.
-- [ ] Add metrics, logs, traces, alerts and runbooks.
-- [ ] Execute claim traceability tests, negative tests and failure/recovery cases.
-- [ ] Obtain independent engineering/security review.
+**Target first production go-live:** 3 May 2027 (planning target; may move with pilot results and approvals).
 
-**Exit:** No unresolved critical/high security issues; integration tests, recovery and ledger-integrity checks pass; production runbooks and monitoring ready.
+### Phase 5 — Demonstrate significance and independent corroboration
+**Estimate:** 4–8 weeks, partly parallel with Phases 3–4 | **Target:** May–July 2027
 
-### Phase 5 — Real Kubernetes staging deployment and controlled pilot
-**Estimate:** 4–6 weeks | **Target:** 4 August–14 September 2027
+- [ ] Produce before/after report with definitions, source data, sample sizes and period.
+- [ ] Quantify actual teams, environments, users, usage frequency and duration.
+- [ ] Obtain detailed letters from adopter executives and technical decision-makers.
+- [ ] Obtain independent expert assessment where appropriate, based on reviewed technical and adoption evidence.
+- [ ] Document why the contribution is original and why its impact is meaningful in the relevant platform-engineering field.
+- [ ] Gather genuine external recognition, publication, conference or other relevant evidence if available.
+- [ ] Keep conflicts, affiliations and relationships transparent.
 
-- [ ] Provision an isolated, approved non-production Kubernetes environment.
-- [ ] Configure real remote state, locking, workload identity and module registry.
-- [ ] Deploy compiler, controllers/operators, policy engine, ledger and services.
-- [ ] Run real environment requests and staged promotions.
-- [ ] Demonstrate policy rejection, drift repair, credential expiry and canary rollback.
-- [ ] Capture a complete lifecycle from request through verified runtime state.
-- [ ] Complete customer/platform acceptance tests.
-- [ ] Record genuine baseline and post-implementation metrics; do not use emulator timings as client results.
+**Exit:** Corroborated adoption and impact dossier, not merely a demo, patent certificate or generic recommendation letters.
 
-**Exit:** Real Kubernetes pilot accepted by designated stakeholders; agreed acceptance criteria passed; no critical unresolved production blocker.
+### Phase 6 — EB-1A evidence pack and launch/continuity plan
+**Estimate:** 3–5 weeks | **Target:** July–August 2027
 
-### Phase 6 — Production readiness, client acceptance and launch
-**Estimate:** 3–4 weeks | **Target:** 15 September–12 October 2027
+- [ ] Organize patent, authorship, licence, implementation, adoption, metrics and expert evidence.
+- [ ] Build a clear chronology of invention → development → licensing/authorization → adoption → impact.
+- [ ] Document the beneficiary's personal contribution and leadership with contemporaneous evidence.
+- [ ] Review consistency of names, dates, company relationships, licence terms and technical descriptions.
+- [ ] Have immigration counsel map evidence to the selected EB-1A criteria and prepare the final merits argument.
+- [ ] Prepare a realistic plan for continuing the work in the United States, supported by commitments or a concrete statement as counsel advises.
+- [ ] Keep the product live and operating; schedule 30-day and 90-day post-launch reviews.
 
-- [ ] Complete production security, architecture and operational reviews.
-- [ ] Confirm SLOs, ownership, support, incident response and escalation.
-- [ ] Validate backup/restore, rollback, access reviews and audit retention.
-- [ ] Complete patent claim evidence pack and counsel review.
-- [ ] Confirm client approval and contractual/licence permissions for production use.
-- [ ] Execute controlled production rollout with tested rollback.
-- [ ] Capture launch approval, release commit, deployment records and first production verification.
-- [ ] Schedule 30-day and 90-day post-launch reviews.
+**Exit:** Counsel-reviewed evidence package and a documented continuing-work plan. Petition filing date is a legal-strategy decision, not a software milestone.
 
-**Exit:** Production acceptance signed, live environment verified, monitoring/support active, rollback tested and evidence pack complete.
+## 6. Schedule summary
 
-## 5. Timeline and production target
-
-| Milestone | Target |
+| Milestone | Planning target |
 |---|---|
-| Patent/document baseline | 24 November 2026 |
-| Claim matrix and architecture approved | 8 December 2026 |
-| Claim 1 core vertical slice | March 2027 |
-| Claims 1–10 feature implementation target | June 2027 |
-| Security/full-system verification | Early August 2027 |
-| Real Kubernetes pilot | August–September 2027 |
-| Production launch readiness | September–October 2027 |
-| **Target production go-live** | **5 October 2027** |
-| Contingency window | October–November 2027 |
+| Patent/ownership/licence basis checked | 25 November 2026 |
+| Adopter and pilot scope agreed | 16 December 2026 |
+| Secure product release candidate | 19 February 2027 |
+| First real Kubernetes pilot/live use | March 2027 |
+| First production go-live | **3 May 2027** |
+| Repeat/second-adopter use and measured impact | May–June 2027 |
+| Adoption and impact dossier | July 2027 |
+| EB-1A evidence package for counsel review | August 2027 |
 
-Planning estimates:
-- Limited staging demonstration using current foundations: approximately 4–8 weeks; this is not complete claim implementation.
-- Integrated Claim 1 technical demonstration: March 2027 target.
-- Claims 1–10 feature-complete engineering: June 2027 target.
-- Full production-capable implementation and evidence: approximately **46–50 calendar weeks** from 11 November 2026.
+### Time estimate and assumptions
 
-The baseline schedule assumes three experienced engineers (platform/backend, Kubernetes/controllers, infrastructure/CI-CD) with part-time QA, security and DevOps support; timely patent-counsel reviews; prompt decisions; and access to a client-approved Kubernetes staging environment.
+- **First real pilot:** approximately 14–20 weeks from 12 November 2026.
+- **First production use:** approximately 5–7 months from 12 November 2026.
+- **Adoption/impact evidence package:** approximately 8–10 months from 12 November 2026.
 
-If one developer performs most of the work, plan approximately 60–80+ weeks. Staffing, client access, scope and legal review can move the dates. **5 October 2027 is a planning target, not a guarantee.** Reforecast after Phase 1.
+Assumes 2–3 experienced engineers, with part-time QA/security/DevOps support; an adopter willing to participate; prompt execution of licence and approvals; and access to a real Kubernetes environment. If one developer performs most work, add roughly 2–4 months. If no company is ready to use it, the software can be built but adoption evidence and the adoption-dependent schedule cannot be guaranteed.
 
-## 6. Evidence required to mark an element complete
+**These are project planning targets, not a prediction or guarantee of EB-1A approval.** Actual adoption dates depend on the organizations' decisions, contracts, infrastructure and use.
 
-For every claim element retain:
-- Exact claim/paragraph reference and element ID.
-- Architecture/design decision.
-- Source path and immutable commit SHA.
-- Relevant schema/configuration and module/artifact digest.
-- Positive, negative and failure/recovery test cases.
-- Raw test output and test environment/version.
-- Runtime logs, Kubernetes snapshots/status and plan references.
-- Signature/attestation verification where relevant.
-- Provenance ledger entry and integrity verification.
-- Reviewer, review date and pass/fail decision.
-- Client acceptance where client use is claimed.
+## 7. Evidence folder and record discipline
 
-Suggested folder structure:
+Suggested structure:
 
 ```text
-docs/evidence/patent-alignment/
-  00-patent-source/
-  01-claim-matrix/
-  02-architecture-decisions/
-  03-compiler/
-  04-module-registry/
-  05-policy-engine/
-  06-orchestrator/
-  07-drift-engine/
-  08-secretless-broker/
-  09-provenance-ledger/
-  10-cicd-progressive-delivery/
-  11-ephemeral-sandbox/
-  12-cost-governor/
-  13-integration-tests/
-  14-kubernetes-pilot/
-  15-production-acceptance/
+docs/evidence/eb1a-adoption/
+  00-patent-ownership-and-licence/
+  01-inventor-contribution/
+  02-adopter-discovery-and-approvals/
+  03-baseline-and-success-measures/
+  04-design-and-development-history/
+  05-release-and-security/
+  06-kubernetes-pilot/
+  07-production-adoption/
+  08-usage-and-impact-metrics/
+  09-adopter-letters/
+  10-independent-expert-evidence/
+  11-external-recognition/
+  12-counsel-review/
 ```
 
-Never fabricate logs, dates, performance results, client use or approvals. Redact credentials, secrets and customer/personal data before external sharing.
+For each evidence item record date, source, owner, context, version/commit and relevance. Retain original records. Redact credentials, secrets, personal data and confidential client details in external copies. Do not create retrospective or fictional logs, usage, metrics, adoption letters or approvals.
 
-## 7. Risks and decision gates
+## 8. Risks and controls
 
 | Risk | Control |
 |---|---|
-| Supplied text differs from registered/final version | Verify official document before finalizing mapping |
-| Optional description feature mistaken for claim limitation | Counsel and architecture review; separate mandatory claims from optional embodiments |
-| Fixed Terraform composition mistaken for compiler | Require generated dependency graph and cycle/interface tests |
-| Git tags mistaken for signed registry | Enforce content digest, signature and attestation verification |
-| Mutable audit log mistaken for immutable ledger | Demonstrate append-only integrity and release reconstruction |
-| Basic drift check mistaken for minimal graph repair | Prove corrective subgraph and freeze of unaffected components |
-| Existing canary mistaken for SLO delivery | Use declared SLO metrics and automatic gate/rollback |
-| Simulation reported as provisioning | Production must fail closed and label demos distinctly |
-| Security defects block client rollout | Resolve authentication, authorization, credentials and least privilege before pilot |
-| Client environment/approval delayed | Use internal controlled Kubernetes staging for engineering proof; do not claim client adoption until actual client use |
+| Signed agreement but no real use | Require actual deployment and recurring workflow evidence before calling it adopted |
+| Patent alone presented as major significance | Corroborate with real use, impact, expert explanation and external recognition where available |
+| Related companies described as independent adopters | Disclose ownership/affiliation and let counsel assess weight |
+| Free licence described as commercial revenue | Accurately describe royalty-free or internal use; do not claim sales |
+| Generic letters | Require specific first-hand basis, detailed use, impact and corroborating records |
+| Local emulation presented as client deployment | Label kind/LocalStack as local tests only |
+| Weak link to the beneficiary | Preserve inventorship, design decisions, commits, reviews and leadership evidence |
+| Security problems block production | Fix credentials, authorization, approval and fail-closed behavior before live deployment |
+| EB-1A case relies on only one criterion | Counsel should assess the entire petition and at least three regulatory criteria or a qualifying one-time achievement, plus final merits |
 
-## 8. Ownership and cadence
+## 9. Weekly governance
 
-Suggested roles:
-- Technical lead/platform architect — architecture and claim traceability.
-- Kubernetes/controller engineer — CRDs, operators and reconciliation.
-- Infrastructure/CI-CD engineer — Terraform, registry, signing, identity and pipelines.
-- QA/SRE — test strategy, runtime verification, observability and recovery.
-- Security reviewer — identity, policy, supply chain and threat review.
-- Patent counsel — claim interpretation, ownership, legal scope and licence.
-- Client/platform owner — pilot acceptance, baseline and operational sign-off.
-
-Cadence:
-- Weekly engineering review: phase status, blockers, tests, evidence and forecast.
-- Every claim element has an owner and reviewer.
-- Every completed feature gets a pull request, tests and evidence record.
-- Monthly steering review: scope, staffing, risks, cost, legal questions and launch forecast.
-- Production requires explicit business, security, platform and client approval.
-
-## 9. First 10 actions
-
-1. Verify supplied specification against the official registered document.
-2. Freeze and version the claims used for engineering traceability.
-3. Confirm executed licence and permitted client/production use.
-4. Build claim-by-claim element matrix for Claim 1 and Claims 2–10.
-5. Review/fix production authentication and sample credentials.
-6. Add production fail-closed behavior when tools, cluster or backend are missing.
-7. Define blueprint schema and compiler acceptance tests.
-8. Decide module registry, signing and attestation architecture.
-9. Design CRD/controller lifecycle and provenance event schema.
-10. Baseline current tests and create the evidence folder before code changes.
+- Weekly product/adoption review: delivery, pilot, blockers, evidence and schedule.
+- Weekly evidence check: original records saved and indexed.
+- Monthly adopter review: actual usage, value, incidents and next adoption scope.
+- Every release: commit, tests, approvals, deployment record and rollback plan.
+- No adoption claim until real use can be corroborated.
+- No EB-1A eligibility or approval promise; counsel owns legal strategy.
 
 ## 10. Weekly status template
 
-| Field | Value |
+| Field | Current value |
 |---|---|
-| Reporting date | To update |
-| Overall status | Not yet baselined |
-| Current phase | Phase 0 |
-| Claim elements formally accepted | None yet |
-| Open blockers | Official registration confirmation; licence confirmation; claim matrix; staffing |
-| Forecast go-live | 5 October 2027 planning target |
-| Schedule confidence | Low until staffing, client environment and legal documents are confirmed |
-| Evidence location | docs/evidence/patent-alignment/ |
+| Reporting date | 12 November 2026 |
+| Current phase | Phase 0 — legal basis and inventor contribution |
+| Patent/ownership verified | Pending confirmation |
+| Executed adopter licence(s) | Must verify |
+| Adopter sponsor(s) | To confirm |
+| Product baseline | Local reference build |
+| First pilot target | March 2027 |
+| First production target | 3 May 2027 |
+| EB-1A evidence package target | August 2027 |
+| Main blockers | Confirm patent/licence record, adopter commitment, staffing and Kubernetes environment |
 
 ---
 
-**Planning conclusion:** Curve Metrics has a useful local reference implementation and several relevant foundations. Completing the supplied Claims 1–10 architecture is a substantial engineering programme. Use October 2027 as the baseline production target under the stated staffing assumptions, and reforecast after Phase 1.
+**Planning conclusion:** Focus first on making Curve Metrics safe and usable, then obtain genuine organizational adoption and prove the impact with contemporaneous records. A concise technical explanation of how the adopted product relates to the patented work is useful; exhaustive claim mapping is not the goal of this EB-1A adoption programme.
