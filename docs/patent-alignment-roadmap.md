@@ -216,6 +216,66 @@ For each intended adopter (e.g. Curve Metrics and Abhishree Labs, if each genuin
 
 **Exit:** Counsel-reviewed evidence package and a documented continuing-work plan. Petition filing date is a legal-strategy decision, not a software milestone.
 
+## 5A. Enterprise technology adoption readiness (cross-phase workstream)
+
+This workstream turns a functioning implementation into a technology that an organization can evaluate, integrate, operate, support and expand. It is distinct from implementing patent features and from assembling EB-1A evidence.
+
+### A. Adoption discovery and fit
+- [ ] Identify the business/platform problem, affected teams, existing process and users.
+- [ ] Identify executive sponsor, technical champion, service owner, security approver and procurement/legal contacts.
+- [ ] Assess fit with the adopter's Kubernetes distribution/version, cloud, networking, storage, identity, Git provider, CI/CD, secrets manager, registry, observability and ticket/change-management tools.
+- [ ] Document functional and non-functional requirements, constraints, exclusions and acceptance criteria.
+- [ ] Record alternatives evaluated and why Curve Metrics was selected.
+- [ ] Confirm deployment model, infrastructure ownership and responsibility boundaries.
+
+### B. Enterprise architecture and integration
+- [ ] Publish reference architecture, deployment topology, network-flow and data-flow diagrams.
+- [ ] Document installation prerequisites, supported Kubernetes versions, required permissions, compute/storage, DNS/TLS and outbound connectivity.
+- [ ] Define integrations for Git, CI/CD, identity/SSO, secrets, module registry, monitoring and ticketing.
+- [ ] Define tenant/team boundaries, namespace/RBAC model, data ownership, telemetry, retention and deletion.
+- [ ] Document upgrade, compatibility, backup/restore, migration and rollback behavior.
+- [ ] Prove coexistence with the adopter's current tools and processes.
+
+### C. Security, risk and procurement approval
+- [ ] Complete threat model and security architecture review.
+- [ ] Provide dependency inventory/SBOM, vulnerability scanning, patch policy and vulnerability-reporting contact.
+- [ ] Document authentication, authorization, credential rotation, audit events, encryption, network exposure and secrets handling.
+- [ ] Agree data processing, confidentiality, residency and retention requirements.
+- [ ] Complete adopter security questionnaire, risk assessment and change approval where required.
+- [ ] Confirm licence/IP, support and service terms before production use.
+- [ ] Do not claim a compliance certification unless independently assessed and certified.
+
+### D. Adoption, migration and enablement
+- [ ] Prepare onboarding guides for platform administrators and self-service guides for developers.
+- [ ] Train administrators/operators and onboard developer teams.
+- [ ] Define migration from the existing provisioning workflow, including coexistence, cutover, rollback and treatment of existing environments.
+- [ ] Select a small, representative pilot cohort; do not use a demo-only pilot.
+- [ ] Define support contacts, escalation path, incident severity, response expectations and maintenance windows.
+- [ ] Assign product, platform and ongoing operational owners.
+- [ ] Collect feedback and prioritize issues by user impact.
+
+### E. Operate, measure and expand
+- [ ] Define availability, provisioning success, queue latency, readiness time, error rate and recovery objectives.
+- [ ] Establish dashboards, alerts, health checks, incident runbooks and access reviews.
+- [ ] Track onboarded teams, active users, real requests, repeat usage, environments, upgrades and usage retention.
+- [ ] Track business value against baseline: manual hours, request-to-ready time, onboarding effort, policy deviations, incident/recovery effort and cost where measurable.
+- [ ] Review adoption and reliability monthly with the sponsor and operational owner.
+- [ ] Define criteria to expand to more teams, environments, clusters or business units.
+- [ ] Maintain release/upgrade cadence, compatibility policy, deprecation notices and customer communication.
+- [ ] Obtain permission before publishing customer name, logo, case study, metrics or testimonial.
+
+### Adoption stage gates
+
+| Gate | Evidence required |
+|---|---|
+| Fit confirmed | Problem statement, stakeholder map, technical fit and success measures approved |
+| Ready to pilot | Security/architecture approval, integration plan, deployment guide, support owner and pilot cohort |
+| Pilot accepted | Real workflow completed, users trained, acceptance criteria passed, issues documented |
+| Production accepted | Change approval, rollback, monitoring, support/escalation, licence and operational ownership confirmed |
+| Adopted and expanding | Recurring usage, named service owner, measured outcomes and decision to expand or continue |
+
+**Exit standard:** Do not call a technology adopted merely because it was installed, demonstrated, licensed or mentioned in a support letter. Adoption requires real organizational use, trained users/operators, operational ownership and corroborating records. Repeated use over time is stronger evidence than a one-time deployment.
+
 ## 6. Schedule summary
 
 | Milestone | Planning target |
